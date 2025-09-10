@@ -1024,10 +1024,8 @@ void func_4G_Connect_Server_Dispose(void)
 	
 	if((pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag == 1) && (pst_MainloopSystemPara->DeviceRunPara.c4GInitFlag == 1))
 	{
-		//OLED_Test(2);
 		pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_DIAG;
 		ucRes = drv_EC200U_4G_Module_Init(1);
-		//OLED_Test(3);
 		//重复尝试重新初始化4G模块
 		if(ucRes == 2)
 		{
