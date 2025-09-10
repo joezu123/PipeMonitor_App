@@ -1,0 +1,1277 @@
+###############################################################################
+#
+# IAR ELF Linker V8.20.2.14835/W32 for ARM                17/Apr/2025  09:06:30
+# Copyright 2007-2017 IAR Systems AB.
+#
+#    Output file  =  
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Exe\adc_01_sa_base.out
+#    Map file     =  
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\List\adc_01_sa_base.map
+#    Command line =  
+#        -f C:\Users\ZUCHEN~1\AppData\Local\Temp\EWC95D.tmp
+#        (E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\4G_EC200U.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\BT_TB05.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\drv_ADC.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\drv_IIC.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\drv_LKT4202.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\drv_RTC.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\drv_SC7A20H.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\drv_SPI.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\drv_Storage_GD25.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\drv_Timer.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\drv_USART.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_adc.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_clk.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_dmac.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_efm.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_event_port.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_exint_nmi_swi.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_gpio.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_i2c.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_icg.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_interrupts.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_keyscan.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_pwc.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_rtc.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_spi.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_sram.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_timer0.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_usart.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_utility.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\hc32f460_wdt.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\LC86L_BD.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\LoRa_RA02.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\Magnetic_Bar.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\main.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\Mainloop.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\MQTT_SK.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\OLED.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\Photosensitive_XYC_ALS.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\RF_NFC.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\startup_hc32f460.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\system_hc32f460.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\User_Data.o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj\WatchDog.o
+#        -o
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Exe\adc_01_sa_base.out
+#        --map
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\List\adc_01_sa_base.map
+#        --config
+#        E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\hc32f460xE.icf
+#        --semihosting --entry __iar_program_start --redirect
+#        __write=__write_buffered --vfe --text_out locale)
+#
+###############################################################################
+
+*******************************************************************************
+*** RUNTIME MODEL ATTRIBUTES
+***
+
+CppFlavor       = *
+__Heap_Handler  = Basic
+__SystemLibrary = DLib
+__dlib_version  = 6
+
+
+*******************************************************************************
+*** HEAP SELECTION
+***
+
+The basic heap was selected because no calls to memory allocation
+functions were found in the application outside of system library
+functions, and there are calls to deallocation functions in the
+application.
+
+
+*******************************************************************************
+*** PLACEMENT SUMMARY
+***
+
+"A0":  place at 0x00000000 { ro section .intvec };
+"P1":  place in [from 0x00000000 to 0x0007ffff] |
+                [from 0x03000c00 to 0x03000ffb] { ro };
+define block CSTACK with size = 5K, alignment = 8 { };
+define block HEAP with size = 5K, alignment = 8 { };
+"P2":  place in [from 0x1fff8000 to 0x1fffffff] |
+                [from 0x20000000 to 0x2000ffff repeat 2] |
+                [from 0x20020000 to 0x20026fff] |
+                [from 0x200f0000 to 0x200f0fff] {
+          rw, block CSTACK, block HEAP };
+initialize by copy { rw };
+
+  Section            Kind        Address    Size  Object
+  -------            ----        -------    ----  ------
+"A0":                                      0x280
+  .intvec            ro code  0x00000000   0x280  startup_hc32f460.o [1]
+                            - 0x00000280   0x280
+
+"P1", part 1 of 2:                           0x0
+  .text              ro code  0x00000280     0x0  cstart_closeall.o [5]
+  .rodata            const    0x00000280     0x0  zero_init3.o [5]
+  .rodata            const    0x00000280     0x0  packbits_init.o [5]
+
+Absolute sections:                          0x20
+  .rodata            const    0x00000400    0x20  hc32f460_icg.o [1]
+                            - 0x00000420    0x20
+
+"P1", part 2 of 2:                        0xfa72
+  .text              ro code  0x00000420  0x14b0  MQTT_SK.o [1]
+  .text              ro code  0x000018d0     0x6  ABImemclr4.o [5]
+  .text              ro code  0x000018d6     0xa  xsprout.o [3]
+  .text              ro code  0x000018e0    0x48  FltToDbl.o [4]
+  .text              ro code  0x00001928    0x40  sprintf.o [3]
+  .text              ro code  0x00001968    0x36  strlen.o [5]
+  .text              ro code  0x000019a0    0xa6  ABImemcpy.o [5]
+  .text              ro code  0x00001a48    0x66  ABImemset.o [5]
+  .text              ro code  0x00001ab0  0x1138  drv_USART.o [1]
+  .text              ro code  0x00002be8    0x48  hc32f460_utility.o [1]
+  .text              ro code  0x00002c30    0x30  strstr.o [3]
+  .text              ro code  0x00002c60    0x48  strtok.o [3]
+  .text              ro code  0x00002ca8   0x178  iar_Stoulx.o [3]
+  .text              ro code  0x00002e20   0x2a0  drv_Storage_GD25.o [1]
+  .text              ro code  0x000030c0   0x158  drv_RTC.o [1]
+  .text              ro code  0x00003218    0x32  ABImemset48.o [5]
+  .text              ro code  0x0000324c   0xc2a  xprintflarge_nomb.o [3]
+  .text              ro code  0x00003e78   0x960  hc32f460_usart.o [1]
+  .text              ro code  0x000047d8   0xaf8  hc32f460_dmac.o [1]
+  .text              ro code  0x000052d0   0x1cc  hc32f460_pwc.o [1]
+  .text              ro code  0x0000549c   0xc88  hc32f460_interrupts.o [1]
+  .text              ro code  0x00006124   0x8e0  hc32f460_timer0.o [1]
+  .text              ro code  0x00006a04    0x4e  User_Data.o [1]
+  .text              ro code  0x00006a54   0x4d4  hc32f460_gpio.o [1]
+  .text              ro code  0x00006f28    0x70  hc32f460_utility.o [1]
+  .text              ro code  0x00006f98     0xc  hc32f460_utility.o [1]
+  .text              ro code  0x00006fa4    0x16  strchr.o [5]
+  .text              ro code  0x00006fba    0x22  strspn.o [3]
+  .text              ro code  0x00006fdc    0x22  strcspn.o [3]
+  .text              ro code  0x00006ffe    0x14  isspace.o [3]
+  .text              ro code  0x00007012    0x14  tolower.o [3]
+  .text              ro code  0x00007028    0x58  memchr.o [5]
+  .text              ro code  0x00007080   0x6c8  hc32f460_spi.o [1]
+  .text              ro code  0x00007748   0x738  hc32f460_rtc.o [1]
+  .text              ro code  0x00007e80    0x44  xfail_s.o [3]
+  .text              ro code  0x00007ec4   0x22e  I64DivMod.o [5]
+  .text              ro code  0x000080f4   0x1a2  DblMul.o [4]
+  .text              ro code  0x00008298    0x70  frexp.o [4]
+  .text              ro code  0x00008308    0x2e  DblCmpLe.o [4]
+  .text              ro code  0x00008338   0x246  DblDiv.o [4]
+  .text              ro code  0x00008580    0x28  DblToU32.o [4]
+  .text              ro code  0x000085a8    0x1a  U32ToDbl.o [4]
+  .text              ro code  0x000085c4    0xe2  DblSub.o [4]
+  .text              ro code  0x000086a8   0x114  xlocale_c.o [3]
+  .text              ro code  0x000087bc     0x2  hc32f460_utility.o [1]
+  .text              ro code  0x000087c0   0x174  hc32f460_exint_nmi_swi.o [1]
+  .text              ro code  0x00008934     0x6  abort.o [3]
+  .text              ro code  0x0000893c     0x2  I64DivZer.o [5]
+  .text              ro code  0x00008940   0x178  DblAdd.o [4]
+  .text              ro code  0x00008ab8    0x14  exit.o [6]
+  .text              ro code  0x00008acc    0x7c  iarttio.o [6]
+  .text              ro code  0x00008b48    0x3c  XShttio.o [3]
+  .text              ro code  0x00008b84   0xa70  hc32f460_clk.o [1]
+  .text              ro code  0x000095f4   0x10c  system_hc32f460.o [1]
+  .text              ro code  0x00009700   0x91e  drv_IIC.o [1]
+  .text              ro code  0x0000a020   0x82a  xgentime.o [3]
+  .text              ro code  0x0000a84a    0x40  xgettime.o [3]
+  .text              ro code  0x0000a88a    0x86  iar_Stolx.o [3]
+  .text              ro code  0x0000a910     0x4  getzone_nop.o [3]
+  .text              ro code  0x0000a914   0x62c  4G_EC200U.o [1]
+  .text              ro code  0x0000af40    0x4c  strcpy.o [5]
+  .text              ro code  0x0000af8c   0x5bc  LoRa_RA02.o [1]
+  .text              ro code  0x0000b548    0x22  S32ToDbl.o [4]
+  .text              ro code  0x0000b56c    0x3a  DblToS32.o [4]
+  .text              ro code  0x0000b5a8   0x5a0  strto64.o [4]
+  .text              ro code  0x0000bb48   0x13a  ldexp.o [4]
+  .text              ro code  0x0000bc82   0x122  iar_Stopfx.o [3]
+  .text              ro code  0x0000bda4   0x1c8  iar_Stoflt.o [3]
+  .text              ro code  0x0000bf6c   0x21c  iar_Stoxflt.o [3]
+  .text              ro code  0x0000c188    0x14  isalpha.o [3]
+  .text              ro code  0x0000c19c   0x54e  LC86L_BD.o [1]
+  .text              ro code  0x0000c6ec   0x424  hc32f460_adc.o [1]
+  .text              ro code  0x0000cb10   0x400  main.o [1]
+  .text              ro code  0x0000cf10    0xa4  hc32f460_efm.o [1]
+  .text              ro code  0x0000cfb4   0x188  hc32f460_sram.o [1]
+  .text              ro code  0x0000d13c   0x37c  Mainloop.o [1]
+  .text              ro code  0x0000d4b8    0x2e  WatchDog.o [1]
+  .text              ro code  0x0000d4e8   0x10c  drv_Timer.o [1]
+  .text              ro code  0x0000d5f4    0x28  printf.o [3]
+  .text              ro code  0x0000d61c   0x2b8  RF_NFC.o [1]
+  .text              ro code  0x0000d8d4   0x148  drv_SPI.o [1]
+  .text              ro code  0x0000da1c   0x14c  drv_SC7A20H.o [1]
+  .text              ro code  0x0000db68   0x36c  drv_ADC.o [1]
+  .text              ro code  0x0000ded4   0x160  Magnetic_Bar.o [1]
+  .text              ro code  0x0000e034   0x290  Photosensitive_XYC_ALS.o [1]
+  .text              ro code  0x0000e2c4   0x128  OLED.o [1]
+  .text              ro code  0x0000e3ec    0xdc  BT_TB05.o [1]
+  .text              ro code  0x0000e4c8     0xe  math_wrappers64.o [4]
+  .text              ro code  0x0000e4d8    0x68  DblToFlt.o [4]
+  .text              ro code  0x0000e540     0x4  time_trampoline.o [3]
+  .text              ro code  0x0000e544    0x1a  localtim.o [3]
+  .text              ro code  0x0000e55e    0x20  strftime.o [3]
+  .text              ro code  0x0000e57e    0x20  strcat.o [3]
+  .text              ro code  0x0000e59e    0x12  time.o [6]
+  .text              ro code  0x0000e5b0     0x4  xTzoff_nop.o [3]
+  .text              ro code  0x0000e5b4   0x108  xttotm.o [3]
+  .text              ro code  0x0000e6bc   0x11c  xstrftim.o [3]
+  .text              ro code  0x0000e7d8     0x6  xisdst_nop.o [3]
+  .text              ro code  0x0000e7e0    0x6c  xDaysTo.o [3]
+  .text              ro code  0x0000e84c   0x140  heap0.o [3]
+  .text              ro code  0x0000e98c    0x2c  xgetmemchunk.o [3]
+  .rodata            const    0x0000e9b8   0x12c  MQTT_SK.o [1]
+  .rodata            const    0x0000eae4   0x124  xlocale_c.o [3]
+  .text              ro code  0x0000ec08    0xd8  xfspos.o [3]
+  .text              ro code  0x0000ece0    0xac  fflush.o [3]
+  .text              ro code  0x0000ed8c     0xc  xfgpos.o [3]
+  .text              ro code  0x0000ed98    0x4a  lseek.o [6]
+  .text              ro code  0x0000ede4    0xbc  xxwritebuffered.o [3]
+  .text              ro code  0x0000eea0    0xcc  XShHandles.o [3]
+  .text              ro code  0x0000ef6c    0x1e  dwrite.o [6]
+  .text              ro code  0x0000ef8a    0x20  iarwstd.o [6]
+  .text              ro code  0x0000efaa    0x22  iarwrite.o [6]
+  .text              ro code  0x0000efcc    0xb4  xfwprep.o [3]
+  .text              ro code  0x0000f080    0x24  fseek.o [3]
+  .text              ro code  0x0000f0a4    0x9c  packbits_init.o [5]
+  .text              ro code  0x0000f140    0x7e  fclose.o [3]
+  .text              ro code  0x0000f1c0    0x7c  xfofind.o [3]
+  .text              ro code  0x0000f23c     0x4  heaptramp0.o [3]
+  .text              ro code  0x0000f240    0x18  close.o [6]
+  .text              ro code  0x0000f258    0x14  remove.o [6]
+  .text              ro code  0x0000f26c    0x54  fputc.o [3]
+  .rodata            const    0x0000f2c0    0x50  LoRa_RA02.o [1]
+  .rodata            const    0x0000f310    0x48  hc32f460_exint_nmi_swi.o [1]
+  .rodata            const    0x0000f358    0x48  hc32f460_interrupts.o [1]
+  .rodata            const    0x0000f3a0    0x44  hc32f460_timer0.o [1]
+  .text              ro code  0x0000f3f0    0x44  startup_hc32f460.o [1]
+  .rodata            const    0x0000f434    0x40  hc32f460_adc.o [1]
+  .rodata            const    0x0000f474    0x40  hc32f460_clk.o [1]
+  .rodata            const    0x0000f4b4    0x40  hc32f460_dmac.o [1]
+  .rodata            const    0x0000f4f4    0x40  hc32f460_efm.o [1]
+  .rodata            const    0x0000f534    0x40  hc32f460_gpio.o [1]
+  .rodata            const    0x0000f574    0x40  hc32f460_pwc.o [1]
+  .rodata            const    0x0000f5b4    0x40  hc32f460_rtc.o [1]
+  .rodata            const    0x0000f5f4    0x40  hc32f460_spi.o [1]
+  .rodata            const    0x0000f634    0x40  hc32f460_sram.o [1]
+  .rodata            const    0x0000f674    0x40  hc32f460_usart.o [1]
+  .text              ro code  0x0000f6b4    0x40  zero_init3.o [5]
+  .text              ro code  0x0000f6f4    0x3c  xcloseall.o [3]
+  .rodata            const    0x0000f730    0x30  4G_EC200U.o [1]
+  .rodata            const    0x0000f760    0x30  4G_EC200U.o [1]
+  .rodata            const    0x0000f790    0x2c  4G_EC200U.o [1]
+  .rodata            const    0x0000f7bc    0x28  4G_EC200U.o [1]
+  .text              ro code  0x0000f7e4    0x28  data_init.o [5]
+  .rodata            const    0x0000f80c    0x24  MQTT_SK.o [1]
+  .text              ro code  0x0000f830    0x22  fpinit_M.o [4]
+  .iar.init_table    const    0x0000f854    0x2c  - Linker created -
+  .rodata            const    0x0000f880    0x20  4G_EC200U.o [1]
+  .rodata            const    0x0000f8a0    0x20  4G_EC200U.o [1]
+  .rodata            const    0x0000f8c0    0x20  main.o [1]
+  .rodata            const    0x0000f8e0    0x20  main.o [1]
+  .rodata            const    0x0000f900    0x20  MQTT_SK.o [1]
+  .rodata            const    0x0000f920    0x20  MQTT_SK.o [1]
+  .rodata            const    0x0000f940    0x20  MQTT_SK.o [1]
+  .text              ro code  0x0000f960    0x1e  cmain.o [5]
+  .text              ro code  0x0000f97e     0x4  low_level_init.o [3]
+  .text              ro code  0x0000f982     0x4  exit.o [3]
+  .text              ro code  0x0000f988     0xe  cexit.o [5]
+  .rodata            const    0x0000f998    0x1c  MQTT_SK.o [1]
+  .rodata            const    0x0000f9b4    0x1c  MQTT_SK.o [1]
+  .rodata            const    0x0000f9d0    0x1c  MQTT_SK.o [1]
+  .rodata            const    0x0000f9ec    0x18  4G_EC200U.o [1]
+  .rodata            const    0x0000fa04    0x18  drv_RTC.o [1]
+  .rodata            const    0x0000fa1c    0x18  MQTT_SK.o [1]
+  .rodata            const    0x0000fa34    0x18  MQTT_SK.o [1]
+  .text              ro code  0x0000fa4c    0x16  xprout.o [3]
+  .text              ro code  0x0000fa64     0xc  putchar.o [3]
+  .rodata            const    0x0000fa70    0x14  Mainloop.o [1]
+  .rodata            const    0x0000fa84    0x14  MQTT_SK.o [1]
+  .rodata            const    0x0000fa98    0x14  MQTT_SK.o [1]
+  .rodata            const    0x0000faac    0x14  MQTT_SK.o [1]
+  .rodata            const    0x0000fac0    0x14  MQTT_SK.o [1]
+  .rodata            const    0x0000fad4    0x14  MQTT_SK.o [1]
+  .text              ro code  0x0000fae8    0x14  xencoding_8859_1.o [3]
+  .rodata            const    0x0000fafc    0x10  4G_EC200U.o [1]
+  .rodata            const    0x0000fb0c    0x10  4G_EC200U.o [1]
+  .rodata            const    0x0000fb1c    0x10  4G_EC200U.o [1]
+  .rodata            const    0x0000fb2c    0x10  4G_EC200U.o [1]
+  .rodata            const    0x0000fb3c    0x10  hc32f460_usart.o [1]
+  .rodata            const    0x0000fb4c    0x10  MQTT_SK.o [1]
+  .rodata            const    0x0000fb5c    0x10  MQTT_SK.o [1]
+  .rodata            const    0x0000fb6c    0x10  MQTT_SK.o [1]
+  .rodata            const    0x0000fb7c     0xc  4G_EC200U.o [1]
+  .rodata            const    0x0000fb88     0xc  4G_EC200U.o [1]
+  .rodata            const    0x0000fb94     0xc  4G_EC200U.o [1]
+  .rodata            const    0x0000fba0     0xc  4G_EC200U.o [1]
+  .rodata            const    0x0000fbac     0xc  4G_EC200U.o [1]
+  .rodata            const    0x0000fbb8     0xc  4G_EC200U.o [1]
+  .rodata            const    0x0000fbc4     0xc  4G_EC200U.o [1]
+  .rodata            const    0x0000fbd0     0xc  4G_EC200U.o [1]
+  .rodata            const    0x0000fbdc     0xc  4G_EC200U.o [1]
+  .rodata            const    0x0000fbe8     0xc  4G_EC200U.o [1]
+  .rodata            const    0x0000fbf4     0xc  drv_USART.o [1]
+  .rodata            const    0x0000fc00     0xc  main.o [1]
+  .rodata            const    0x0000fc0c     0xc  main.o [1]
+  .rodata            const    0x0000fc18     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fc24     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fc30     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fc3c     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fc48     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fc54     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fc60     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fc6c     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fc78     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fc84     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fc90     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fc9c     0xc  MQTT_SK.o [1]
+  .rodata            const    0x0000fca8     0xc  MQTT_SK.o [1]
+  .text              ro code  0x0000fcb4     0xc  cstartup_M.o [5]
+  .rodata            const    0x0000fcc0     0x8  4G_EC200U.o [1]
+  .rodata            const    0x0000fcc8     0x8  4G_EC200U.o [1]
+  .rodata            const    0x0000fcd0     0x8  4G_EC200U.o [1]
+  .rodata            const    0x0000fcd8     0x8  LC86L_BD.o [1]
+  .rodata            const    0x0000fce0     0x8  LC86L_BD.o [1]
+  .rodata            const    0x0000fce8     0x8  main.o [1]
+  .rodata            const    0x0000fcf0     0x8  main.o [1]
+  .rodata            const    0x0000fcf8     0x8  main.o [1]
+  .rodata            const    0x0000fd00     0x8  MQTT_SK.o [1]
+  .rodata            const    0x0000fd08     0x8  MQTT_SK.o [1]
+  .rodata            const    0x0000fd10     0x8  MQTT_SK.o [1]
+  .rodata            const    0x0000fd18     0x8  MQTT_SK.o [1]
+  .rodata            const    0x0000fd20     0x8  MQTT_SK.o [1]
+  .rodata            const    0x0000fd28     0x4  hc32f460_usart.o [1]
+  .rodata            const    0x0000fd2c     0x4  hc32f460_usart.o [1]
+  .rodata            const    0x0000fd30     0x4  hc32f460_usart.o [1]
+  .rodata            const    0x0000fd34     0x4  hc32f460_usart.o [1]
+  .text              ro code  0x0000fd38     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd3c     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd40     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd44     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd48     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd4c     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd50     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd54     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd58     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd5c     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd60     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd64     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd68     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd6c     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd70     0x4  startup_hc32f460.o [1]
+  .text              ro code  0x0000fd74     0x4  startup_hc32f460.o [1]
+  Initializer bytes  const    0x0000fd78   0x11a  <for P2 s0>
+                            - 0x0000fe92  0xfa72
+
+"P2", part 1 of 3:                         0x1e1
+  P2 s0                       0x1fff8000   0x1e1  <Init block>
+    .data            inited   0x1fff8000    0x48  xlocale_c.o [3]
+    .data            inited   0x1fff8048    0x48  xfiles.o [3]
+    .data            inited   0x1fff8090    0x48  xfiles.o [3]
+    .data            inited   0x1fff80d8    0x48  xfiles.o [3]
+    .data            inited   0x1fff8120    0x38  xlocale_c.o [3]
+    .data            inited   0x1fff8158    0x20  BT_TB05.o [1]
+    .data            inited   0x1fff8178    0x20  BT_TB05.o [1]
+    .data            inited   0x1fff8198    0x20  xfiles.o [3]
+    .data            inited   0x1fff81b8    0x14  BT_TB05.o [1]
+    .data            inited   0x1fff81cc     0x8  XShttio.o [3]
+    .data            inited   0x1fff81d4     0x4  system_hc32f460.o [1]
+    .data            inited   0x1fff81d8     0x4  system_hc32f460.o [1]
+    .data            inited   0x1fff81dc     0x1  4G_EC200U.o [1]
+    .data            inited   0x1fff81dd     0x1  drv_IIC.o [1]
+    .data            inited   0x1fff81de     0x1  drv_IIC.o [1]
+    .data            inited   0x1fff81df     0x1  drv_IIC.o [1]
+    .data            inited   0x1fff81e0     0x1  drv_IIC.o [1]
+                            - 0x1fff81e1   0x1e1
+
+"P2", part 2 of 3:                        0x1d80
+  .bss               zero     0x1fff81e4  0x1934  User_Data.o [1]
+  .bss               zero     0x1fff9b18   0x200  hc32f460_interrupts.o [1]
+  .bss               zero     0x1fff9d18    0x80  XShHandles.o [3]
+  .bss               zero     0x1fff9d98    0x54  xxwritebuffered.o [3]
+  .bss               zero     0x1fff9dec    0x50  xfiles.o [3]
+  .bss               zero     0x1fff9e3c    0x50  xfiles.o [3]
+  .bss               zero     0x1fff9e8c    0x2c  xttotm.o [3]
+  .bss               zero     0x1fff9eb8    0x24  drv_ADC.o [1]
+  .bss               zero     0x1fff9edc    0x1c  LoRa_RA02.o [1]
+  .bss               zero     0x1fff9ef8    0x14  drv_ADC.o [1]
+  .bss               zero     0x1fff9f0c     0x8  main.o [1]
+  .bss               zero     0x1fff9f14     0x8  heap0.o [3]
+  .bss               zero     0x1fff9f1c     0x4  4G_EC200U.o [1]
+  .bss               zero     0x1fff9f20     0x4  BT_TB05.o [1]
+  .bss               zero     0x1fff9f24     0x4  drv_RTC.o [1]
+  .bss               zero     0x1fff9f28     0x4  drv_USART.o [1]
+  .bss               zero     0x1fff9f2c     0x4  hc32f460_exint_nmi_swi.o [1]
+  .bss               zero     0x1fff9f30     0x4  hc32f460_utility.o [1]
+  .bss               zero     0x1fff9f34     0x4  hc32f460_utility.o [1]
+  .bss               zero     0x1fff9f38     0x4  LC86L_BD.o [1]
+  .bss               zero     0x1fff9f3c     0x4  Magnetic_Bar.o [1]
+  .bss               zero     0x1fff9f40     0x4  main.o [1]
+  .bss               zero     0x1fff9f44     0x4  Mainloop.o [1]
+  .bss               zero     0x1fff9f48     0x4  MQTT_SK.o [1]
+  .bss               zero     0x1fff9f4c     0x4  Photosensitive_XYC_ALS.o [1]
+  .bss               zero     0x1fff9f50     0x4  RF_NFC.o [1]
+  .bss               zero     0x1fff9f54     0x4  strtok.o [3]
+  .bss               zero     0x1fff9f58     0x4  xgetmemchunk.o [3]
+  .bss               zero     0x1fff9f5c     0x4  xfail_s.o [3]
+  .bss               zero     0x1fff9f60     0x1  hc32f460_dmac.o [1]
+  .bss               zero     0x1fff9f61     0x1  XShttio.o [3]
+                            - 0x1fff9f62  0x1d7e
+
+"P2", part 3 of 3:                        0x2800
+  CSTACK                      0x1fff9f68  0x1400  <Block>
+    CSTACK           uninit   0x1fff9f68  0x1400  <Block tail>
+  HEAP                        0x1fffb368  0x1400  <Block>
+    HEAP             uninit   0x1fffb368  0x1400  <Block tail>
+                            - 0x1fffc768  0x2800
+
+
+*******************************************************************************
+*** INIT TABLE
+***
+
+          Address     Size
+          -------     ----
+Zero (__iar_zero_init3)
+    1 destination range, total size 0x1d7e:
+          0x1fff81e4  0x1d7e
+
+Copy/packbits (__iar_packbits_init3)
+    1 source range, total size 0x11a (58% of destination):
+          0x0000fd78   0x11a
+    1 destination range, total size 0x1e1:
+          0x1fff8000   0x1e1
+
+
+
+*******************************************************************************
+*** MODULE SUMMARY
+***
+
+    Module                    ro code  ro data  rw data  ro data
+                                                          (abs)
+    ------                    -------  -------  -------  -------
+E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj: [1]
+    4G_EC200U.o                 1 580      476        5
+    BT_TB05.o                     220       50       88
+    LC86L_BD.o                  1 358       16        4
+    LoRa_RA02.o                 1 468       80       28
+    MQTT_SK.o                   5 296      908        4
+    Magnetic_Bar.o                352                 4
+    Mainloop.o                    892       20        4
+    OLED.o                        296
+    Photosensitive_XYC_ALS.o      656                 4
+    RF_NFC.o                      696                 4
+    User_Data.o                    78             6 452
+    WatchDog.o                     46
+    drv_ADC.o                     876                56
+    drv_IIC.o                   2 334        3        4
+    drv_RTC.o                     344       24        4
+    drv_SC7A20H.o                 332
+    drv_SPI.o                     328
+    drv_Storage_GD25.o            672
+    drv_Timer.o                   268
+    drv_USART.o                 4 408       12        4
+    hc32f460_adc.o              1 060       64
+    hc32f460_clk.o              2 672       64
+    hc32f460_dmac.o             2 808       64        1
+    hc32f460_efm.o                164       64
+    hc32f460_exint_nmi_swi.o      372       72        4
+    hc32f460_gpio.o             1 236       64
+    hc32f460_icg.o                                            32
+    hc32f460_interrupts.o       3 208       72      512
+    hc32f460_pwc.o                460       64
+    hc32f460_rtc.o              1 848       64
+    hc32f460_spi.o              1 736       64
+    hc32f460_sram.o               392       64
+    hc32f460_timer0.o           2 272       68
+    hc32f460_usart.o            2 400       96
+    hc32f460_utility.o            198                 8
+    main.o                      1 024      112       12
+    startup_hc32f460.o            772
+    system_hc32f460.o             268        5        8
+    ------------------------------------------------------------
+    Total:                     45 390    2 590    7 210       32
+
+command line: [2]
+    ------------------------------------------------------------
+    Total:
+
+dl7M_tlf.a: [3]
+    XShHandles.o                  204               128
+    XShttio.o                      60        5        9
+    abort.o                         6
+    exit.o                          4
+    fclose.o                      126
+    fflush.o                      172
+    fputc.o                        84
+    fseek.o                        36
+    getzone_nop.o                   4
+    heap0.o                       320                 8
+    heaptramp0.o                    4
+    iar_Stoflt.o                  456
+    iar_Stolx.o                   134
+    iar_Stopfx.o                  290
+    iar_Stoulx.o                  376
+    iar_Stoxflt.o                 540
+    isalpha.o                      20
+    isspace.o                      20
+    localtim.o                     26
+    low_level_init.o                4
+    printf.o                       40
+    putchar.o                      12
+    sprintf.o                      64
+    strcat.o                       32
+    strcspn.o                      34
+    strftime.o                     32
+    strspn.o                       34
+    strstr.o                       48
+    strtok.o                       72                 4
+    time_trampoline.o               4
+    tolower.o                      20
+    xDaysTo.o                     108
+    xTzoff_nop.o                    4
+    xcloseall.o                    60
+    xencoding_8859_1.o             20
+    xfail_s.o                      68                 4
+    xfgpos.o                       12
+    xfiles.o                               144      408
+    xfofind.o                     124
+    xfspos.o                      216
+    xfwprep.o                     180
+    xgentime.o                  2 090
+    xgetmemchunk.o                 44                 4
+    xgettime.o                     64
+    xisdst_nop.o                    6
+    xlocale_c.o                   276      367      128
+    xprintflarge_nomb.o         3 114
+    xprout.o                       22
+    xsprout.o                      10
+    xstrftim.o                    284
+    xttotm.o                      264                44
+    xxwritebuffered.o             188                84
+    ------------------------------------------------------------
+    Total:                     10 432      516      821
+
+m7M_tls.a: [4]
+    DblAdd.o                      376
+    DblCmpLe.o                     46
+    DblDiv.o                      582
+    DblMul.o                      418
+    DblSub.o                      226
+    DblToFlt.o                    104
+    DblToS32.o                     58
+    DblToU32.o                     40
+    FltToDbl.o                     72
+    S32ToDbl.o                     34
+    U32ToDbl.o                     26
+    fpinit_M.o                     34
+    frexp.o                       112
+    ldexp.o                       314
+    math_wrappers64.o              14
+    strto64.o                   1 440
+    ------------------------------------------------------------
+    Total:                      3 896
+
+rt7M_tl.a: [5]
+    ABImemclr4.o                    6
+    ABImemcpy.o                   166
+    ABImemset.o                   102
+    ABImemset48.o                  50
+    I64DivMod.o                   558
+    I64DivZer.o                     2
+    cexit.o                        14
+    cmain.o                        30
+    cstart_closeall.o
+    cstartup_M.o                   12
+    data_init.o                    40
+    memchr.o                       88
+    packbits_init.o               156
+    strchr.o                       22
+    strcpy.o                       76
+    strlen.o                       54
+    zero_init3.o                   64
+    ------------------------------------------------------------
+    Total:                      1 440
+
+shb_l.a: [6]
+    close.o                        24
+    dwrite.o                       30
+    exit.o                         20
+    iarttio.o                     124
+    iarwrite.o                     34
+    iarwstd.o                      32
+    lseek.o                        74
+    remove.o                       20
+    time.o                         18
+    ------------------------------------------------------------
+    Total:                        376
+
+    Gaps                           66        4
+    Linker created                          44   10 240
+----------------------------------------------------------------
+    Grand Total:               61 600    3 154   18 271       32
+
+
+*******************************************************************************
+*** ENTRY LIST
+***
+
+Entry                      Address    Size  Type      Object
+-----                      -------    ----  ----      ------
+.iar.init_table$$Base   0x0000f854           --   Gb  - Linker created -
+.iar.init_table$$Limit  0x0000f880           --   Gb  - Linker created -
+?main                   0x0000f961          Code  Gb  cmain.o [5]
+ADC_AddAdcChannel       0x0000c7dd    0xbc  Code  Gb  hc32f460_adc.o [1]
+ADC_AddAvgChannel       0x0000c909    0x6c  Code  Gb  hc32f460_adc.o [1]
+ADC_ClrEocFlag          0x0000ca37    0x36  Code  Gb  hc32f460_adc.o [1]
+ADC_ConfigAvg           0x0000c8a1    0x62  Code  Gb  hc32f460_adc.o [1]
+ADC_GetChData           0x0000ca6d    0x98  Code  Gb  hc32f460_adc.o [1]
+ADC_GetEocFlag          0x0000c9fd    0x3a  Code  Gb  hc32f460_adc.o [1]
+ADC_Init                0x0000c6ed    0xf0  Code  Gb  hc32f460_adc.o [1]
+ADC_StartConvert        0x0000c979    0x34  Code  Gb  hc32f460_adc.o [1]
+ADC_StopConvert         0x0000c9ad    0x50  Code  Gb  hc32f460_adc.o [1]
+AdcChannelConfig        0x0000dc39    0x68  Code  Lc  drv_ADC.o [1]
+AdcClockConfig          0x0000db69    0x78  Code  Lc  drv_ADC.o [1]
+AdcInitConfig           0x0000dbe1    0x58  Code  Lc  drv_ADC.o [1]
+Aldata                  0x1fff9f14     0x8  Data  Lc  heap0.o [3]
+AsyncDelay              0x0000618d    0x76  Code  Lc  hc32f460_timer0.o [1]
+BusFault_Handler        0x0000554b     0x8  Code  Gb  hc32f460_interrupts.o [1]
+CLK_GetFlagStatus       0x00009531    0x88  Code  Gb  hc32f460_clk.o [1]
+CLK_MpllCmd             0x00008ed9    0xb8  Code  Gb  hc32f460_clk.o [1]
+CLK_MpllConfig          0x00008d5d   0x17c  Code  Gb  hc32f460_clk.o [1]
+CLK_SetPeriClkSource    0x000094a5    0x6a  Code  Gb  hc32f460_clk.o [1]
+CLK_SetPllSource        0x00008cfb    0x62  Code  Gb  hc32f460_clk.o [1]
+CLK_SetSysClkSource     0x000091c1   0x128  Code  Gb  hc32f460_clk.o [1]
+CLK_SysClkConfig        0x000092fd   0x1a8  Code  Gb  hc32f460_clk.o [1]
+CLK_UpllCmd             0x000090fd    0xb8  Code  Gb  hc32f460_clk.o [1]
+CLK_UpllConfig          0x00008f91   0x16c  Code  Gb  hc32f460_clk.o [1]
+CLK_XtalCmd             0x00008bf1   0x10a  Code  Gb  hc32f460_clk.o [1]
+CLK_XtalConfig          0x00008b85    0x6c  Code  Gb  hc32f460_clk.o [1]
+CSTACK$$Base            0x1fff9f68           --   Gb  - Linker created -
+CSTACK$$Limit           0x1fffb368           --   Gb  - Linker created -
+CacheMore               0x000086e9    0x24  Code  Lc  xlocale_c.o [3]
+DMA_ChannelCfg          0x00004d91   0x2f6  Code  Gb  hc32f460_dmac.o [1]
+DMA_ChannelCmd          0x0000491f   0x20e  Code  Gb  hc32f460_dmac.o [1]
+DMA_ClearIrqFlag        0x00004825    0xfa  Code  Gb  hc32f460_dmac.o [1]
+DMA_Cmd                 0x000047d9    0x4c  Code  Gb  hc32f460_dmac.o [1]
+DMA_GetTransferCnt      0x00004cbf    0x62  Code  Gb  hc32f460_dmac.o [1]
+DMA_InitChannel         0x00005087   0x234  Code  Gb  hc32f460_dmac.o [1]
+DMA_SetDesAddress       0x00004b39    0xaa  Code  Gb  hc32f460_dmac.o [1]
+DMA_SetTransferCnt      0x00004be3    0xdc  Code  Gb  hc32f460_dmac.o [1]
+DMA_SetTriggerSrc       0x00004d31    0x5a  Code  Gb  hc32f460_dmac.o [1]
+Ddl_AssertHandler       0x000087bd     0x2  Code  Wk  hc32f460_utility.o [1]
+Ddl_Delay1ms            0x00006f29    0x28  Code  Gb  hc32f460_utility.o [1]
+Ddl_Delay1us            0x00006f51    0x3c  Code  Gb  hc32f460_utility.o [1]
+DebugMon_Handler        0x00005563     0x8  Code  Gb  hc32f460_interrupts.o [1]
+Dma1Btc0IrqCallback     0x00001b21    0x1c  Code  Lc  drv_USART.o [1]
+Dma1Btc1IrqCallback     0x00001b3d    0x1c  Code  Lc  drv_USART.o [1]
+Dma1Btc2IrqCallback     0x00001b59    0x1c  Code  Lc  drv_USART.o [1]
+Dma1Btc3IrqCallback     0x00001b75    0x1c  Code  Lc  drv_USART.o [1]
+Dma1Init                0x00001b91   0x22a  Code  Lc  drv_USART.o [1]
+DmaChEnState            0x1fff9f60     0x1  Data  Lc  hc32f460_dmac.o [1]
+Dtentox                 0x0000b75d   0x19a  Code  Lc  strto64.o [4]
+EC200U_4G_Module_Configuration_Init
+                        0x0000a959   0x4ac  Code  Gb  4G_EC200U.o [1]
+EC200U_4G_Module_GPIO_Init
+                        0x0000a915    0x42  Code  Gb  4G_EC200U.o [1]
+EFM_Lock                0x0000cf27    0x20  Code  Gb  hc32f460_efm.o [1]
+EFM_SetLatency          0x0000cf47    0x60  Code  Gb  hc32f460_efm.o [1]
+EFM_Unlock              0x0000cf11    0x16  Code  Gb  hc32f460_efm.o [1]
+EXINT_Init              0x000087c1    0x96  Code  Gb  hc32f460_exint_nmi_swi.o [1]
+EXINT_IrqFlgClr         0x000088f1    0x14  Code  Gb  hc32f460_exint_nmi_swi.o [1]
+EXINT_IrqFlgGet         0x00008857    0x9a  Code  Gb  hc32f460_exint_nmi_swi.o [1]
+ExtInt06_Callback       0x0000d685    0x14  Code  Gb  RF_NFC.o [1]
+ExtInt07_Callback       0x0000df3d    0x20  Code  Gb  Magnetic_Bar.o [1]
+ExtInt08_Callback       0x0000e09d    0x66  Code  Gb  Photosensitive_XYC_ALS.o [1]
+GD25_Get_ReadDataBytes  0x00002e55    0x50  Code  Gb  drv_Storage_GD25.o [1]
+GD25_SendRcvByte        0x00002e21    0x30  Code  Gb  drv_Storage_GD25.o [1]
+GD25_Spi_flash_buffer_write
+                        0x00002f41   0x152  Code  Gb  drv_Storage_GD25.o [1]
+GD25_Spi_flash_page_write
+                        0x00002eeb    0x56  Code  Lc  drv_Storage_GD25.o [1]
+GD25_Spi_flash_wait_for_write_end
+                        0x00002ebf    0x2c  Code  Gb  drv_Storage_GD25.o [1]
+GD25_Spi_flash_write_enable
+                        0x00002ea5    0x1a  Code  Gb  drv_Storage_GD25.o [1]
+GetSystemPara           0x00006a05     0x4  Code  Gb  User_Data.o [1]
+HEAP$$Base              0x1fffb368           --   Gb  - Linker created -
+HEAP$$Limit             0x1fffc768           --   Gb  - Linker created -
+HRC_VALUE               0x1fff81d4     0x4  Data  Gb  system_hc32f460.o [1]
+HardFault_Handler       0x0000553b     0x8  Code  Gb  hc32f460_interrupts.o [1]
+IRQ000_Handler          0x0000557b    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ001_Handler          0x00005591    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ002_Handler          0x000055a7    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ003_Handler          0x000055bd    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ004_Handler          0x000055d3    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ005_Handler          0x000055e9    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ006_Handler          0x000055ff    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ007_Handler          0x00005615    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ008_Handler          0x0000562b    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ009_Handler          0x00005641    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ010_Handler          0x00005657    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ011_Handler          0x0000566d    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ012_Handler          0x00005683    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ013_Handler          0x00005699    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ014_Handler          0x000056af    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ015_Handler          0x000056c5    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ016_Handler          0x000056db    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ017_Handler          0x000056f1    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ018_Handler          0x00005707    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ019_Handler          0x0000571d    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ020_Handler          0x00005733    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ021_Handler          0x00005749    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ022_Handler          0x0000575f    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ023_Handler          0x00005775    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ024_Handler          0x0000578b    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ025_Handler          0x000057a1    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ026_Handler          0x000057b7    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ027_Handler          0x000057cd    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ028_Handler          0x000057e3    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ029_Handler          0x000057f9    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ030_Handler          0x0000580f    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ031_Handler          0x00005825    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ032_Handler          0x0000583b    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ033_Handler          0x00005855    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ034_Handler          0x0000586f    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ035_Handler          0x00005889    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ036_Handler          0x000058a3    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ037_Handler          0x000058bd    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ038_Handler          0x000058d7    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ039_Handler          0x000058f1    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ040_Handler          0x0000590b    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ041_Handler          0x00005925    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ042_Handler          0x0000593f    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ043_Handler          0x00005959    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ044_Handler          0x00005973    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ045_Handler          0x0000598d    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ046_Handler          0x000059a7    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ047_Handler          0x000059c1    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ048_Handler          0x000059db    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ049_Handler          0x000059f5    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ050_Handler          0x00005a0f    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ051_Handler          0x00005a29    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ052_Handler          0x00005a43    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ053_Handler          0x00005a5d    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ054_Handler          0x00005a77    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ055_Handler          0x00005a91    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ056_Handler          0x00005aab    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ057_Handler          0x00005ac5    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ058_Handler          0x00005adf    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ059_Handler          0x00005af9    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ060_Handler          0x00005b13    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ061_Handler          0x00005b2d    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ062_Handler          0x00005b47    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ063_Handler          0x00005b61    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ064_Handler          0x00005b7b    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ065_Handler          0x00005b95    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ066_Handler          0x00005baf    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ067_Handler          0x00005bc9    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ068_Handler          0x00005be3    0x1a  Code  Gb  hc32f460_interrupts.o [1]
+IRQ069_Handler          0x00005bfd    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ070_Handler          0x00005c13    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ071_Handler          0x00005c29    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ072_Handler          0x00005c3f    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ073_Handler          0x00005c55    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ074_Handler          0x00005c6b    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ075_Handler          0x00005c81    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ076_Handler          0x00005c97    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ077_Handler          0x00005cad    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ078_Handler          0x00005cc3    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ079_Handler          0x00005cd9    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ080_Handler          0x00005cef    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ081_Handler          0x00005d05    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ082_Handler          0x00005d1b    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ083_Handler          0x00005d31    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ084_Handler          0x00005d47    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ085_Handler          0x00005d5d    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ086_Handler          0x00005d73    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ087_Handler          0x00005d89    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ088_Handler          0x00005d9f    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ089_Handler          0x00005db5    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ090_Handler          0x00005dcb    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ091_Handler          0x00005de1    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ092_Handler          0x00005df7    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ093_Handler          0x00005e0d    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ094_Handler          0x00005e23    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ095_Handler          0x00005e39    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ096_Handler          0x00005e55    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ097_Handler          0x00005e6b    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ098_Handler          0x00005e81    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ099_Handler          0x00005e9d    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ100_Handler          0x00005eb9    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ101_Handler          0x00005ecf    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ102_Handler          0x00005ee5    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ103_Handler          0x00005efb    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ104_Handler          0x00005f11    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ105_Handler          0x00005f27    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ106_Handler          0x00005f3d    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ107_Handler          0x00005f53    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ108_Handler          0x00005f69    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ109_Handler          0x00005f7f    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ110_Handler          0x00005f95    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ111_Handler          0x00005fab    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ112_Handler          0x00005fc1    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ113_Handler          0x00005fd7    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ114_Handler          0x00005fed    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ115_Handler          0x00006003    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ116_Handler          0x00006019    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ117_Handler          0x0000602f    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ118_Handler          0x00006045    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ119_Handler          0x0000605b    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ120_Handler          0x00006071    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ121_Handler          0x00006087    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ122_Handler          0x0000609d    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ123_Handler          0x000060b3    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ124_Handler          0x000060c9    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ125_Handler          0x000060df    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ126_Handler          0x000060f5    0x16  Code  Gb  hc32f460_interrupts.o [1]
+IRQ127_Handler          0x0000610b    0x16  Code  Gb  hc32f460_interrupts.o [1]
+ISOwkyr                 0x0000a0dd    0xb8  Code  Lc  xgentime.o [3]
+ISOyear                 0x0000a199    0x1a  Code  Lc  xgentime.o [3]
+IrqHandler              0x1fff9b18   0x200  Data  Gb  hc32f460_interrupts.o [1]
+LORA_RA02_SendRcvByte   0x0000afef    0x38  Code  Gb  LoRa_RA02.o [1]
+LoRa_gotoMode           0x0000b2c5    0x7e  Code  Gb  LoRa_RA02.o [1]
+LoRa_init               0x0000b351   0x10c  Code  Gb  LoRa_RA02.o [1]
+LoRa_isvalid            0x0000afe9     0x6  Code  Gb  LoRa_RA02.o [1]
+LoRa_read               0x0000b0b1    0x26  Code  Gb  LoRa_RA02.o [1]
+LoRa_readReg            0x0000b027    0x46  Code  Gb  LoRa_RA02.o [1]
+LoRa_reset              0x0000afc7    0x22  Code  Gb  LoRa_RA02.o [1]
+LoRa_setAutoLDO         0x0000b135    0x48  Code  Gb  LoRa_RA02.o [1]
+LoRa_setFrequency       0x0000b17d    0x58  Code  Gb  LoRa_RA02.o [1]
+LoRa_setLowDaraRateOptimization
+                        0x0000b0ff    0x36  Code  Gb  LoRa_RA02.o [1]
+LoRa_setOCP             0x0000b23b    0x64  Code  Gb  LoRa_RA02.o [1]
+LoRa_setPower           0x0000b221    0x1a  Code  Gb  LoRa_RA02.o [1]
+LoRa_setSpreadingFactor
+                        0x0000b1d5    0x4c  Code  Gb  LoRa_RA02.o [1]
+LoRa_setTOMsb_setCRCon  0x0000b29f    0x26  Code  Gb  LoRa_RA02.o [1]
+LoRa_startReceiving     0x0000b343     0xe  Code  Gb  LoRa_RA02.o [1]
+LoRa_write              0x0000b0d7    0x28  Code  Gb  LoRa_RA02.o [1]
+LoRa_writeReg           0x0000b06d    0x44  Code  Gb  LoRa_RA02.o [1]
+LoadInt                 0x000033f7    0x7a  Code  Lc  xprintflarge_nomb.o [3]
+MQTT_SK_Data_Pass_Through
+                        0x00001861     0x4  Code  Gb  MQTT_SK.o [1]
+MQTT_SK_Data_Upload     0x00000421   0xf40  Code  Gb  MQTT_SK.o [1]
+MQTT_SK_Get_Config      0x000015c9   0x28c  Code  Gb  MQTT_SK.o [1]
+MQTT_SK_Get_Data        0x0000185d     0x4  Code  Gb  MQTT_SK.o [1]
+MQTT_SK_Set_Config      0x00001379   0x238  Code  Gb  MQTT_SK.o [1]
+MemManage_Handler       0x00005543     0x8  Code  Gb  hc32f460_interrupts.o [1]
+NMEA_Comma_Pos          0x0000c19d    0x36  Code  Gb  LC86L_BD.o [1]
+NMEA_GPRMC_Analysis     0x0000c325   0x326  Code  Gb  LC86L_BD.o [1]
+NMEA_Pow                0x0000c1d3    0x18  Code  Gb  LC86L_BD.o [1]
+NMEA_Str2num            0x0000c1eb   0x138  Code  Gb  LC86L_BD.o [1]
+NMI_Handler             0x00005533     0x8  Code  Gb  hc32f460_interrupts.o [1]
+NMI_IrqHandler          0x00008905    0x1c  Code  Gb  hc32f460_exint_nmi_swi.o [1]
+OLED_Write_CMD          0x0000e2c5    0x22  Code  Gb  OLED.o [1]
+PORT_GetBit             0x00006c57    0xfc  Code  Gb  hc32f460_gpio.o [1]
+PORT_Init               0x00006a55   0x1ea  Code  Gb  hc32f460_gpio.o [1]
+PORT_Lock               0x00006c4b     0xc  Code  Gb  hc32f460_gpio.o [1]
+PORT_ResetBits          0x00006dab    0x54  Code  Gb  hc32f460_gpio.o [1]
+PORT_SetBits            0x00006d53    0x58  Code  Gb  hc32f460_gpio.o [1]
+PORT_SetFunc            0x00006dff   0x10c  Code  Gb  hc32f460_gpio.o [1]
+PORT_Unlock             0x00006c3f     0xc  Code  Gb  hc32f460_gpio.o [1]
+PWC_Fcg0PeriphClockCmd  0x000052d1    0x76  Code  Gb  hc32f460_pwc.o [1]
+PWC_Fcg1PeriphClockCmd  0x00005347    0x62  Code  Gb  hc32f460_pwc.o [1]
+PWC_Fcg2PeriphClockCmd  0x000053a9    0x62  Code  Gb  hc32f460_pwc.o [1]
+PWC_Fcg3PeriphClockCmd  0x0000540b    0x62  Code  Gb  hc32f460_pwc.o [1]
+PendSV_Handler          0x0000556b     0x8  Code  Gb  hc32f460_interrupts.o [1]
+RTC_EnterRwMode         0x00007749    0x5c  Code  Gb  hc32f460_rtc.o [1]
+RTC_ExitRwMode          0x000077a5    0x5c  Code  Gb  hc32f460_rtc.o [1]
+RTC_GetDateTime         0x00007d17   0x138  Code  Gb  hc32f460_rtc.o [1]
+RTC_PeriodIntConfig     0x00007801    0xb4  Code  Gb  hc32f460_rtc.o [1]
+RTC_SetDateTime         0x000078b5   0x462  Code  Gb  hc32f460_rtc.o [1]
+Region$$Table$$Base     0x0000f854           --   Gb  - Linker created -
+Region$$Table$$Limit    0x0000f880           --   Gb  - Linker created -
+SC7AIICREADADDR         0x1fff81de     0x1  Data  Gb  drv_IIC.o [1]
+SC7AIICWRITEADDR        0x1fff81dd     0x1  Data  Gb  drv_IIC.o [1]
+SPI_Cmd                 0x00007593    0x5a  Code  Gb  hc32f460_spi.o [1]
+SPI_GetFlag             0x00007665    0xd0  Code  Gb  hc32f460_spi.o [1]
+SPI_Init                0x00007081   0x512  Code  Gb  hc32f460_spi.o [1]
+SPI_ReceiveData8        0x0000761f    0x30  Code  Gb  hc32f460_spi.o [1]
+SPI_SendData8           0x000075ed    0x32  Code  Gb  hc32f460_spi.o [1]
+SRAM_CK_Disable         0x0000cfc9     0xa  Code  Gb  hc32f460_sram.o [1]
+SRAM_CK_Enable          0x0000cfd3     0xa  Code  Gb  hc32f460_sram.o [1]
+SRAM_Init               0x0000cfdd   0x14c  Code  Gb  hc32f460_sram.o [1]
+SRAM_WT_Disable         0x0000cfb5     0xa  Code  Gb  hc32f460_sram.o [1]
+SRAM_WT_Enable          0x0000cfbf     0xa  Code  Gb  hc32f460_sram.o [1]
+SVC_Handler             0x0000555b     0x8  Code  Gb  hc32f460_interrupts.o [1]
+SetClkSyncBaudrate      0x00004629   0x136  Code  Lc  hc32f460_usart.o [1]
+SetScBaudrate           0x000044b5   0x174  Code  Lc  hc32f460_usart.o [1]
+SetUartBaudrate         0x0000433d   0x176  Code  Lc  hc32f460_usart.o [1]
+SysTick_Delay           0x00002be9    0x48  Code  Wk  hc32f460_utility.o [1]
+SysTick_Handler         0x00005573     0x8  Code  Gb  hc32f460_interrupts.o [1]
+SystemCoreClock         0x1fff81d8     0x4  Data  Gb  system_hc32f460.o [1]
+SystemCoreClockUpdate   0x00009609    0xd4  Code  Gb  system_hc32f460.o [1]
+SystemInit              0x000095f5    0x14  Code  Gb  system_hc32f460.o [1]
+TIMER0_BaseInit         0x00006455   0x24e  Code  Gb  hc32f460_timer0.o [1]
+TIMER0_ClearFlag        0x00006203    0xaa  Code  Gb  hc32f460_timer0.o [1]
+TIMER0_Cmd              0x000062ad    0xee  Code  Gb  hc32f460_timer0.o [1]
+TIMER0_GetClkMode       0x00006125    0x68  Code  Lc  hc32f460_timer0.o [1]
+TIMER0_HardTriggerInit  0x000066b5   0x33e  Code  Gb  hc32f460_timer0.o [1]
+TIMER0_WriteCntReg      0x0000639b    0xba  Code  Gb  hc32f460_timer0.o [1]
+TurnOff_LC86L_BD_Power  0x0000c6dd     0xe  Code  Gb  LC86L_BD.o [1]
+USART_ClearStatus       0x000040a9    0x6e  Code  Gb  hc32f460_usart.o [1]
+USART_FuncCmd           0x00004117   0x154  Code  Gb  hc32f460_usart.o [1]
+USART_GetStatus         0x00004037    0x72  Code  Gb  hc32f460_usart.o [1]
+USART_SendData          0x00004295    0x42  Code  Gb  hc32f460_usart.o [1]
+USART_SetBaudrate       0x000042d7    0x64  Code  Gb  hc32f460_usart.o [1]
+USART_UART_Init         0x00003e79   0x1be  Code  Gb  hc32f460_usart.o [1]
+UsageFault_Handler      0x00005553     0x8  Code  Gb  hc32f460_interrupts.o [1]
+Usart1ErrIrqCallback    0x00001dbb    0x4c  Code  Lc  drv_USART.o [1]
+Usart1TimeoutIrqCallback
+                        0x00001eeb    0x84  Code  Lc  drv_USART.o [1]
+Usart1TxCmpltIrqCallback
+                        0x0000214f    0x26  Code  Lc  drv_USART.o [1]
+Usart1TxIrqCallback     0x000020dd    0x72  Code  Lc  drv_USART.o [1]
+Usart2ErrIrqCallback    0x00001e07    0x4c  Code  Lc  drv_USART.o [1]
+Usart2TimeoutIrqCallback
+                        0x00001f6f    0x7e  Code  Lc  drv_USART.o [1]
+Usart2TxCmpltIrqCallback
+                        0x000021e7    0x26  Code  Lc  drv_USART.o [1]
+Usart2TxIrqCallback     0x00002175    0x72  Code  Lc  drv_USART.o [1]
+Usart3ErrIrqCallback    0x00001e53    0x4c  Code  Lc  drv_USART.o [1]
+Usart3TimeoutIrqCallback
+                        0x00001fed    0x78  Code  Lc  drv_USART.o [1]
+Usart3TxCmpltIrqCallback
+                        0x0000227f    0x26  Code  Lc  drv_USART.o [1]
+Usart3TxIrqCallback     0x0000220d    0x72  Code  Lc  drv_USART.o [1]
+Usart4ErrIrqCallback    0x00001e9f    0x4c  Code  Lc  drv_USART.o [1]
+Usart4TimeoutIrqCallback
+                        0x00002065    0x78  Code  Lc  drv_USART.o [1]
+Usart4TxCmpltIrqCallback
+                        0x00002311    0x26  Code  Lc  drv_USART.o [1]
+Usart4TxIrqCallback     0x000022a5    0x6c  Code  Lc  drv_USART.o [1]
+UsartGetClk             0x00004765    0x52  Code  Lc  hc32f460_usart.o [1]
+XYC_ALSIICREADADDR      0x1fff81e0     0x1  Data  Gb  drv_IIC.o [1]
+XYC_ALSIICWRITEADDR     0x1fff81df     0x1  Data  Gb  drv_IIC.o [1]
+_Close_all              0x0000f6f5    0x3c  Code  Gb  xcloseall.o [3]
+_Encoding_8859_1_Mbrlen
+                        0x0000faf1     0x2  Code  Gb  xencoding_8859_1.o [3]
+_Encoding_8859_1_Mbtowc
+                        0x0000fae9     0x8  Code  Gb  xencoding_8859_1.o [3]
+_Files                  0x1fff8198    0x20  Data  Gb  xfiles.o [3]
+_Fofree                 0x0000f1c1    0x78  Code  Gb  xfofind.o [3]
+_Fspos                  0x0000ec09    0xd8  Code  Gb  xfspos.o [3]
+_Fwprep                 0x0000efcd    0xb4  Code  Gb  xfwprep.o [3]
+_GenldLargeNoMb         0x00003b99   0x248  Code  Lc  xprintflarge_nomb.o [3]
+_Gentime                0x0000a2bd   0x54e  Code  Gb  xgentime.o [3]
+_Gettime                0x0000a84b    0x40  Code  Gb  xgettime.o [3]
+_LdtobLargeNoMb         0x00003931   0x240  Code  Lc  xprintflarge_nomb.o [3]
+_LitobLargeNoMb         0x000037d9   0x112  Code  Lc  xprintflarge_nomb.o [3]
+_LocaleC_Tinfo          0x00008770    0x4c  Data  Lc  xlocale_c.o [3]
+_LocaleC_isalpha        0x000086af     0xc  Code  Gb  xlocale_c.o [3]
+_LocaleC_islower        0x000086a9     0x4  Code  Gb  xlocale_c.o [3]
+_LocaleC_isspace        0x000086c5    0x14  Code  Gb  xlocale_c.o [3]
+_LocaleC_isupper        0x000086ad     0x2  Code  Gb  xlocale_c.o [3]
+_LocaleC_tolower        0x000086d9     0xc  Code  Gb  xlocale_c.o [3]
+_Locale_lconv           0x1fff8120    0x38  Data  Lc  xlocale_c.o [3]
+_Nnl                    0x0000ed8d     0xc  Code  Gb  xfgpos.o [3]
+_PrintfLargeNoMb        0x0000324d   0x1a4  Code  Gb  xprintflarge_nomb.o [3]
+_Prout                  0x0000fa4d    0x16  Code  Gb  xprout.o [3]
+_PutcharsLargeNoMb      0x00003de1    0x2e  Code  Lc  xprintflarge_nomb.o [3]
+_PutfldLargeNoMb        0x00003471   0x25c  Code  Lc  xprintflarge_nomb.o [3]
+_PuttxtLargeNoMb        0x000036cd   0x10c  Code  Lc  xprintflarge_nomb.o [3]
+_SProut                 0x000018d7     0xa  Code  Gb  xsprout.o [3]
+_Strtok_ssave           0x1fff9f54     0x4  Data  Lc  strtok.o [3]
+_Ttotm_ts               0x1fff9e8c    0x2c  Data  Lc  xttotm.o [3]
+_Tzoff                  0x0000e5b1     0x4  Code  Gb  xTzoff_nop.o [3]
+__NVIC_ClearPendingIRQ  0x00001ad1    0x20  Code  Lc  drv_USART.o [1]
+__NVIC_ClearPendingIRQ  0x0000def3    0x1e  Code  Lc  Magnetic_Bar.o [1]
+__NVIC_ClearPendingIRQ  0x0000e053    0x1e  Code  Lc  Photosensitive_XYC_ALS.o [1]
+__NVIC_ClearPendingIRQ  0x0000d63b    0x1e  Code  Lc  RF_NFC.o [1]
+__NVIC_EnableIRQ        0x00001ab1    0x20  Code  Lc  drv_USART.o [1]
+__NVIC_EnableIRQ        0x0000ded5    0x1e  Code  Lc  Magnetic_Bar.o [1]
+__NVIC_EnableIRQ        0x0000e035    0x1e  Code  Lc  Photosensitive_XYC_ALS.o [1]
+__NVIC_EnableIRQ        0x0000d61d    0x1e  Code  Lc  RF_NFC.o [1]
+__NVIC_SetPriority      0x00001af1    0x30  Code  Lc  drv_USART.o [1]
+__NVIC_SetPriority      0x0000df11    0x2c  Code  Lc  Magnetic_Bar.o [1]
+__NVIC_SetPriority      0x0000e071    0x2c  Code  Lc  Photosensitive_XYC_ALS.o [1]
+__NVIC_SetPriority      0x0000d659    0x2c  Code  Lc  RF_NFC.o [1]
+__aeabi_cdcmple         0x00008309          Code  Gb  DblCmpLe.o [4]
+__aeabi_d2f             0x0000e4d9          Code  Gb  DblToFlt.o [4]
+__aeabi_d2iz            0x0000b56d          Code  Gb  DblToS32.o [4]
+__aeabi_d2uiz           0x00008581          Code  Gb  DblToU32.o [4]
+__aeabi_dadd            0x00008941          Code  Gb  DblAdd.o [4]
+__aeabi_ddiv            0x00008339          Code  Gb  DblDiv.o [4]
+__aeabi_dmul            0x000080f5          Code  Gb  DblMul.o [4]
+__aeabi_dsub            0x000085c5          Code  Gb  DblSub.o [4]
+__aeabi_f2d             0x000018e1          Code  Gb  FltToDbl.o [4]
+__aeabi_i2d             0x0000b549          Code  Gb  S32ToDbl.o [4]
+__aeabi_ldiv0           0x0000893d          Code  Gb  I64DivZer.o [5]
+__aeabi_memclr4         0x000018d1          Code  Gb  ABImemclr4.o [5]
+__aeabi_memcpy          0x000019a1          Code  Gb  ABImemcpy.o [5]
+__aeabi_memcpy4         0x000019c1          Code  Gb  ABImemcpy.o [5]
+__aeabi_memcpy8         0x000019c1          Code  Gb  ABImemcpy.o [5]
+__aeabi_memset          0x00001a49          Code  Gb  ABImemset.o [5]
+__aeabi_ui2d            0x000085a9          Code  Gb  U32ToDbl.o [4]
+__aeabi_uldivmod        0x00007ec5          Code  Gb  I64DivMod.o [5]
+__basic_free            0x0000e8f9    0x16  Code  Gb  heap0.o [3]
+__basic_free_intern     0x0000e90f    0x7a  Code  Lc  heap0.o [3]
+__basic_malloc          0x0000e84d    0x18  Code  Gb  heap0.o [3]
+__basic_malloc_intern   0x0000e865    0x94  Code  Lc  heap0.o [3]
+__cexit_closeall        0x0000f98b          Code  Gb  cexit.o [5]
+__close                 0x0000f241    0x18  Code  Gb  close.o [6]
+__cmain                 0x0000f961          Code  Gb  cmain.o [5]
+__cstart_closeall       0x00000280          Data  Gb  cstart_closeall.o [5]
+__data_GetMemChunk      0x0000e98d    0x2c  Code  Gb  xgetmemchunk.o [3]
+__data_GetMemChunk::start
+                        0x1fff9f58     0x4  Data  Lc  xgetmemchunk.o [3]
+__dwrite                0x0000ef6d    0x1e  Code  Gb  dwrite.o [6]
+__exit                  0x00008ab9    0x14  Code  Gb  exit.o [6]
+__getzone               0x0000a911     0x4  Code  Gb  getzone_nop.o [3]
+__iar_CStrftime         0x0000e6bd   0x10c  Code  Gb  xstrftim.o [3]
+__iar_Daysto32          0x0000e7e1    0x3c  Code  Gb  xDaysTo.o [3]
+__iar_Fail_s            0x00007e81    0x1e  Code  Gb  xfail_s.o [3]
+__iar_Isdst32           0x0000e7d9     0x6  Code  Gb  xisdst_nop.o [3]
+__iar_Memchr            0x00007029          Code  Gb  memchr.o [5]
+__iar_Memset            0x00001a49          Code  Gb  ABImemset.o [5]
+__iar_Memset4_word      0x00003219          Code  Gb  ABImemset48.o [5]
+__iar_Memset8_word      0x00003219          Code  Gb  ABImemset48.o [5]
+__iar_Memset_word       0x00001a51          Code  Gb  ABImemset.o [5]
+__iar_Stderr            0x1fff80d8    0x48  Data  Gb  xfiles.o [3]
+__iar_Stdin             0x1fff8048    0x48  Data  Gb  xfiles.o [3]
+__iar_Stdout            0x1fff8090    0x48  Data  Gb  xfiles.o [3]
+__iar_Sto64             0x0000b909   0x1a6  Code  Gb  strto64.o [4]
+__iar_Stoflt            0x0000bda5   0x1c8  Code  Gb  iar_Stoflt.o [3]
+__iar_Stolx             0x0000a88b    0x82  Code  Gb  iar_Stolx.o [3]
+__iar_Stopfx            0x0000bc83   0x122  Code  Gb  iar_Stopfx.o [3]
+__iar_Stoulx            0x00002ca9   0x116  Code  Gb  iar_Stoulx.o [3]
+__iar_Stoxflt           0x0000bf6d   0x1e6  Code  Gb  iar_Stoxflt.o [3]
+__iar_Stoxflt::digits   0x0000c158    0x18  Data  Lc  iar_Stoxflt.o [3]
+__iar_Stoxflt::vals     0x0000c170    0x18  Data  Lc  iar_Stoxflt.o [3]
+__iar_Strchr            0x00006fa5          Code  Gb  strchr.o [5]
+__iar_Ttotm32           0x0000e5b5    0xca  Code  Gb  xttotm.o [3]
+__iar_close_ttio        0x00008acd    0x2c  Code  Gb  iarttio.o [6]
+__iar_dadd              0x000085d5          Code  Gb  DblSub.o [4]
+__iar_data_init3        0x0000f7e5    0x28  Code  Gb  data_init.o [5]
+__iar_dsub              0x00008951          Code  Gb  DblAdd.o [4]
+__iar_dsubStart         0x00008963          Code  Gb  DblAdd.o [4]
+__iar_frexp             0x000082a5          Code  Gb  frexp.o [4]
+__iar_frexpl            0x000082a5          Code  Gb  frexp.o [4]
+__iar_get_ttio          0x00008af9    0x4c  Code  Gb  iarttio.o [6]
+__iar_globLocale        0x1fff8000    0x48  Data  Lc  xlocale_c.o [3]
+__iar_global_Locale     0x000086e5     0x4  Code  Gb  xlocale_c.o [3]
+__iar_init_vfp          0x0000f831          Code  Gb  fpinit_M.o [4]
+__iar_ldexp64           0x0000bb49          Code  Gb  ldexp.o [4]
+__iar_lookup_ttioh      0x00008b77     0x4  Code  Gb  XShttio.o [3]
+__iar_packbits_init3    0x0000f0a5    0x9c  Code  Gb  packbits_init.o [5]
+__iar_program_start     0x0000fcb5          Code  Gb  cstartup_M.o [5]
+__iar_scalbln64         0x0000bb49          Code  Gb  ldexp.o [4]
+__iar_scalbn64          0x0000bb49          Code  Gb  ldexp.o [4]
+__iar_sh_Discard        0x0000eea1    0x42  Code  Gb  XShHandles.o [3]
+__iar_sh_Move           0x0000eee3    0x46  Code  Gb  XShHandles.o [3]
+__iar_sh_Pos            0x0000ef29    0x3e  Code  Gb  XShHandles.o [3]
+__iar_sh_stdout         0x0000ef8b    0x20  Code  Gb  iarwstd.o [6]
+__iar_sh_write          0x0000efab    0x22  Code  Gb  iarwrite.o [6]
+__iar_softfp___iar_frexp64
+                        0x00008299          Code  Gb  frexp.o [4]
+__iar_softfp_frexp      0x00008299          Code  Gb  frexp.o [4]
+__iar_softfp_frexpl     0x00008299          Code  Gb  frexp.o [4]
+__iar_systems$$module {Abs}
+                        0x00000001          Data  Gb  command line/config [2]
+__iar_ttio_guard_lock   0x00008b49    0x1e  Code  Gb  XShttio.o [3]
+__iar_ttio_guard_unlock
+                        0x00008b67    0x10  Code  Gb  XShttio.o [3]
+__iar_ttio_handles      0x1fff81cc     0x8  Data  Lc  XShttio.o [3]
+__iar_vfp_atof          0x0000e4cf     0x8  Code  Gb  math_wrappers64.o [4]
+__iar_zero_init3        0x0000f6b5    0x40  Code  Gb  zero_init3.o [5]
+__localtime32           0x0000e545    0x1a  Code  Gb  localtim.o [3]
+__low_level_init        0x0000f97f     0x4  Code  Gb  low_level_init.o [3]
+__lseek                 0x0000ed99    0x4a  Code  Gb  lseek.o [6]
+__time32                0x0000e59f    0x12  Code  Gb  time.o [6]
+__vector_table          0x00000000          Data  Gb  startup_hc32f460.o [1]
+__write_buffered        0x0000ede5    0xbc  Code  Gb  xxwritebuffered.o [3]
+_call_main              0x0000f96d          Code  Gb  cmain.o [5]
+_exit                   0x0000f989          Code  Gb  cexit.o [5]
+_gLocale_mbtowc         0x00008757     0xc  Code  Gb  xlocale_c.o [3]
+_gLocale_mbtowcInt      0x0000870d    0x4a  Code  Gb  xlocale_c.o [3]
+_main                   0x0000f97b          Code  Gb  cmain.o [5]
+abort                   0x00008935     0x6  Code  Gb  abort.o [3]
+alt_digits              0x0000eaea     0x1  Data  Lc  xlocale_c.o [3]
+am_pm                   0x0000eaec     0x8  Data  Lc  xlocale_c.o [3]
+atof                    0x0000baf5     0x8  Code  Gb  strto64.o [4]
+atoi                    0x00002dc5     0x2  Code  Gb  iar_Stoulx.o [3]
+cmp_era_date            0x0000a1b3    0x76  Code  Lc  xgentime.o [3]
+days                    0x0000eaf4    0x58  Data  Lc  xlocale_c.o [3]
+ddiv                    0x0000b67d    0xd0  Code  Lc  strto64.o [4]
+decimal_bcd_code        0x00006a25    0x2e  Code  Gb  User_Data.o [1]
+digits                  0x00002dd0    0x28  Data  Lc  iar_Stoulx.o [3]
+dmul                    0x0000b5a9    0xd2  Code  Lc  strto64.o [4]
+drv_Attitude_Sensor_SC7A20H_Init
+                        0x0000da1d    0x8e  Code  Gb  drv_SC7A20H.o [1]
+drv_BT05_InitATCMD      0x0000e401    0x50  Code  Gb  BT_TB05.o [1]
+drv_BT05_Module_Init    0x0000e451    0x66  Code  Gb  BT_TB05.o [1]
+drv_BT05_SendData       0x0000e3ed    0x14  Code  Gb  BT_TB05.o [1]
+drv_Battery_Level_Init  0x0000dcf3    0x5c  Code  Gb  drv_ADC.o [1]
+drv_EC200U_4G_Module_Init
+                        0x0000ae09    0xc6  Code  Gb  4G_EC200U.o [1]
+drv_Get_Battery_Level_Value
+                        0x0000de09    0xaa  Code  Gb  drv_ADC.o [1]
+drv_Get_Water_Immersion_Sensor_Status
+                        0x0000dd51    0xb8  Code  Gb  drv_ADC.o [1]
+drv_LC86L_BD_Init       0x0000c64b    0x7c  Code  Gb  LC86L_BD.o [1]
+drv_LoRa_RA02_Init      0x0000b45d    0xde  Code  Gb  LoRa_RA02.o [1]
+drv_Magnetic_Bar_Init   0x0000df5d    0xc0  Code  Gb  Magnetic_Bar.o [1]
+drv_OLED_IIC_Checkack   0x00009f5d    0x5a  Code  Gb  drv_IIC.o [1]
+drv_OLED_IIC_Sendbyte   0x00009fb7    0x68  Code  Gb  drv_IIC.o [1]
+drv_OLED_IIC_Start      0x00009f21    0x3c  Code  Gb  drv_IIC.o [1]
+drv_OLED_IIC_Stop       0x00009eeb    0x36  Code  Gb  drv_IIC.o [1]
+drv_OLED_Init           0x0000e2e7   0x106  Code  Gb  OLED.o [1]
+drv_Photosensitive_XYC_ALS_Init
+                        0x0000e103   0x1aa  Code  Gb  Photosensitive_XYC_ALS.o [1]
+drv_RF_NFC_MCU_TO_PCD_Test
+                        0x0000d891    0x44  Code  Gb  RF_NFC.o [1]
+drv_RF_NFC_Module_Init  0x0000d699   0x14e  Code  Gb  RF_NFC.o [1]
+drv_RF_NFC_ReceiveData  0x0000d80d    0x6a  Code  Gb  RF_NFC.o [1]
+drv_RF_NFC_SendData     0x0000d7e7    0x26  Code  Gb  RF_NFC.o [1]
+drv_SC7A_IIC_ACKorNACK  0x00009807    0x74  Code  Gb  drv_IIC.o [1]
+drv_SC7A_IIC_Checkack   0x0000987b    0x5a  Code  Gb  drv_IIC.o [1]
+drv_SC7A_IIC_Recbyte    0x0000993d    0x98  Code  Gb  drv_IIC.o [1]
+drv_SC7A_IIC_Sendbyte   0x000098d5    0x68  Code  Gb  drv_IIC.o [1]
+drv_SC7A_IIC_Start      0x000097cb    0x3c  Code  Gb  drv_IIC.o [1]
+drv_SC7A_IIC_Stop       0x00009795    0x36  Code  Gb  drv_IIC.o [1]
+drv_SC7A_ReadData       0x00009a45    0xa6  Code  Gb  drv_IIC.o [1]
+drv_SC7A_WriteData      0x000099d5    0x70  Code  Gb  drv_IIC.o [1]
+drv_Storage_GD25_Init   0x00003093    0x2e  Code  Gb  drv_Storage_GD25.o [1]
+drv_WatchDog_Init       0x0000d4b9    0x2e  Code  Gb  WatchDog.o [1]
+drv_Water_Immersion_Sensor_Init
+                        0x0000dcb3    0x40  Code  Gb  drv_ADC.o [1]
+drv_XYC_ALS_IIC_ACKorNACK
+                        0x00009bab    0x74  Code  Gb  drv_IIC.o [1]
+drv_XYC_ALS_IIC_Checkack
+                        0x00009c1f    0x5a  Code  Gb  drv_IIC.o [1]
+drv_XYC_ALS_IIC_Recbyte
+                        0x00009ce1    0x98  Code  Gb  drv_IIC.o [1]
+drv_XYC_ALS_IIC_Sendbyte
+                        0x00009c79    0x68  Code  Gb  drv_IIC.o [1]
+drv_XYC_ALS_IIC_Start   0x00009b6f    0x3c  Code  Gb  drv_IIC.o [1]
+drv_XYC_ALS_IIC_Stop    0x00009b39    0x36  Code  Gb  drv_IIC.o [1]
+drv_XYC_ALS_ReadData    0x00009de7    0xa2  Code  Gb  drv_IIC.o [1]
+drv_XYC_ALS_WriteData   0x00009d79    0x6e  Code  Gb  drv_IIC.o [1]
+drv_mcu_ADC_Init        0x0000dca1    0x12  Code  Gb  drv_ADC.o [1]
+drv_mcu_ChangeUSART3_Source
+                        0x00002ac5    0xc8  Code  Gb  drv_USART.o [1]
+drv_mcu_Clock_Init      0x0000cb11    0xc4  Code  Lc  main.o [1]
+drv_mcu_Get_RTC_Time    0x000031b9    0x54  Code  Gb  drv_RTC.o [1]
+drv_mcu_OLED_IIC_SDA_PIN_SET_INPUT
+                        0x00009ec7    0x24  Code  Gb  drv_IIC.o [1]
+drv_mcu_OLED_IIC_SDA_PIN_SET_OUTPUT
+                        0x00009e9d    0x2a  Code  Gb  drv_IIC.o [1]
+drv_mcu_SC7A_IIC_Init   0x00009701    0x46  Code  Gb  drv_IIC.o [1]
+drv_mcu_SC7A_IIC_SDA_PIN_SET_INPUT
+                        0x00009771    0x24  Code  Gb  drv_IIC.o [1]
+drv_mcu_SC7A_IIC_SDA_PIN_SET_OUTPUT
+                        0x00009747    0x2a  Code  Gb  drv_IIC.o [1]
+drv_mcu_SPI_Init        0x0000d8d5   0x148  Code  Gb  drv_SPI.o [1]
+drv_mcu_SetUSART3_Baud  0x00002aaf     0xe  Code  Gb  drv_USART.o [1]
+drv_mcu_Set_RTC_Time    0x000030c1    0xf8  Code  Gb  drv_RTC.o [1]
+drv_mcu_Timer0_Init     0x0000d4f1    0xfa  Code  Gb  drv_Timer.o [1]
+drv_mcu_Timer_Init      0x0000d4e9     0x8  Code  Gb  drv_Timer.o [1]
+drv_mcu_USART_Init      0x00002369   0x594  Code  Gb  drv_USART.o [1]
+drv_mcu_USART_SendData  0x00002911   0x19e  Code  Gb  drv_USART.o [1]
+drv_mcu_XYC_ALS_IIC_SDA_PIN_SET_INPUT
+                        0x00009b15    0x24  Code  Gb  drv_IIC.o [1]
+drv_mcu_XYC_ALS_IIC_SDA_PIN_SET_OUTPUT
+                        0x00009aeb    0x2a  Code  Gb  drv_IIC.o [1]
+ebuf                    0x1fff9dec    0x50  Data  Lc  xfiles.o [3]
+enIrqRegistration       0x0000549d    0x96  Code  Gb  hc32f460_interrupts.o [1]
+era                     0x0000eb4c     0x1  Data  Lc  xlocale_c.o [3]
+exit                    0x0000f983     0x4  Code  Gb  exit.o [3]
+fclose                  0x0000f141    0x7e  Code  Gb  fclose.o [3]
+fflush                  0x0000ed55    0x34  Code  Gb  fflush.o [3]
+fflushOne               0x0000ece1    0x74  Code  Lc  fflush.o [3]
+fmts                    0x0000eb50    0x30  Data  Lc  xlocale_c.o [3]
+fputc                   0x0000f26d    0x54  Code  Gb  fputc.o [3]
+free                    0x0000f23d     0x4  Code  Gb  heaptramp0.o [3]
+fseek                   0x0000f081    0x24  Code  Gb  fseek.o [3]
+func_GPIO_Init          0x0000d13d    0x90  Code  Gb  Mainloop.o [1]
+func_Get_Flash_Data     0x0000d1cd     0xa  Code  Gb  Mainloop.o [1]
+func_SC7A20H_Read_FIFO_Buf
+                        0x0000daab    0xbe  Code  Gb  drv_SC7A20H.o [1]
+func_Set_Flash_Data     0x0000d1d7    0x46  Code  Gb  Mainloop.o [1]
+func_SystemPara_Init    0x00006a09    0x16  Code  Gb  User_Data.o [1]
+func_Upload_Data_To_Server
+                        0x0000d21d   0x292  Code  Gb  Mainloop.o [1]
+gE_4G_Module_Init_CMD   0x1fff81dc     0x1  Data  Gb  4G_EC200U.o [1]
+gSt_systemPara          0x1fff81e4  0x1934  Data  Lc  User_Data.o [1]
+g_AT_RESET_CMD          0x1fff8178    0x20  Data  Lc  BT_TB05.o [1]
+g_AT_SSID_CMD           0x1fff8158    0x20  Data  Lc  BT_TB05.o [1]
+g_Ble_SSID              0x1fff81b8    0x14  Data  Gb  BT_TB05.o [1]
+getera                  0x0000a229    0x92  Code  Lc  xgentime.o [3]
+getval                  0x0000a021    0x60  Code  Lc  xgentime.o [3]
+isalpha                 0x0000c189    0x14  Code  Gb  isalpha.o [3]
+isleapyr                0x0000a081    0x42  Code  Lc  xgentime.o [3]
+isspace                 0x00006fff    0x14  Code  Gb  isspace.o [3]
+ldexp                   0x0000bb49          Code  Gb  ldexp.o [4]
+ldexpl                  0x0000bb49          Code  Gb  ldexp.o [4]
+lmos                    0x0000e68c    0x18  Data  Lc  xttotm.o [3]
+lmos                    0x0000e81c    0x18  Data  Lc  xDaysTo.o [3]
+localeconv              0x00008763     0x4  Code  Gb  xlocale_c.o [3]
+localtime               0x0000e545    0x1a  Code  Gb  localtim.o [3]
+m_au16Adc1Value         0x1fff9eb8    0x24  Data  Lc  drv_ADC.o [1]
+m_au16Adc2Value         0x1fff9ef8    0x14  Data  Lc  drv_ADC.o [1]
+m_stcSysclkCfg          0x1fff9f0c     0x8  Data  Lc  main.o [1]
+m_u32TickCount          0x1fff9f34     0x4  Data  Lc  hc32f460_utility.o [1]
+m_u32TickStep           0x1fff9f30     0x4  Data  Lc  hc32f460_utility.o [1]
+main                    0x0000cbd5   0x312  Code  Gb  main.o [1]
+memchr                  0x00007029          Code  Gb  memchr.o [5]
+mons                    0x0000eb80    0x88  Data  Lc  xlocale_c.o [3]
+mos                     0x0000e6a4    0x18  Data  Lc  xttotm.o [3]
+mos                     0x0000e834    0x18  Data  Lc  xDaysTo.o [3]
+myLoRa                  0x1fff9edc    0x1c  Data  Gb  LoRa_RA02.o [1]
+ndigs                   0x00002df8    0x28  Data  Lc  iar_Stoulx.o [3]
+newLoRa                 0x0000af8d    0x3a  Code  Gb  LoRa_RA02.o [1]
+obuf                    0x1fff9e3c    0x50  Data  Lc  xfiles.o [3]
+pfnNmiCallback          0x1fff9f2c     0x4  Data  Lc  hc32f460_exint_nmi_swi.o [1]
+pows                    0x0000bb00    0x48  Data  Lc  strto64.o [4]
+printf                  0x0000d5f5    0x28  Code  Gb  printf.o [3]
+pst_BDSystemPara        0x1fff9f38     0x4  Data  Lc  LC86L_BD.o [1]
+pst_BTSystemPara        0x1fff9f20     0x4  Data  Lc  BT_TB05.o [1]
+pst_EC200USystemPara    0x1fff9f1c     0x4  Data  Lc  4G_EC200U.o [1]
+pst_MQTTSystemPara      0x1fff9f48     0x4  Data  Lc  MQTT_SK.o [1]
+pst_MagSystemPara       0x1fff9f3c     0x4  Data  Lc  Magnetic_Bar.o [1]
+pst_MainSystemPara      0x1fff9f40     0x4  Data  Lc  main.o [1]
+pst_MainloopSystemPara  0x1fff9f44     0x4  Data  Lc  Mainloop.o [1]
+pst_NFCSystemPara       0x1fff9f50     0x4  Data  Lc  RF_NFC.o [1]
+pst_PhotoSystemPara     0x1fff9f4c     0x4  Data  Lc  Photosensitive_XYC_ALS.o [1]
+pst_RTCSystemPara       0x1fff9f24     0x4  Data  Lc  drv_RTC.o [1]
+pst_UsartSystemPara     0x1fff9f28     0x4  Data  Lc  drv_USART.o [1]
+putchar                 0x0000fa65     0xc  Code  Gb  putchar.o [3]
+remove                  0x0000f259    0x14  Code  Gb  remove.o [6]
+sFileInfo               0x1fff9d18    0x80  Data  Lc  XShHandles.o [3]
+scalbln                 0x0000bb49          Code  Gb  ldexp.o [4]
+scalblnl                0x0000bb49          Code  Gb  ldexp.o [4]
+scalbn                  0x0000bb49          Code  Gb  ldexp.o [4]
+scalbnl                 0x0000bb49          Code  Gb  ldexp.o [4]
+scale                   0x000038eb    0x46  Code  Lc  xprintflarge_nomb.o [3]
+sec_hand                0x1fff9f5c     0x4  Data  Lc  xfail_s.o [3]
+sprintf                 0x00001929    0x40  Code  Gb  sprintf.o [3]
+store                   0x1fff9d98    0x50  Data  Lc  xxwritebuffered.o [3]
+storeLen                0x1fff9de8     0x4  Data  Lc  xxwritebuffered.o [3]
+strcat                  0x0000e57f    0x20  Code  Gb  strcat.o [3]
+strchr                  0x00006fa5          Code  Gb  strchr.o [5]
+strcpy                  0x0000af41          Code  Gb  strcpy.o [5]
+strcspn                 0x00006fdd    0x22  Code  Gb  strcspn.o [3]
+strftime                0x0000e55f    0x20  Code  Gb  strftime.o [3]
+strlen                  0x00001969          Code  Gb  strlen.o [5]
+strspn                  0x00006fbb    0x22  Code  Gb  strspn.o [3]
+strstr                  0x00002c31    0x30  Code  Gb  strstr.o [3]
+strtok                  0x00002c61    0x48  Code  Gb  strtok.o [3]
+strtol                  0x0000a90d     0x4  Code  Gb  iar_Stolx.o [3]
+time                    0x0000e541     0x4  Code  Gb  time_trampoline.o [3]
+tolower                 0x00007013    0x14  Code  Gb  tolower.o [3]
+ttio_guard              0x1fff9f61     0x1  Data  Lc  XShttio.o [3]
+u32ICG                  0x00000400    0x20  Data  Gb  hc32f460_icg.o [1]
+wkyr                    0x0000a0c3    0x1a  Code  Lc  xgentime.o [3]
+
+
+[1] = E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Obj
+[2] = command line
+[3] = dl7M_tlf.a
+[4] = m7M_tls.a
+[5] = rt7M_tl.a
+[6] = shb_l.a
+
+  61 600 bytes of readonly  code memory
+   3 154 bytes of readonly  data memory (+ 32 absolute)
+  18 271 bytes of readwrite data memory
+
+Errors: none
+Warnings: none

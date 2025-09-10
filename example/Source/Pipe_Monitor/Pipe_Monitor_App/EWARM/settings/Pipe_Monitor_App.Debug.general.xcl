@@ -1,0 +1,13 @@
+"D:\Program Files\IAR Systems\Embedded Workbench 9.2\arm\bin\armPROC.dll" 
+
+"D:\Program Files\IAR Systems\Embedded Workbench 9.2\arm\bin\armJET.dll" 
+
+"D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Exe\Pipe_Monitor_App.out" 
+
+--plugin="D:\Program Files\IAR Systems\Embedded Workbench 9.2\arm\bin\armbat.dll" 
+
+--flash_loader="D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\flashloader\hc32f460xE.board" 
+
+
+
+

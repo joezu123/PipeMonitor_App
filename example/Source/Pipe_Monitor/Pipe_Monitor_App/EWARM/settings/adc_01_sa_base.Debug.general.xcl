@@ -1,0 +1,13 @@
+"D:\IAR Systems\Embedded Workbench 8.0\arm\bin\armproc.dll" 
+
+"D:\IAR Systems\Embedded Workbench 8.0\arm\bin\armJET.dll" 
+
+"E:\WorkProcess\example\hc32f460_ddl_Rev2.2.0\example\ev_hc32f460_lqfp100_v2\adc\adc_01_sa_base\EWARM\output\debug\Exe\adc_01_sa_base.out" 
+
+--plugin "D:\IAR Systems\Embedded Workbench 8.0\arm\bin\armbat.dll" 
+
+--flash_loader "E:\WorkProcess\example\hc32f460_ddl_Rev2.2.0\example\ev_hc32f460_lqfp100_v2\adc\adc_01_sa_base\EWARM\flashloader\hc32f460xE.board" 
+
+
+
+

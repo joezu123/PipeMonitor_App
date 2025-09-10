@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<userOverrides>
+    <override>
+        <path>E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\source\OLED\Display.c</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\hc32l19x_ddl_Rev1.0.3now\hc32l19x_ddl_Rev1.0.3\hc32l19x_ddl_Rev1.0.3\example\spi\spi_master\source\w25qxx.c</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\hc32l19x_ddl_Rev1.0.3now\hc32l19x_ddl_Rev1.0.3\hc32l19x_ddl_Rev1.0.3\example\spi\spi_master\source\w25qxx.h</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\LKT4202UGM开发套件V1.1\I2C接口通讯例程\基于NXPLPC1768的IIC通讯例程\Source\App\LPC17xx.h</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\LKT4202UGM开发套件V1.1\I2C接口通讯例程\基于NXPLPC1768的IIC通讯例程\Source\App\i2c.c</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\LKT4202UGM开发套件V1.1\I2C接口通讯例程\基于NXPLPC1768的IIC通讯例程\Source\App\i2c.h</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\LKT4202UGM开发套件V1.1\I2C接口通讯例程\基于NXPLPC1768的IIC通讯例程\Source\App\main.c</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\LKT4202UGM开发套件V1.1\I2C接口通讯例程\基于NXPLPC1768的IIC通讯例程\Source\App\system_LPC17xx.c</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\LKT4202UGM开发套件V1.1\I2C接口通讯例程\基于NXPLPC1768的IIC通讯例程\Source\App\system_LPC17xx.h</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\PN0027 UART资料\RC522模块 UART(0002)\RC522 UART\LPCREG.H</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\PN0027 UART资料\RC522模块 UART(0002)\RC522 UART\MAIN.C</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\PN0027 UART资料\RC522模块 UART(0002)\RC522 UART\MAIN.H</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\PN0027 UART资料\RC522模块 UART(0002)\RC522 UART\MFRC522.H</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\PN0027 UART资料\RC522模块 UART(0002)\RC522 UART\RC522.C</path>
+        <encoding>UTF-8</encoding>
+    </override>
+    <override>
+        <path>E:\工作文档\开发资料\PN0027 UART资料\RC522模块 UART(0002)\RC522 UART\REG52.H</path>
+        <encoding>UTF-8</encoding>
+    </override>
+</userOverrides>

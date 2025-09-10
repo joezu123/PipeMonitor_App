@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BuildDb>
+    <Tool>
+        <Name>linker</Name>
+        <Parent>
+            <Path>D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Exe\Pipe_Monitor_App.out</Path>
+            <Output>
+                <Path>D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\List\Pipe_Monitor_App.map</Path>
+            </Output>
+        </Parent>
+        <Parent>
+            <Path>E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\Exe\Pipe_Monitor_App.out</Path>
+            <Output>
+                <Path>E:\WorkProcess\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\output\debug\List\Pipe_Monitor_App.map</Path>
+            </Output>
+        </Parent>
+    </Tool>
+</BuildDb>
