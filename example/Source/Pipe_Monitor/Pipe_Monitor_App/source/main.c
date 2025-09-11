@@ -504,7 +504,7 @@ int32_t main(void)
         pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Integrated_Conductivity;
     }
     //pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Radar_Level;
-    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 10;
+    //pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 10;
     //pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 5;
     //pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 5;
     

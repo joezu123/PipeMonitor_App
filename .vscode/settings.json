@@ -36,6 +36,7 @@
         "hc32f460_gpio.h": "c",
         "hc32f460_usart.h": "c",
         "mqtt_sk.h": "c",
-        "hc32f460_sram.h": "c"
+        "hc32f460_sram.h": "c",
+        "hc32f460_clk.h": "c"
     }
 }
