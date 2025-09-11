@@ -970,7 +970,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                 //    ucFlag = 4;
                 //}
             }
-            if(usRecvTimeOutCnt >= 500)
+            if(usRecvTimeOutCnt >= 1000)
             {
                 u8Temp = 0;
                 return 2;
