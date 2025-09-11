@@ -988,6 +988,7 @@ void func_4G_Connect_Server_Dispose(void)
 	uint8_t ucRes = 0xFF;
 	struct tm tm;
 	time_t now;
+	static uint8_t ucRetryCnt = 0;
     //time(&now);	
 
 	if(pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag == 0)
@@ -1019,6 +1020,7 @@ void func_4G_Connect_Server_Dispose(void)
 			}
 			//先统计本次要上传的数据个数
 			pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag = 1;
+			ucRetryCnt = 0;
 		}
 	}
 	
@@ -1029,10 +1031,15 @@ void func_4G_Connect_Server_Dispose(void)
 		//重复尝试重新初始化4G模块
 		if(ucRes == 2)
 		{
-			pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_RUN;
-			pst_MainloopSystemPara->DeviceRunPara.usDevStatus |= 0x0001;
-			pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag = 0;
-			pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag = 0;
+			ucRetryCnt++;
+			if(ucRetryCnt > 3)
+			{
+				ucRetryCnt = 0;
+				pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_RUN;
+				pst_MainloopSystemPara->DeviceRunPara.usDevStatus |= 0x0001;
+				pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag = 0;
+				pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag = 0;
+			}
 		}
 		else if(ucRes == 0)
 		{
