@@ -16,10 +16,10 @@
         <FirstRun>0</FirstRun>
     </PlDriver>
     <Jet>
+        <OnlineReset>Software</OnlineReset>
         <DisableInterrupts>0</DisableInterrupts>
         <LeaveRunning>0</LeaveRunning>
         <MultiCoreRunAll>0</MultiCoreRunAll>
-        <OnlineReset>Software</OnlineReset>
         <JetConnSerialNo>#PW_WINUSB_CMSIS-DAP:8B4334514D3B9EF70136CCEC13E235DF</JetConnSerialNo>
         <JetConnFoundProbes>#PW_HID_CMSIS-DAP:8B4334514D3B9EF70136CCEC13E235DF:#PW_WINUSB_CMSIS-DAP:8B4334514D3B9EF70136CCEC13E235DF:</JetConnFoundProbes>
         <PrevWtdReset>System</PrevWtdReset>
@@ -29,7 +29,7 @@
         <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>2852609699</Checksum>
+        <Checksum>4056573004</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>

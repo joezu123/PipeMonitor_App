@@ -1323,8 +1323,6 @@ unsigned char func_BY_BlackLight_Camera_Test_CMD(en_usart_device_t ucDeviceType)
     unsigned char ucRetCheckArr[] = {0x90,0xEB,0x01,0x01,0x03,0x00,0x00,0xAA,0x55,0xF6,0xEB};
 
     //drv_mcu_ChangeUSART4_Baud(115200); //切换波特率到115200
-    
-
     ucSendBuf[0] = 0x90;
     ucSendBuf[1] = 0xEB;
     ucSendBuf[2] = 0x01;
@@ -1418,7 +1416,6 @@ unsigned char func_Get_Photo_Data(en_usart_device_t ucDeviceType, unsigned long 
     //每次取1024字节数据
     ucSendBuf[10] = usGetDataLen & 0xFF; //数据长度低位
     ucSendBuf[11] = (usGetDataLen >> 8) & 0xFF; //数据长度高位
-    
     ucSendBuf[12] = 0xC1; //CRC校验低位
     ucSendBuf[13] = 0xC2; //CRC校验高位
 
@@ -1566,7 +1563,6 @@ void func_Meas_Sensor_Dispose(void)
                         //k = 3; //跳出重试循环
                     }
                 }
-                
             }
             pst_MBSystemPara->DeviceRunPara.cGetMeasSensorValueFlag = 1;
         }
