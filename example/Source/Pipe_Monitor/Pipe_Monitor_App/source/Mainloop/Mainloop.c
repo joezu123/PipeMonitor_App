@@ -1217,7 +1217,6 @@ void func_System_Mainloop_Dispose(void)
 							}
 						}
 					}
-					
 				}
 				
 				//获取设备板级传感器数据

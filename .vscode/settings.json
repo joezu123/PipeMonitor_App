@@ -37,6 +37,11 @@
         "hc32f460_usart.h": "c",
         "mqtt_sk.h": "c",
         "hc32f460_sram.h": "c",
-        "hc32f460_clk.h": "c"
+        "hc32f460_clk.h": "c",
+        "system_hc32f460.h": "c",
+        "hc32f460_timer4_oco.h": "c",
+        "hc32_common.h": "c",
+        "hc32f460_interrupts.h": "c",
+        "hc32f460_exint_nmi_swi.h": "c"
     }
 }

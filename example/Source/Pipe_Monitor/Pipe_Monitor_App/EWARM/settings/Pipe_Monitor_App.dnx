@@ -12,24 +12,24 @@
         <ByteLimit>50</ByteLimit>
     </Stack>
     <PlDriver>
-        <MemConfigValue>D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\mcu\EWARM\HC32F460xE.ddf</MemConfigValue>
         <FirstRun>0</FirstRun>
+        <MemConfigValue>D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\mcu\EWARM\HC32F460xE.ddf</MemConfigValue>
     </PlDriver>
     <Jet>
-        <OnlineReset>Software</OnlineReset>
+        <JetConnSerialNo>#PW_WINUSB_CMSIS-DAP:8B4334514D3B9EF70136CCEC13E235DF</JetConnSerialNo>
+        <JetConnFoundProbes />
+        <PrevWtdReset>System</PrevWtdReset>
         <DisableInterrupts>0</DisableInterrupts>
         <LeaveRunning>0</LeaveRunning>
         <MultiCoreRunAll>0</MultiCoreRunAll>
-        <JetConnSerialNo>#PW_WINUSB_CMSIS-DAP:8B4334514D3B9EF70136CCEC13E235DF</JetConnSerialNo>
-        <JetConnFoundProbes>#PW_HID_CMSIS-DAP:8B4334514D3B9EF70136CCEC13E235DF:#PW_WINUSB_CMSIS-DAP:8B4334514D3B9EF70136CCEC13E235DF:</JetConnFoundProbes>
-        <PrevWtdReset>System</PrevWtdReset>
+        <OnlineReset>Software</OnlineReset>
     </Jet>
     <ArmDriver>
         <EnableCache>1</EnableCache>
         <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>4056573004</Checksum>
+        <Checksum>619212065</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -44,8 +44,8 @@
     <SWOManager>
         <SamplingDivider>8192</SamplingDivider>
         <OverrideClock>0</OverrideClock>
-        <CpuClock>362106368</CpuClock>
-        <SwoClock>411</SwoClock>
+        <CpuClock>1953721961</CpuClock>
+        <SwoClock>1376416626</SwoClock>
         <DataLogMode>0</DataLogMode>
         <ItmPortsEnabled>63</ItmPortsEnabled>
         <ItmTermIOPorts>1</ItmTermIOPorts>
@@ -110,14 +110,15 @@
     </DisassembleMode>
     <Breakpoints2>
         <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\source\4G_EC200U\4G_EC200U.c}.976.17" 0 0 1 "" 0 "" 0</Bp0>
-        <Count>1</Count>
+        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\drv_device\drv_Timer\drv_Timer.c}.154.17" 0 0 1 "" 0 "" 0</Bp1>
+        <Count>2</Count>
     </Breakpoints2>
-    <Aliases>
-        <Count>0</Count>
-        <SuppressDialog>0</SuppressDialog>
-    </Aliases>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
     </TermIOLog>
+    <Aliases>
+        <Count>0</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
 </settings>

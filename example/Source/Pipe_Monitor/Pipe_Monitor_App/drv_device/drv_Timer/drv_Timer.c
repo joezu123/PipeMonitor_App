@@ -158,7 +158,7 @@ static void OcoIrqCallback(void)
 	else	//磁棒断开接触状态
 	{
 		//判断之前磁棒是否为接触状态：磁棒唤醒事件
-        if(pst_TimerSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status == 1)
+        if((pst_TimerSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status == 1) && (pst_TimerSystemPara->DeviceRunPara.eCurPowerType == Power_ON))
         {
             pst_TimerSystemPara->DeviceRunPara.cBarTouchCnt = 0;
             ucBarLostCnt++;
@@ -273,6 +273,15 @@ static void OcoIrqCallback(void)
             }
             
         }
+        else if(pst_TimerSystemPara->DeviceRunPara.eCurPowerType == Power_OFF)
+        {
+            pst_TimerSystemPara->DeviceRunPara.cBarTouchCnt = 0;
+            if(pst_TimerSystemPara->DeviceRunPara.ucOLEDInitFlag == 1)
+            {
+                pst_TimerSystemPara->DeviceRunPara.ucOLEDInitFlag = 0;
+                func_OLED_PowerDown_DeInit(); //关闭OLED电源
+            }
+        }
 	}
 	//磁棒状态检测结束
 
@@ -352,6 +361,10 @@ static void OcoIrqCallback(void)
 	}
 
     //pst_TimerSystemPara->DeviceRunPara.c4GTimerCnt++;
+    if(pst_TimerSystemPara->DevicePara.cMonitorMode == 1)
+    {
+        cBarEventFinishFlag = 0;
+    }
 	//当前引起定时器产生的事件均已处理完后，关闭定时器，退出诊断模式
     if((cBarEventFinishFlag == 1) && (cServerEventFinishFlag == 1) && (cMeasSensorEventFinishFlag == 1) 
 		&& (pst_TimerSystemPara->DeviceRunPara.cConnectServerFlag == 0) && (cBTEventFinishFlag == 1)

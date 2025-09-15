@@ -487,8 +487,8 @@ int32_t main(void)
     //pst_MainSystemPara->DeviceRunPara.cDeviceStatusUploadFlag = 1 ;
 
     //OLED_Test(1);
-    //pst_MainSystemPara->DevicePara.cMonitorMode = 1;
-    //pst_MainSystemPara->DevicePara.cDeviceIdenFlag = 0;
+    pst_MainSystemPara->DevicePara.cMonitorMode = 1;
+    pst_MainSystemPara->DevicePara.cDeviceIdenFlag = 1;
     //pst_MainSystemPara->DevicePara.cDeviceRegisterFlag = 0;
     //pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
@@ -497,12 +497,8 @@ int32_t main(void)
     if(pst_MainSystemPara->DevicePara.cMonitorMode == 0)
     {
         ucMonitorFlag = 1;
-        pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Integrated_Conductivity;//Meas_BY_Radar_Level;
     }
-    else
-    {
-        pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Integrated_Conductivity;
-    }
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Integrated_Conductivity;
     //pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Radar_Level;
     //pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 10;
     //pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 5;

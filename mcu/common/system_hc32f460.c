@@ -41,7 +41,7 @@ uint32_t SystemCoreClock = MRC_VALUE;
 
 /* Vector Table base offset field */
 #ifndef VECT_TAB_OFFSET
-#define VECT_TAB_OFFSET                 (0x14000UL)     /*!< This value must be a multiple of 0x400. */
+#define VECT_TAB_OFFSET                 (0x00000UL)     /*!< This value must be a multiple of 0x400. */
 #endif
 
 /**
