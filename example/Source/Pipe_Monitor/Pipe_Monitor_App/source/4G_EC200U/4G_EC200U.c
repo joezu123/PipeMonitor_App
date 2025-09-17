@@ -1013,6 +1013,11 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                 {
                     return 0;
                 }
+                if(pst_EC200USystemPara->DevicePara.cMonitorMode == 1)
+                {
+                    pst_EC200USystemPara->DeviceRunPara.c4GInitFlag = 1;
+                    return 0;
+                }
             }
             else
             {

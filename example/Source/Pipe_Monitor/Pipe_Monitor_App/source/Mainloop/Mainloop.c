@@ -86,6 +86,7 @@ void func_Enter_LowPower_Stop_Mode(void)
 {
     uint32_t u32tmp1, u32tmp2;
 
+	//guc_SystemTestFlag = 0;
 	pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_SLEEP;
     guc_SystemPowerInitFlag = 0;
 	//关闭相关电源
@@ -662,6 +663,7 @@ void func_DeviceStart_Sensor_PowerUp_Dispose(void)
 	//}
 }
 
+
 //获取设备板级传感器数据
 void func_Get_Device_Sensors_Value(void)
 {
@@ -743,6 +745,7 @@ void func_Get_Device_Sensors_Value(void)
 	{
 		if(pst_MainloopSystemPara->DeviceRunPara.cBlackLightFlag == 0)
 		{
+			//ucMeasValue[ucMeasPosi++] = pst_MainloopSystemPara->DeviceRunPara.cMeasDelayCnt;
 			func_Meas_Sensor_Dispose();
 		}
 		else
@@ -1008,7 +1011,7 @@ void func_4G_Connect_Server_Dispose(void)
 			{
 				pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag = 3; //清除触摸标志位
 				if(strlen(pst_MainloopSystemPara->DeviceRunPara.esDeviceRunState.cDevStartDateTime) > 1)
-				{
+				{	
 					pst_MainloopSystemPara->DeviceRunPara.ulBarTouchEventUploadTime = (long)now; //记录上传数据开始时间
 				}
 			}
@@ -1111,6 +1114,10 @@ void func_System_Mainloop_Dispose(void)
 			//每次系统从低功耗模式下唤醒时，需配置相关模块电源及初始化操作
 			if(guc_SystemPowerInitFlag == 0)
 			{ 
+				//guc_SystemTestFlag = 1;
+				//ucMeasPosi = 0;
+				//memset(ucMeasValue,0,sizeof(ucMeasValue));
+				//memset(gus_SystemTestArr,0,sizeof(gus_SystemTestArr));
 				guc_SystemPowerInitFlag = 1;
 				func_DeviceStart_Sensor_PowerUp_Dispose();
 				if(pst_MainloopSystemPara->DevicePara.cMonitorMode == 1)

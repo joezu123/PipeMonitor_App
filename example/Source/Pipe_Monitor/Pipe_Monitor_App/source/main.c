@@ -499,13 +499,13 @@ int32_t main(void)
         ucMonitorFlag = 1;
     }
     pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Integrated_Conductivity;
-    //pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Radar_Level;
-    //pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 10;
+    //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
+    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 10;
     //pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 5;
     //pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 5;
     
     #ifndef JOE_TEST
-    if((pst_MainSystemPara->DevicePara.cDeviceIdenFlag == 1) && (pst_MainSystemPara->DeviceRunPara.c4GInitFlag == 0))
+    if((pst_MainSystemPara->DevicePara.cDeviceIdenFlag == 1) && (pst_MainSystemPara->DeviceRunPara.c4GInitFlag == 0) && (pst_MainSystemPara->DevicePara.cMonitorMode == 0))
     {
         u8Result = drv_EC200U_4G_Module_Init(0);
         if(u8Result != 0)
@@ -753,36 +753,42 @@ int32_t main(void)
             func_WatchDog_Refresh();
         }
 
+        if(ucMonitorFlag == 0)
+        {
+            ucMonitorFlag = 1;
+            pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status = 1;
+            func_Measure_Water_Quality_View_Show(0);
+            //func_Enter_LowPower_Stop_Mode();
+        }
+
         if((pst_MainSystemPara->DevicePara.cDeviceIdenFlag == 1) && (pst_MainSystemPara->DeviceRunPara.c4GInitFlag == 0))
         {
-            u8Result = drv_EC200U_4G_Module_Init(0);
-            if(u8Result != 0)
+            if(pst_MainSystemPara->DevicePara.cMonitorMode == 1)
             {
-                pst_MainSystemPara->DeviceRunPara.usDevStatus |= 0x01;
+                u8Result = drv_EC200U_4G_Module_Init(1);
             }
             else
             {
-                pst_MainSystemPara->DeviceRunPara.enUploadStatus = Status_OK;
-            }
-            pst_MainSystemPara->DeviceRunPara.c4GInitFlag = 1;
-            if(pst_MainSystemPara->DeviceRunPara.ucOLEDInitFlag == 1)
-            {
-                pst_MainSystemPara->DeviceRunPara.ucOLEDInitFlag = 0;
-                func_OLED_PowerDown_DeInit(); //关闭OLED电源
+                u8Result = drv_EC200U_4G_Module_Init(0);
+                if(u8Result != 0)
+                {
+                    pst_MainSystemPara->DeviceRunPara.usDevStatus |= 0x01;
+                }
+                else
+                {
+                    pst_MainSystemPara->DeviceRunPara.enUploadStatus = Status_OK;
+                }
+                pst_MainSystemPara->DeviceRunPara.c4GInitFlag = 1;
+                if(pst_MainSystemPara->DeviceRunPara.ucOLEDInitFlag == 1)
+                {
+                    pst_MainSystemPara->DeviceRunPara.ucOLEDInitFlag = 0;
+                    func_OLED_PowerDown_DeInit(); //关闭OLED电源
+                }
             }
         }
 
         #ifdef NEW_MAINLOOP
-        if(ucMonitorFlag == 0)
-        {
-            ucMonitorFlag = 1;
-            func_Enter_LowPower_Stop_Mode();
-        }
-        else
-        {
-            func_System_Mainloop_Dispose();
-        }
-        
+        func_System_Mainloop_Dispose();
         #else
         //磁棒状态检测
         if(pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status == 1)

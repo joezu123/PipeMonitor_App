@@ -518,7 +518,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		}
 	case DEV_SAMPLE_GAP:
 		nTmpData = *((int *)cDataArr);  
-		if (nTmpData > 0x270F) 
+		if ((nTmpData < 1) || (nTmpData > 600))
 		{ 
 			return(0);
 		}
@@ -532,7 +532,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_RECORD_GAP:
 		nTmpData = *((int *)cDataArr);  
-		if (nTmpData > 0x270F) 
+		if ((nTmpData < 1) || (nTmpData > 600))
 		{ 
 			return(0);
 		}
@@ -546,7 +546,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_UPLOAD_GAP:
 		nTmpData = *((int *)cDataArr);  
-		if (nTmpData > 0x270F) 
+		if ((nTmpData < 1) || (nTmpData > 600))
 		{ 
 			return(0);
 		}
@@ -560,11 +560,11 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_HIS_RECORD:
 		nTmpData = *((int *)cDataArr);  
-		if (nTmpData > 0x270F) 
-		{ 
-			return(0);
-		}
-		else
+		//if (nTmpData > 0x270F) 
+		//{ 
+		//	return(0);
+		//}
+		//else
 		{
 			pst_W25Q128SystemPara->DevicePara.nDeviceRecordCnt = nTmpData;
 			#pragma diag_suppress=Pa039
@@ -873,10 +873,17 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;	
 	case DEV_STATUS_UPLOAD_GAP:
 		ucTmpData = *cDataArr;     
-		pst_W25Q128SystemPara->DevicePara.ucUploadStatusGap = ucTmpData;
-		#pragma diag_suppress=Pa039
-		W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.ucUploadStatusGap,SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.ucUploadStatusGap-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(unsigned char));
-		#pragma diag_warning=Pa039
+		if((ucTmpData < 1) || (ucTmpData > 300))
+		{
+			ucResult = 0;
+		}
+		else{
+			pst_W25Q128SystemPara->DevicePara.ucUploadStatusGap = ucTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.ucUploadStatusGap,SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.ucUploadStatusGap-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(unsigned char));
+			#pragma diag_warning=Pa039
+		}
+		
 		break;
 	case DEV_IP_ADDRESS1:
 		ucTmpData = strlen((char*)cDataArr);
@@ -941,10 +948,18 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 	case DEV_INSTALL_HEIGHT:
 		//memcpy(&pst_W25Q128SystemPara->DevicePara.fTotal_Volume, cDataArr, sizeof(float));
 		fTmpData = ((float*)cDataArr);
-		pst_W25Q128SystemPara->DevicePara.fInit_Height = *fTmpData;
-		#pragma diag_suppress=Pa039
-		W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fInit_Height,SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fInit_Height-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
-		#pragma diag_warning=Pa039
+		if((*fTmpData < 0.2) || (*fTmpData > 10.0))
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.fInit_Height = *fTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fInit_Height,SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fInit_Height-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
+			#pragma diag_warning=Pa039
+		}
+		
 		break;
 	case DEV_SENSOR_BAUDRATE:
 		ucTmpData = *cDataArr;     

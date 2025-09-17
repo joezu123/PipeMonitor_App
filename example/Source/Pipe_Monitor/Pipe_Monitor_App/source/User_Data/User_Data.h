@@ -601,6 +601,10 @@ extern SysDeviceParaSt gs_DeviceDefaultPara;
 extern unsigned char guc_RTURecvArr[20];
 extern char gc_SystemPosi;
 extern DevMeasRecordDataSt gSt_DevMeasRecordData;	//设备测量数据记录结构体
+extern unsigned char guc_SystemTestFlag;
+extern unsigned short gus_SystemTestArr[10];
+extern unsigned char ucMeasPosi;
+extern unsigned char ucMeasValue[10];
 //extern unsigned short gus_BarCnt;
 //extern unsigned short gus_BarCnt1;
 /*******************************************************************************

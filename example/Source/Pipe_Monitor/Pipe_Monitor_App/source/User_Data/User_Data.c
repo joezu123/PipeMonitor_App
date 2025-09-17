@@ -47,6 +47,10 @@ unsigned char guc_NFC_Card_Flag = 0;	//NFC识别正确标志位: 1->正确; 0->�
 unsigned char guc_RTURecvArr[20] = {0};	//Modbus RTU接收数据缓存
 char gc_SystemPosi = 0;
 DevMeasRecordDataSt gSt_DevMeasRecordData = {0};	//设备测量数据记录结构体
+unsigned char guc_SystemTestFlag = 0;
+unsigned short gus_SystemTestArr[10] = {0};
+unsigned char ucMeasPosi = 0;
+unsigned char ucMeasValue[10] = 0;
 
 SysDeviceParaSt gs_DeviceDefaultPara = 
 {
