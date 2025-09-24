@@ -246,7 +246,7 @@ void func_RF_NFC_PowerUp_Init(void)
     NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
 
     MEM_ZERO_STRUCT(stcPortInit);
-    stcPortInit.enPinMode = Pin_Mode_Out;
+    stcPortInit.enPinMode = Pin_Mode_Out;   
     PORT_Init(RFRST_PORT, RFRST_PIN, &stcPortInit);
     
     //开启供电电源

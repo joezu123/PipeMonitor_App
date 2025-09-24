@@ -156,6 +156,8 @@ void NMEA_GPRMC_Analysis(uint8_t *buf)
 	uint8_t *p1,dx;
 	uint8_t posx;
   	uint32_t temp;
+	uint32_t ulValue = 0;
+	uint32_t ulValue1 = 0;
   	float rs;  
 	dx = 1;
   	p1 = (uint8_t*)strstr((const char *)buf,"BDRMC"); //GNSS
@@ -192,9 +194,13 @@ void NMEA_GPRMC_Analysis(uint8_t *buf)
 		if(posx!=0XFF)
 		{
 			temp = NMEA_Str2num(p1+posx,&dx);
-			pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude=temp/NMEA_Pow(10,dx+2);  //得到°
-			rs = temp % NMEA_Pow(10,dx+2);        //得到'
-			pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude=pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude*NMEA_Pow(10,5)+(uint32_t)(rs*NMEA_Pow(10,5-dx))/60;//转换为°
+			ulValue = NMEA_Pow(10,dx+2);
+			ulValue1 = temp / ulValue;
+			pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude=(unsigned long)((double)temp/(double)ulValue);  //得到°
+			rs = temp % ulValue;        //得到'
+			ulValue = NMEA_Pow(10,5);
+			ulValue1 = NMEA_Pow(10,5-dx);
+			pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude=pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude*ulValue+(uint32_t)(rs*ulValue1)/60;//转换为°
 			pst_BDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat = (double)pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude / 100000.0;
 			if(pst_BDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat > 1.0)
 			{
@@ -214,11 +220,14 @@ void NMEA_GPRMC_Analysis(uint8_t *buf)
 		posx = NMEA_Comma_Pos(p1,5);                //得到经度 dddmm.mmmm
 		if(posx!=0XFF)
 		{
+			ulValue = NMEA_Pow(10,dx+2);
 			temp = NMEA_Str2num(p1+posx,&dx);
-			pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude = temp / NMEA_Pow(10,dx+2);  //得到°
-			rs = temp % NMEA_Pow(10,dx+2);        //得到'
+			pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude = (unsigned long)((double)temp/(double)ulValue);  //得到°
+			rs = temp % ulValue;        //得到'
+			ulValue = NMEA_Pow(10,5);
+			ulValue1 = NMEA_Pow(10,5-dx);
 			pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude
-				= pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude*NMEA_Pow(10,5)+(uint32_t)(rs*NMEA_Pow(10,5-dx))/60;//转换为°
+				= pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude*ulValue+(uint32_t)(rs*ulValue1)/60;//转换为°
 			pst_BDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lng = (double)pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude / 100000.0;
 			
 		}

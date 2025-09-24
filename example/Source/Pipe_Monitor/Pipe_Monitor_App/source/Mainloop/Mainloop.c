@@ -576,7 +576,7 @@ void func_NFC_Check_Dispose(void)
 	#ifdef HW_VERSION_V1_1
 	ucNFCFindCardFlag = func_Search_Card();
 	if(ucNFCFindCardFlag == 0)   //找到卡片
-	{
+	{	
 		//找到卡片
 		if(guc_NFC_Card_Flag == 0)
 		{
@@ -921,6 +921,7 @@ void func_BD_Data_Dispose(void)
 					0x36,0x30,0x35,0x2E,0x35,0x37,0x33,0x33,0x32,0x32,0x2C,0x4E,0x2C,0x31,0x31,0x39,0x31,0x38,0x2E,0x39,0x31,0x33,0x35,0x37,0x36,0x2C,0x45,0x2C	,
 					0x31,0x2E,0x32,0x33,0x2C,0x31,0x35,0x34,0x2E,0x31,0x33,0x2C,0x31,0x38,0x30,0x36,0x32,0x35,0x2C,0x2C,0x2C,0x41,0x2C,0x56,0x2A,0x30,0x33,0x0D,0x0A};
 	#endif
+	unsigned char ucBDData[800] = {0};
 	#if 1
 	if(pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag == 0)
 	{
@@ -946,7 +947,8 @@ void func_BD_Data_Dispose(void)
 				if(strstr(pst_MainloopSystemPara->UsartData.ucUsartxRecvDataArr[MODULE_BD],"RMC") != NULL)
 				{
 					memcpy(guc_TextBDData, &pst_MainloopSystemPara->UsartData.ucUsartxRecvDataArr[MODULE_BD][42], 20);
-					NMEA_GPRMC_Analysis((uint8_t *)pst_MainloopSystemPara->UsartData.ucUsartxRecvDataArr[MODULE_BD]);
+					memcpy(ucBDData,&pst_MainloopSystemPara->UsartData.ucUsartxRecvDataArr[MODULE_BD],pst_MainloopSystemPara->UsartData.usUsartxRecvDataLen[MODULE_BD]);
+					NMEA_GPRMC_Analysis(ucBDData);
 				}   
 				pst_MainloopSystemPara->UsartData.ucUsartxRecvDataFlag[MODULE_BD] = 0;
 				//memset(pst_MainSystemPara->UsartData.ucUsartxRecvDataArr[MODULE_BD], 0, USART_DATA_LEN_MAX);

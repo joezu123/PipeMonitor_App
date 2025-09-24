@@ -487,20 +487,22 @@ int32_t main(void)
     //pst_MainSystemPara->DeviceRunPara.cDeviceStatusUploadFlag = 1 ;
 
     //OLED_Test(1);
-    pst_MainSystemPara->DevicePara.cMonitorMode = 1;
-    pst_MainSystemPara->DevicePara.cDeviceIdenFlag = 1;
+    //pst_MainSystemPara->DevicePara.cMonitorMode = 1;
+    //pst_MainSystemPara->DevicePara.cDeviceIdenFlag = 1;
     //pst_MainSystemPara->DevicePara.cDeviceRegisterFlag = 0;
-    //pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
-    //pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 1;
-    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 2;
     if(pst_MainSystemPara->DevicePara.cMonitorMode == 0)
     {
         ucMonitorFlag = 1;
     }
+    pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Pressure_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Integrated_Conductivity;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_BY_Radar_Level;
     //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
-    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 10;
+    //pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 10;
     //pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 5;
     //pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 5;
     
@@ -609,7 +611,7 @@ int32_t main(void)
     {
         func_BD_PowerUp_Init();
         drv_mcu_ChangeUSART3_Source(MODULE_BD);
-        //drv_LC86L_BD_Init();
+        drv_LC86L_BD_Init();
     }
     
     //OLED_Test(5);
@@ -672,7 +674,7 @@ int32_t main(void)
     }
     
     //测试外接传感器通讯
-    #ifdef JOE_TEST
+    #if 0
     BATTERY_PWRCHK_OPEN();
     func_Meas_Sensor_PowerOn_Init();
     //Ddl_Delay1ms(5000);

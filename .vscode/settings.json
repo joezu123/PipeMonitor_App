@@ -42,6 +42,15 @@
         "hc32f460_timer4_oco.h": "c",
         "hc32_common.h": "c",
         "hc32f460_interrupts.h": "c",
-        "hc32f460_exint_nmi_swi.h": "c"
+        "hc32f460_exint_nmi_swi.h": "c",
+        "hc32f460_sdioc.h": "c",
+        "ddl_config.h": "c",
+        "hc32f460_dmac.h": "c",
+        "hc32f460_i2c.h": "c",
+        "hc32f460_spi.h": "c",
+        "mpu_armv7.h": "c",
+        "hc32f460_rtc.h": "c",
+        "hc32f460_event_port.h": "c",
+        "hc32f460_timer0.h": "c"
     }
 }
