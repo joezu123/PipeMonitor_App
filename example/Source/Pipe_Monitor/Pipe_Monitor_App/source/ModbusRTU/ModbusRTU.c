@@ -1447,6 +1447,7 @@ void func_Meas_Sensor_Dispose(void)
     en_usart_device_t enType = MODULE_MEAS_SENSOR1;
     MeasSensorParaSt st_MeasSensorPara[2][10];
     uint8_t ucCnt = 0;
+    unsigned char ucRetryCnt = 0;
 
     for(l=0; l<2; l++)
     {
@@ -1502,7 +1503,8 @@ void func_Meas_Sensor_Dispose(void)
         //根据当前配置的外接设备数量，进行设备型号查询及处理
         //for(l=0; l<2; l++)
         {
-            for(i=0; i<pst_MBSystemPara->DevicePara.cMeasSensorCount[l]; i++)
+            ucRetryCnt = 0;
+            for(i=0; i<pst_MBSystemPara->DevicePara.cMeasSensorCount[l];)
             {
                 pst_MBSystemPara->UsartData.ucUsartxSendDataFlag[3] = 0;
                 
@@ -1550,8 +1552,9 @@ void func_Meas_Sensor_Dispose(void)
                     //drv_mcu_ChangeUSART4_Baud(9600); //切换波特率到9600
                     if(ucRes == 0)
                     {
+                        i++;
                         st_MeasSensorPara[l][i].cGetDataFlag = 1; //获取数据成功
-                        
+                        ucRetryCnt = 0;
                         ucCnt++;
                         if(ucCnt >= pst_MBSystemPara->DevicePara.cMeasSensorCount[l])
                         {
@@ -1561,6 +1564,15 @@ void func_Meas_Sensor_Dispose(void)
                             break;
                         }
                         //k = 3; //跳出重试循环
+                    }
+                    else    //获取参数异常
+                    {
+                        ucRetryCnt++;
+                        if(ucRetryCnt > 3)
+                        {
+                            i++;
+                            ucRetryCnt = 0;
+                        }
                     }
                 }
             }

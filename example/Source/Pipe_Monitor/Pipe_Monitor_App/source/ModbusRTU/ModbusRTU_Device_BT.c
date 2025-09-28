@@ -565,6 +565,14 @@ eMBErrorCode Unit_RW_Device_Sensor_Baud_func( unsigned char * pucRegBuffer, unsi
     return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_SENSOR_BAUDRATE);
 }
 
+//设备长供电模式
+eMBErrorCode Unit_RW_Device_LongPower_Model_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    unsigned char cVlaue = (unsigned char)pst_MBSystemPara->DeviceRunPara.cLongPowerModel;
+    return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_LONGPOWER_MODEL);
+}
+
+
 //设备测量信息：雷达液位计
 eMBErrorCode Unit_R_DeviceRadarLevel_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
 {
@@ -677,7 +685,8 @@ static const MB_Data_Reg_Unit_S Modbus_Data_Reg_Unit[MD_MAX_REG_UNIT] =
     {MB_RW_DEVICE_SERVER2_PORT,MB_RW_DEVICE_DEBUG_MODEL - MB_RW_DEVICE_SERVER2_PORT,Unit_R_Device_ServerPort2_func},
     {MB_RW_DEVICE_DEBUG_MODEL,MB_RW_DEVICE_INSTALL_HEIGHT - MB_RW_DEVICE_DEBUG_MODEL,Unit_RW_Device_Debug_Model_func},
     {MB_RW_DEVICE_INSTALL_HEIGHT,MB_RW_DEVICE_SENSOR_BAUDRATE - MB_RW_DEVICE_INSTALL_HEIGHT,Unit_RW_Device_Install_Height_func},
-    {MB_RW_DEVICE_SENSOR_BAUDRATE,1,Unit_RW_Device_Sensor_Baud_func},
+    {MB_RW_DEVICE_SENSOR_BAUDRATE,MB_RW_DEVICE_LONGPOWER_MODEL - MB_RW_DEVICE_SENSOR_BAUDRATE,Unit_RW_Device_Sensor_Baud_func},
+    {MB_RW_DEVICE_LONGPOWER_MODEL,1,Unit_RW_Device_LongPower_Model_func},
 
     {MB_R_DEVICE_RADAR_LEVEL_SENSOR_VALUE,MB_R_DEVICE_PRESSURE_LEVEL_SENSOR_VALUE - MB_R_DEVICE_RADAR_LEVEL_SENSOR_VALUE,Unit_R_DeviceRadarLevel_func},
     {MB_R_DEVICE_PRESSURE_LEVEL_SENSOR_VALUE,MB_R_DEVICE_FLOWERMETER_SENSOR_VALUE - MB_R_DEVICE_PRESSURE_LEVEL_SENSOR_VALUE,Unit_R_DevicePressLevel_func},

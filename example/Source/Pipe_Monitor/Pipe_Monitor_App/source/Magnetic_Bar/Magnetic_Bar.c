@@ -97,6 +97,8 @@ void ExtInt07_Callback(void)
             Ddl_Delay1ms(100);
             MAINPWR3V8_PIN_OPEN();	//打开3.8V电源
             #endif
+            pst_MagSystemPara->DeviceRunPara.cMeasShowViewCnt = (pst_MagSystemPara->DeviceRunPara.cTotalSensorCnt + 1) / 2;
+            pst_MagSystemPara->DeviceRunPara.cCurMeasShowViewCnt = 0;
 
             func_OLED_PowerUp_Init();
             pst_MagSystemPara->DeviceRunPara.ucOLEDInitFlag = 1;

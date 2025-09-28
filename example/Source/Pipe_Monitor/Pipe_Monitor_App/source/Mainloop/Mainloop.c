@@ -852,16 +852,24 @@ void func_Save_Device_MeasRecord_Dispose()
 					if((ucPressLevelExistFlag == 1) && (ucRadarLevelExistFlag == 1))
 					{
 						fDifValue = gSt_DevMeasRecordData.fWaterLevel_Radar - gSt_DevMeasRecordData.fWaterLevel_Pres;
-						if(fabs(fDifValue) >= 0.3)
+						if((fabs(fDifValue) >= 0.3) && (gSt_DevMeasRecordData.fWaterLevel_Pres > 0.3))
 						{
-							gSt_DevMeasRecordData.fWaterLevel_Radar = gSt_DevMeasRecordData.fWaterLevel_Pres;
+							gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Pres;
+						}
+						else
+						{
+							gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Radar;
 						}
 					}
 					else
 					{
 						if(ucPressLevelExistFlag == 1)
 						{
-							gSt_DevMeasRecordData.fWaterLevel_Radar = gSt_DevMeasRecordData.fWaterLevel_Pres;
+							gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Pres;
+						}
+						else
+						{
+							gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Radar;
 						}
 					}
 					#endif
@@ -1122,10 +1130,18 @@ void func_System_Mainloop_Dispose(void)
 				//memset(gus_SystemTestArr,0,sizeof(gus_SystemTestArr));
 				guc_SystemPowerInitFlag = 1;
 				func_DeviceStart_Sensor_PowerUp_Dispose();
-				if(pst_MainloopSystemPara->DevicePara.cMonitorMode == 1)
+				if(pst_MainloopSystemPara->DeviceRunPara.cLongPowerModel == 1)
 				{
 					func_Meas_Sensor_PowerOn_Init();
 				}
+				else
+				{
+					if(pst_MainloopSystemPara->DevicePara.cMonitorMode == 1)
+					{
+						func_Meas_Sensor_PowerOn_Init();
+					}
+				}
+				
 			}
 			gc_SystemPosi = 2;
 			if(pst_MainloopSystemPara->DevicePara.cDeviceIdenFlag == 1) //当前设备NFC认证通过
@@ -1208,9 +1224,16 @@ void func_System_Mainloop_Dispose(void)
 								pst_MainloopSystemPara->DeviceRunPara.nDeviceCurSampleCount = 0;
 							}
 							//非调试模式下开启外接传感器电源，因为调试模式下，已经在前面开启了电源
-							if(pst_MainloopSystemPara->DevicePara.cMonitorMode == 0)
+							if(pst_MainloopSystemPara->DeviceRunPara.cLongPowerModel == 1)
 							{
 								func_Meas_Sensor_PowerOn_Init();
+							}
+							else
+							{
+								if(pst_MainloopSystemPara->DevicePara.cMonitorMode == 0)
+								{
+									func_Meas_Sensor_PowerOn_Init();
+								}
 							}
 							
 							pst_MainloopSystemPara->DeviceRunPara.cGetMeasSensorValueSuccFlag = 0;

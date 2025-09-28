@@ -380,7 +380,7 @@ int32_t main(void)
     //static uint8_t uc4GInitFlag = 0;
     static uint8_t ucMonitorFlag = 0;
     //DevMeasRecordDataSt st_TempValue;
-    
+    static unsigned char ucRetryCnt = 0;
     /* Initialize Clock */
     drv_mcu_Clock_Init();
     // ucValueArr[10] = {0};
@@ -488,7 +488,7 @@ int32_t main(void)
 
     //OLED_Test(1);
     //pst_MainSystemPara->DevicePara.cMonitorMode = 1;
-    //pst_MainSystemPara->DevicePara.cDeviceIdenFlag = 1;
+    //pst_MainSystemPara->DevicePara.cDeviceIdenFlag = 0;
     //pst_MainSystemPara->DevicePara.cDeviceRegisterFlag = 0;
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
@@ -499,14 +499,17 @@ int32_t main(void)
         ucMonitorFlag = 1;
     }
     pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Pressure_Level;
-    pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Integrated_Conductivity;
-    pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_BY_Radar_Level;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_BY_Integrated_Conductivity;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
     //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
-    //pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 10;
-    //pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 5;
-    //pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 5;
+    //pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 6;
+    //pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 2;
+    //pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 2;
+
+    pst_MainSystemPara->DeviceRunPara.cTotalSensorCnt = pst_MainSystemPara->DevicePara.cMeasSensorCount[0] + pst_MainSystemPara->DevicePara.cMeasSensorCount[1];
     
     #ifndef JOE_TEST
+    #if 0
     if((pst_MainSystemPara->DevicePara.cDeviceIdenFlag == 1) && (pst_MainSystemPara->DeviceRunPara.c4GInitFlag == 0) && (pst_MainSystemPara->DevicePara.cMonitorMode == 0))
     {
         u8Result = drv_EC200U_4G_Module_Init(0);
@@ -520,7 +523,7 @@ int32_t main(void)
         }
         pst_MainSystemPara->DeviceRunPara.c4GInitFlag = 1;
     }
-    
+    #endif
     //OLED_Test(2);
     #else 
     drv_mcu_Set_RTC_Time("\r\n+QLTS: \"2025/05/12,15:15:03+32.0\"\r\n\r\nOK\r\n");
@@ -765,10 +768,45 @@ int32_t main(void)
 
         if((pst_MainSystemPara->DevicePara.cDeviceIdenFlag == 1) && (pst_MainSystemPara->DeviceRunPara.c4GInitFlag == 0))
         {
-            if(pst_MainSystemPara->DevicePara.cMonitorMode == 1)
+            //if(pst_MainSystemPara->DevicePara.cMonitorMode == 1)
             {
-                u8Result = drv_EC200U_4G_Module_Init(1);
+                if(pst_MainSystemPara->DeviceRunPara.cTimer4StartFlag == 0)
+                {
+                    pst_MainSystemPara->DeviceRunPara.c4GInitWaitCnt = 0;
+                    guc_NFC_Card_Flag = 1;
+                    pst_MainSystemPara->DeviceRunPara.cEveryNFCDisposeFlag= 1;
+                    pst_MainSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_DIAG;
+                    drv_mcu_Timer4_Start();
+                }
+                u8Result = drv_EC200U_4G_Module_Init(0);
+                if(u8Result == 2)
+                {
+                    ucRetryCnt++;
+                    if(ucRetryCnt > 3)
+                    {
+                        ucRetryCnt = 0;
+                        guc_NFC_Card_Flag = 0;
+                        pst_MainSystemPara->DeviceRunPara.cEveryNFCDisposeFlag= 0;
+                        pst_MainSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_RUN;
+                        pst_MainSystemPara->DeviceRunPara.usDevStatus |= 0x0001;
+                        pst_MainSystemPara->DeviceRunPara.cConnectServerFlag = 0;
+                        pst_MainSystemPara->DeviceRunPara.cBarTouchFlag = 0;
+                    }
+                }
+                else if(u8Result == 0)
+                {
+                    guc_NFC_Card_Flag = 0;
+                    pst_MainSystemPara->DeviceRunPara.cEveryNFCDisposeFlag= 0;
+                    pst_MainSystemPara->DeviceRunPara.enUploadStatus = Status_OK;
+                    pst_MainSystemPara->DeviceRunPara.c4GInitFlag = 1;
+                    if(pst_MainSystemPara->DeviceRunPara.ucOLEDInitFlag == 1)
+                    {
+                        pst_MainSystemPara->DeviceRunPara.ucOLEDInitFlag = 0;
+                        func_OLED_PowerDown_DeInit(); //关闭OLED电源
+                    }
+                }
             }
+            #if 0
             else
             {
                 u8Result = drv_EC200U_4G_Module_Init(0);
@@ -787,6 +825,7 @@ int32_t main(void)
                     func_OLED_PowerDown_DeInit(); //关闭OLED电源
                 }
             }
+            #endif
         }
 
         #ifdef NEW_MAINLOOP

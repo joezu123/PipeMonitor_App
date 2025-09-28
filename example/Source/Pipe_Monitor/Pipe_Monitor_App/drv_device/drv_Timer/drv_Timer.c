@@ -75,6 +75,8 @@ static void OcoIrqCallback(void)
 	static char cBTEventFinishFlag = 0;	//蓝牙事件完成标志位:1->完成，0->未完成
 	static char cBTWaitConnectEventFinishFlag = 0;	//蓝牙等待连接事件完成标志位:1->完成，0->未完成
 	static unsigned char ucBarLostCnt = 0;
+    static unsigned char uc4GInitWaitFlag = 0;  //开机4G初始化
+    static unsigned short usLongPowerWaitFlag = 0;   //长供电模式等待标志
     static char cInitFlag = 0;
 
     TIMER4_OCO_ClearIrqFlag(TIMER4_UNIT, TIMER4_OCO_HIGH_CH);
@@ -83,7 +85,7 @@ static void OcoIrqCallback(void)
 
     if(pst_TimerSystemPara->DeviceRunPara.eCurPowerType == Power_ON)	//开机状态下
 	{
-		ucLCDShowDelayCnt = 19;//9;	//开机状态下，延时9秒
+		ucLCDShowDelayCnt = (4+pst_OLEDSystemPara->DeviceRunPara.cMeasShowViewCnt) * 3 + 1;//19;//9;	//开机状态下，延时9秒
 	}
 	else	//关机状态下	
     {
@@ -158,7 +160,7 @@ static void OcoIrqCallback(void)
 	else	//磁棒断开接触状态
 	{
 		//判断之前磁棒是否为接触状态：磁棒唤醒事件
-        if((pst_TimerSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status == 1) && (pst_TimerSystemPara->DeviceRunPara.eCurPowerType == Power_ON))
+        if(((pst_TimerSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status == 1) || (pst_TimerSystemPara->DeviceRunPara.c4GInitFlag == 0)) && (pst_TimerSystemPara->DeviceRunPara.eCurPowerType == Power_ON))
         {
             pst_TimerSystemPara->DeviceRunPara.cBarTouchCnt = 0;
             ucBarLostCnt++;
@@ -197,6 +199,7 @@ static void OcoIrqCallback(void)
                             {
                                 func_display_Authorize_Menu();
                                 ucNFCShowFlag = 1;
+                                pst_TimerSystemPara->DeviceRunPara.c4GInitWaitCnt = 0;
                             }
                             else
                             {
@@ -207,12 +210,19 @@ static void OcoIrqCallback(void)
                                 }
                                 switch(pst_TimerSystemPara->DeviceRunPara.eShowView)
                                 {
+                                #if 0
                                 case SType_Meas_Level:
                                     func_Measure_WaterLevel_View_Show(0);
                                     break;
                                 case SType_Meas_Water_Quality:
                                     func_Measure_Water_Quality_View_Show(0);
                                     break;
+                                #else
+                                case SType_Meas_Level:
+                                case SType_Meas_Water_Quality:
+                                    func_Measure_Data_View_Show(0);
+                                    break;
+                                #endif
                                 case SType_Meas_Sensor_Value:
                                     func_Meas_Sensor_Value_View_Show(0);
                                     break;
@@ -230,9 +240,23 @@ static void OcoIrqCallback(void)
                                     break;
                                 }
                                 pst_TimerSystemPara->DeviceRunPara.eShowView++;
+                                pst_TimerSystemPara->DeviceRunPara.cCurMeasShowViewCnt++;
+                                if(pst_TimerSystemPara->DeviceRunPara.cCurMeasShowViewCnt < pst_OLEDSystemPara->DeviceRunPara.cMeasShowViewCnt)
+                                {
+                                    pst_TimerSystemPara->DeviceRunPara.eShowView = SType_Meas_Water_Quality;
+                                }
+                                else if((pst_TimerSystemPara->DeviceRunPara.cCurMeasShowViewCnt == pst_OLEDSystemPara->DeviceRunPara.cMeasShowViewCnt))
+                                {
+                                    pst_TimerSystemPara->DeviceRunPara.eShowView = SType_Meas_Sensor_Value;
+                                }
+                                else if((pst_TimerSystemPara->DeviceRunPara.eShowView == SType_Meas_Water_Quality) && (pst_OLEDSystemPara->DeviceRunPara.cMeasShowViewCnt == 0))
+                                {
+                                    pst_TimerSystemPara->DeviceRunPara.eShowView = SType_Meas_Sensor_Value;
+                                }
                                 if(pst_TimerSystemPara->DeviceRunPara.eShowView >= SType_Max)
                                 {
                                     //ucBarLostCnt = 100;
+                                    pst_TimerSystemPara->DeviceRunPara.cCurMeasShowViewCnt = 0;
                                     pst_TimerSystemPara->DeviceRunPara.eShowView = SType_Meas_Level;
                                     //pst_TimerSystemPara->DeviceRunPara.cEveryNFCDisposeFlag = 0;
                                 }
@@ -243,18 +267,23 @@ static void OcoIrqCallback(void)
                 
                 if(ucNFCShowFlag == 0)	//当前显示界面为正常测量界面或者NFC未经过认证界面
                 {
-                    if(ucBarLostCnt >= ucLCDShowDelayCnt)	//本轮显示界面已轮询完成
+                    //if((pst_TimerSystemPara->DevicePara.cDeviceIdenFlag == 0) || ((ucBarLostCnt >= ucLCDShowDelayCnt) && (pst_TimerSystemPara->DeviceRunPara.c4GInitFlag == 1)))	//本轮显示界面已轮询完成
+                    if(ucBarLostCnt >= ucLCDShowDelayCnt)
                     {
-                        ucBarLostCnt = 0;
-                        pst_TimerSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status = 0;
-                        cBarEventFinishFlag = 1;
-                        pst_TimerSystemPara->DeviceRunPara.cEveryNFCDisposeFlag = 1;
-                        pst_TimerSystemPara->DeviceRunPara.eShowView = SType_Meas_Level;
-                        if(pst_TimerSystemPara->DeviceRunPara.ucOLEDInitFlag == 1)
+                        if((pst_TimerSystemPara->DevicePara.cDeviceIdenFlag == 0) || (pst_TimerSystemPara->DeviceRunPara.c4GInitFlag == 1))
                         {
-                            pst_TimerSystemPara->DeviceRunPara.ucOLEDInitFlag = 0;
-                            func_OLED_PowerDown_DeInit(); //关闭OLED电源
+                            ucBarLostCnt = 0;
+                            pst_TimerSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status = 0;
+                            cBarEventFinishFlag = 1;
+                            pst_TimerSystemPara->DeviceRunPara.cEveryNFCDisposeFlag = 1;
+                            pst_TimerSystemPara->DeviceRunPara.eShowView = SType_Meas_Level;
+                            if(pst_TimerSystemPara->DeviceRunPara.ucOLEDInitFlag == 1)
+                            {
+                                pst_TimerSystemPara->DeviceRunPara.ucOLEDInitFlag = 0;
+                                func_OLED_PowerDown_DeInit(); //关闭OLED电源
+                            }
                         }
+                        
                     }
                 }
                 else	//当前界面为NFC认证信息界面：认证通过界面
@@ -264,10 +293,11 @@ static void OcoIrqCallback(void)
                     {
                         ucNFCShowCnt = 0;
                         ucNFCShowFlag = 0;
-                        guc_NFC_Card_Flag = 0;
+                        //guc_NFC_Card_Flag = 0;
                         ucBarLostCnt = 0;
                         cBarEventFinishFlag = 1;
                         pst_TimerSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status = 0;
+                        pst_TimerSystemPara->DeviceRunPara.cEveryNFCDisposeFlag = 1;
                     }
                 }
             }
@@ -365,11 +395,47 @@ static void OcoIrqCallback(void)
     {
         cBarEventFinishFlag = 0;
     }
+
+    if(pst_TimerSystemPara->DeviceRunPara.c4GInitFlag == 0)
+    {
+        if(pst_TimerSystemPara->DeviceRunPara.c4GInitWaitCnt >= 90)
+        {
+            pst_TimerSystemPara->DeviceRunPara.c4GInitWaitCnt = 0;
+            uc4GInitWaitFlag = 1;
+        }
+        else
+        {
+            pst_TimerSystemPara->DeviceRunPara.c4GInitWaitCnt++;
+        }
+    }
+    else
+    {
+        uc4GInitWaitFlag = 1;
+    }
+
+    if(pst_TimerSystemPara->DeviceRunPara.cLongPowerModel == 1)
+    {
+        if(pst_TimerSystemPara->DeviceRunPara.usLongPowerModelWaitCnt >= 1800)  //30min
+        {
+            pst_TimerSystemPara->DeviceRunPara.usLongPowerModelWaitCnt = 0;
+            usLongPowerWaitFlag = 1;
+            pst_TimerSystemPara->DeviceRunPara.cLongPowerModel = 0;
+        }
+        else
+        {
+            pst_TimerSystemPara->DeviceRunPara.usLongPowerModelWaitCnt++;
+        }
+    }
+    else
+    {
+        usLongPowerWaitFlag = 1;
+    }
 	//当前引起定时器产生的事件均已处理完后，关闭定时器，退出诊断模式
     if((cBarEventFinishFlag == 1) && (cServerEventFinishFlag == 1) && (cMeasSensorEventFinishFlag == 1) 
 		&& (pst_TimerSystemPara->DeviceRunPara.cConnectServerFlag == 0) && (cBTEventFinishFlag == 1)
-		&& (cBTWaitConnectEventFinishFlag == 1))
+		&& (cBTWaitConnectEventFinishFlag == 1) && (uc4GInitWaitFlag == 1) && (usLongPowerWaitFlag == 1))
     {
+        ucBarLostCnt = 0;
         drv_mcu_Timer4_Stop();
         pst_TimerSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_RUN;
     }

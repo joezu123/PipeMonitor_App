@@ -400,7 +400,7 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
             func_Get_Device_MeasData_Record(pst_EC200USystemPara->DevicePara.nDeviceRecordCnt - ulRecordCnt + nPosi, &st_TempValue);
             if(ucWaterLevel_Radar_Flag == 1)
             {
-                sprintf((char *)&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "%.3lf,", (double)st_TempValue.fWaterLevel_Radar);
+                sprintf((char *)&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "%.3lf,", (double)st_TempValue.fWaterLevel);
             }
             #ifndef WATERLEVEL_RADAR_PRESS
             if(ucWaterLevel_Pressure_Flag == 1)
@@ -431,7 +431,7 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     {
         if(ucWaterLevel_Radar_Flag == 1)
         {
-            sprintf((char *)&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterLevel_Radar);
+            sprintf((char *)&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterLevel);
         }
         #ifndef WATERLEVEL_RADAR_PRESS
         if(ucWaterLevel_Pressure_Flag == 1)
@@ -622,14 +622,14 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
     uint16_t usRecvLen = 0;
     unsigned short usPosition = 0;
 
-    if((ucDataUploadEnable == 0) )
-    {
-        u8Temp = 1;
-    }
-    else
-    {
+    //if((ucDataUploadEnable == 0) )
+    //{
+    //    u8Temp = 1;
+    //}
+    //else
+    //{
         u8Temp = 0; //如果是数据上传阶段，则不需要等待
-    }
+    //}
 
     do
     {
@@ -1194,7 +1194,7 @@ uint8_t drv_EC200U_4G_Module_Init(unsigned char ucDataUploadEnable)
         pst_EC200USystemPara = GetSystemPara();
     }
 
-    if(ucDataUploadEnable == 1)
+    //if(ucDataUploadEnable == 1)
     {
         ucResult = EC200U_4G_Module_Configuration_Init(ucDataUploadEnable);
         if((ucResult == 0) || (ucResult == 2))
@@ -1213,6 +1213,7 @@ uint8_t drv_EC200U_4G_Module_Init(unsigned char ucDataUploadEnable)
             }
         }
     }
+    #if 0
     else
     {
         EC200U_4G_Module_GPIO_Init();
@@ -1268,7 +1269,7 @@ uint8_t drv_EC200U_4G_Module_Init(unsigned char ucDataUploadEnable)
             memset(pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB], 0, USART_DATA_LEN_MAX);
         }
     }
-    
+    #endif
     return ucResult;
 }
 

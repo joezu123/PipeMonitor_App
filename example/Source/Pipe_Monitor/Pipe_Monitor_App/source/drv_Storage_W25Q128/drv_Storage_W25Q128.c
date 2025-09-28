@@ -606,6 +606,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		{
 			pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[0] = ucTmpData;
 			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[0],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+			pst_W25Q128SystemPara->DeviceRunPara.cTotalSensorCnt = pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[0] + pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[1];
 		}
 		break;
 	case DEV_SENSOR_CNT_2:
@@ -618,6 +619,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		{
 			pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[1] = ucTmpData;
 			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[1],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[1]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+			pst_W25Q128SystemPara->DeviceRunPara.cTotalSensorCnt = pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[0] + pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[1];
 		}
 		break;
 	case DEV_CHN1_SENSOR1_TYPE:
@@ -973,6 +975,18 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cSensorBaudRate,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cSensorBaudRate-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
 		}
 		break;
+	case DEV_LONGPOWER_MODEL:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 1)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DeviceRunPara.cLongPowerModel = ucTmpData;
+			//W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDebugModel,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cDebugModel-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
 	default:
 		break;
 	}
@@ -982,7 +996,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 //保存设备测量数据
 void func_Save_Device_MeasData(void)
 {
-	W25Q128_Spi_flash_buffer_write((uint8_t *)&gSt_DevMeasRecordData.fWaterLevel_Radar,SYSTEM_RECORD_START_ADDR+pst_W25Q128SystemPara->DevicePara.nDeviceRecordCnt*SYSTEM_RECORD_SIZE,SYSTEM_RECORD_SIZE);
+	W25Q128_Spi_flash_buffer_write((uint8_t *)&gSt_DevMeasRecordData.fWaterLevel,SYSTEM_RECORD_START_ADDR+pst_W25Q128SystemPara->DevicePara.nDeviceRecordCnt*SYSTEM_RECORD_SIZE,SYSTEM_RECORD_SIZE);
 }
 
 //读取设备测量数据

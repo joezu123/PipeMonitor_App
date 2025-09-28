@@ -920,6 +920,16 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					pst_MQTTSystemPara->DevicePara.cSensorBaudRate = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_SENSOR_BAUDRATE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.cSensorBaudRate);
 				}
+				else if (strcmp(pItem, "\"DevLongPowerEnable\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_LONGPOWER_MODEL, (unsigned char*)&pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
+				}
 			}
 		}
 	}
@@ -1082,6 +1092,9 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, char* cmsgIdArr)
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备传感器波特率
 	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorBaud\":%d", pst_MQTTSystemPara->DevicePara.cSensorBaudRate);
+	usDataLen = strlen((char *)ucTempArr);
+	//拼接设备长供电模式
+	sprintf((char *)ucTempArr+usDataLen, "\"DevLongPowerEnable\":%d,", pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接结束符
 	sprintf((char *)ucTempArr+usDataLen, "}}");

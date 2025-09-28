@@ -197,6 +197,7 @@ typedef enum _SavePara
 	DEV_DEBUG_MODEL,	//设备调试模式
 	DEV_INSTALL_HEIGHT,	//设备安装井深
 	DEV_SENSOR_BAUDRATE,	//设备485波特率
+	DEV_LONGPOWER_MODEL,	//设备长供电模式
 	DEV_END_PARA
 }en_SaveParaCMD;
 
@@ -506,6 +507,12 @@ typedef struct _SysDeviceRunPara
 	char cEveryNFCDisposeFlag;	//每次NFC操作标志位; 0->未操作; 1->已操作
 	unsigned short usUploadStatusDataCurCnt;	//当前上传状态数据计数值
 	char c4GInitFlag;	//4G模块初始化标志位，重新授权通过时，需要重新注册设备
+	char cTotalSensorCnt;	//当前设备外接传感器总数
+	char cMeasShowViewCnt;	//当前设备测量数据需要显示的界面个数。每个界面显示最多2个测量参数
+	char cCurMeasShowViewCnt;	//当前已显示的测量数据界面个数
+	char c4GInitWaitCnt;	//开机4G初始化等待时间
+	char cLongPowerModel;	//设备长供电模式，给外接传感器进行30分钟供电，便于外接传感器进行调试，比如雷达液位计通过蓝牙小程序调试等
+	unsigned short usLongPowerModelWaitCnt;	//长供电模式，当前等待时间，单位s
 	char cBlackLightFlag;		//是否为黑光图像站设备 	
 	BlackLightDataSt st_BlackLightData;	//黑光图像站数据结构体
 	//char c4GTimerCnt;
@@ -568,6 +575,7 @@ typedef struct _SystemRecordData
 /*设备测量数据记录结构体-暂定 */
 typedef struct _DevMeasRecordData
 {
+	float fWaterLevel;		//液位
 	float fWaterLevel_Radar;		//液位-雷达
 	float fWaterLevel_Pres;		//液位-压力
 	float fWaterQuality_COND;		//水质-电导率

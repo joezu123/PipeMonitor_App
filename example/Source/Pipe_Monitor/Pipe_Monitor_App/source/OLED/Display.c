@@ -645,6 +645,306 @@ void func_Connect_Server_Status_View_Show(void)
 	guc_LcdDipRevesAttr = 0;
 }
 
+//雷达/压力液位值显示
+void func_WaterLevel_View_Show(unsigned char ucLevelType,unsigned char ucYPosi)
+{
+	signed short sTestArr[20] = {0};
+	uint8_t i = 0;
+	uint8_t l = 0;
+	float fLevel = 0.0;
+
+	if(ucLevelType == 0)
+	{
+		//雷达水位:
+		sTestArr[0] = 0x003D;
+		sTestArr[1] = 0x003E;
+	}
+	else
+	{
+		//压力水位
+		sTestArr[0] = 0x003F;
+		sTestArr[1] = 0x0040;
+	}
+	sTestArr[2] = 0x000A;
+	sTestArr[3] = 0x0025;
+	sTestArr[4] = 0x071A;	//':'
+	sTestArr[5] = 0xFFFF;
+	func_display_string(0,ucYPosi,&sTestArr[0]);
+	memset(sTestArr,0,sizeof(sTestArr));
+	for(l=0; l<2; l++)
+	{
+		for(i=0; i<pst_OLEDSystemPara->DevicePara.cMeasSensorCount[l]; i++)
+		{
+			if(ucLevelType == 0)
+			{
+				if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Radar_Level)
+				{
+					fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fRadarWaterLevelValue;
+					break;
+				}
+				else if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Radar_Level))
+				{
+					fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarWaterLevelValue;
+					break;
+				}
+			}
+			else
+			{
+				if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Pressure_Level))
+				{
+					fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fPressureWaterLevelValue;
+					break;
+				}
+			}
+		}
+	}
+	
+	func_sprintf_metricsystem(&sTestArr[0],fLevel,3,7);
+	for(i=0; i<20; i++)
+	{
+		if(sTestArr[i] == -1)
+		{
+			sTestArr[i] = 0x0700;	//' '
+			sTestArr[i+1] = 0x074D;	//m
+			sTestArr[i+2] = 0xFFFF;
+			break;
+		}
+	}
+	func_display_string(65,ucYPosi,&sTestArr[0]);
+}
+
+//流量测量数据显示界面
+void func_Flow_View_Show(unsigned char ucYPosi)
+{
+	signed short sTestArr[20] = {0};
+	uint8_t i = 0;
+	uint8_t l = 0;
+	float fFlow = 0.0;
+	//流量:
+	sTestArr[0] = 0x0029;
+	sTestArr[1] = 0x0005;
+	sTestArr[2] = 0x071A;	//':'
+	sTestArr[3] = 0xFFFF;
+	func_display_string(0,ucYPosi,&sTestArr[0]);
+	memset(sTestArr,0,sizeof(sTestArr));
+	for(l=0; l<2; l++)
+	{
+		for(i=0; i<pst_OLEDSystemPara->DevicePara.cMeasSensorCount[l]; i++)
+		{
+			if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_Flowmeter)
+			|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Radar_Ultrasonic_Flow)
+			|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Ultrasonic_Flow)
+			|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Radar_Ultrasonic_Flow)
+			|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Flowmeter))
+			{
+				fFlow = pst_OLEDSystemPara->DeviceRunPara.esMeasData.fVolumeValue;
+				break;
+			}
+		}
+	}
+
+	func_sprintf_metricsystem(&sTestArr[0],fFlow,3,7);
+	for(i=0; i<20; i++)
+	{
+		if(sTestArr[i] == -1)
+		{
+			sTestArr[i] = 0x0700;	//' '
+			sTestArr[i+1] = 0x074D;	//m
+			sTestArr[i+2] = 0x070F;	//'/'
+			sTestArr[i+3] = 0x0753;	//s
+			sTestArr[i+4] = 0xFFFF;
+			break;
+		}
+	}
+	func_display_string(35,ucYPosi,&sTestArr[0]);
+}
+
+//电导率测量显示界面
+void func_COND_View_Show(unsigned char ucYPosi)
+{
+	signed short sTestArr[20] = {0};
+	float fCOND = 0.0;
+	uint8_t i = 0;
+	uint8_t l = 0;
+	//电导率: uS/cm
+	sTestArr[0] = 0x002F;
+	sTestArr[1] = 0x0030;
+	sTestArr[2] = 0x0031;
+	sTestArr[3] = 0x071A;	//':'
+	sTestArr[4] = 0xFFFF;
+	func_display_string(0,ucYPosi,&sTestArr[0]);
+	memset(sTestArr,0,sizeof(sTestArr));
+	for(l=0; l<2; l++)
+	{
+		for(i=0; i<pst_OLEDSystemPara->DevicePara.cMeasSensorCount[l]; i++)
+		{
+			if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity))
+			{
+				fCOND = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esBY_IntegratedConductivityData.fConductivityValue;
+				break;
+			}
+		}
+	}
+	//fCOND = 99999.999;
+	func_sprintf_metricsystem(&sTestArr[0],fCOND,2,7);
+	for(i=0; i<20; i++)
+	{
+		if(sTestArr[i] == -1)	
+		{
+			sTestArr[i] = 0x0700;	//' '
+			sTestArr[i+1] = 0x0755;	//u
+			sTestArr[i+2] = 0x0733;	//S
+			sTestArr[i+3] = 0x070F;	///
+			sTestArr[i+4] = 0x0743;	//c
+			sTestArr[i+5] = 0x074D;	//m
+			sTestArr[i+6] = 0xFFFF;
+			break;
+		}
+	}
+	func_display_string(47,ucYPosi,&sTestArr[0]);
+}
+
+void func_COD_View_Show(unsigned char ucYPosi)
+{
+	signed short sTestArr[20] = {0};
+	float fCOD = 0.0;
+	uint8_t i = 0;
+	uint8_t l = 0;
+	//COD: mg/L
+	sTestArr[0] = 0x0510;
+	sTestArr[1] = 0x051C;
+	sTestArr[2] = 0x0511;
+	sTestArr[3] = 0x071A;	//':'
+	sTestArr[4] = 0xFFFF;
+	func_display_string(0,ucYPosi,&sTestArr[0]);
+	memset(sTestArr,0,sizeof(sTestArr));
+	for(l=0; l<2; l++)
+	{
+		for(i=0; i<pst_OLEDSystemPara->DevicePara.cMeasSensorCount[l]; i++)
+		{
+			if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_WaterQuality_COD)
+			{
+				fCOD = pst_OLEDSystemPara->DeviceRunPara.esMeasData.fWaterQuality_CODValue;
+				break;
+			}
+		}
+	}
+	//fCOD = 99999.99;
+	func_sprintf_metricsystem(&sTestArr[0],fCOD,3,7);
+	for(i=0; i<20; i++)
+	{
+		if(sTestArr[i] == -1)
+		{
+			sTestArr[i] = 0x0700;	//' '
+			sTestArr[i+1] = 0x074D;	//m
+			sTestArr[i+2] = 0x0747;	//'g'
+			sTestArr[i+3] = 0x070F;	//'/'
+			sTestArr[i+4] = 0x072C;	//L
+			sTestArr[i+5] = 0xFFFF;
+			break;
+		}
+	}
+	func_display_string(47,ucYPosi,&sTestArr[0]);
+}
+
+void func_NoSensor_View_Show(void)
+{
+	signed short sTestArr[20] = {0};
+	//请配置传感器
+	sTestArr[0] = 0x001E;
+	sTestArr[1] = 0x0041;
+	sTestArr[2] = 0x0042;
+	sTestArr[3] = 0x0043;	
+	sTestArr[4] = 0x0044;
+	sTestArr[5] = 0x0045;
+	sTestArr[6] = 0xFFFF;
+	func_display_string(20,25,&sTestArr[0]);
+}
+
+//测量数据显示界面
+void func_Measure_Data_View_Show(unsigned char ucCnt)
+{
+	unsigned char i,j,l;
+	unsigned char ucEndPosi = pst_OLEDSystemPara->DeviceRunPara.cCurMeasShowViewCnt*2 + 2;
+	unsigned char ucBeginPosi = pst_OLEDSystemPara->DeviceRunPara.cCurMeasShowViewCnt * 2;
+	unsigned char ucYPosi = 18;
+
+	if(ucEndPosi > pst_OLEDSystemPara->DeviceRunPara.cTotalSensorCnt)
+	{
+		ucEndPosi = pst_OLEDSystemPara->DeviceRunPara.cTotalSensorCnt;
+	}
+	j = 0;
+	func_DateTime_Battery_Status_View_Show();
+
+	if(pst_OLEDSystemPara->DeviceRunPara.cTotalSensorCnt == 0)	//当前未配置传感器
+	{
+		func_NoSensor_View_Show();
+	}
+	else
+	{
+		for(l=0; l<2; l++)
+		{
+			for(i=0; i<pst_OLEDSystemPara->DevicePara.cMeasSensorCount[l]; i++)
+			{
+				if(j >= ucBeginPosi)
+				{
+					if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Radar_Level)
+					|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Radar_Level)
+					)
+					{
+						func_WaterLevel_View_Show(0,ucYPosi);
+					}
+					else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Pressure_Level)
+					{
+						func_WaterLevel_View_Show(1,ucYPosi);
+					}
+					else if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_Flowmeter)
+						|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Radar_Ultrasonic_Flow)
+						|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Ultrasonic_Flow)
+						|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Radar_Ultrasonic_Flow)
+						|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Flowmeter))
+					{
+						func_Flow_View_Show(ucYPosi);
+					}
+					else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity)
+					{
+						func_COND_View_Show(ucYPosi);
+					}
+					else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_WaterQuality_COD)
+					{
+						func_COD_View_Show(ucYPosi);
+					}
+					if(ucYPosi == 18)
+					{
+						ucYPosi = 34;
+					}
+					else
+					{
+						ucYPosi = 18;
+					}
+					j++;
+					if(j >= ucEndPosi)
+					{
+						break;
+					}
+				}
+				else
+				{
+					j++;
+				}
+			}
+			if(j >= ucEndPosi)
+			{
+				break;
+			}
+		}
+	}
+	
+	func_Connect_Server_Status_View_Show();
+	func_Device_Status_View_Show(ucCnt);
+	func_Display_128x64(0);
+}
+
 //显示测量界面：液位+流量
 void func_Measure_WaterLevel_View_Show(unsigned char ucCnt)
 {
