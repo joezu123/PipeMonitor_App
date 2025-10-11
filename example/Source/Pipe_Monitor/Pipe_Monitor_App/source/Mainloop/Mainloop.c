@@ -73,7 +73,6 @@ void func_Mainloop_Init(void)
 	pst_MainloopSystemPara = GetSystemPara();
 }
 
-
  //软件复位
 void func_System_Soft_Reset(void)
 {
@@ -90,8 +89,15 @@ void func_Enter_LowPower_Stop_Mode(void)
 	pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_SLEEP;
     guc_SystemPowerInitFlag = 0;
 	//关闭相关电源
-	func_Meas_Sensor_PowerDown_DeInit();
-	func_BT05_PowerDown_DeInit(); //关闭蓝牙模块电源
+	if(pst_MainloopSystemPara->DeviceRunPara.cLongPowerModel == 0)
+	{
+		func_Meas_Sensor_PowerDown_DeInit();
+	}
+	if(pst_MainloopSystemPara->DevicePara.cMonitorMode == 0)
+	{
+		func_BT05_PowerDown_DeInit(); //关闭蓝牙模块电源
+	}
+	
     func_ADC_DeInit();
     PWRSNR_PIN_CLOSE();	//关闭传感器电源
     PWRLORA_PIN_CLOSE();	//关闭LoRa模块电源
@@ -157,7 +163,6 @@ int func_Get_Flash_Data(char cDataType, int nStartAddr, int nLen, char *cDataArr
 	//read record data from flash
 	return 0;
 }
-
 
 /**
  *******************************************************************************
@@ -897,6 +902,10 @@ void func_Save_Device_MeasRecord_Dispose()
 			{
 				func_Save_Device_MeasData();
 				pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt++;
+				if(pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt >= ((16777216/SYSTEM_RECORD_SIZE) - 1))
+				{
+					pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt = 0;
+				}
 				#pragma diag_suppress=Pa039
 				func_Save_Device_Parameter(DEV_HIS_RECORD, (unsigned char*)&pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt);
 				#pragma diag_warning=Pa039

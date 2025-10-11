@@ -984,6 +984,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		else
 		{
 			pst_W25Q128SystemPara->DeviceRunPara.cLongPowerModel = ucTmpData;
+			pst_W25Q128SystemPara->DeviceRunPara.usLongPowerModelWaitCnt = 0;
 			//W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDebugModel,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cDebugModel-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
 		}
 		break;

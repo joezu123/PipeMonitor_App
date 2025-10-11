@@ -365,9 +365,9 @@ int drv_mcu_Set_RTC_Time(char *cCurDateTime)
 	stcRtcDateTimeCfg.u8Weekday = RtcWeekdayMonday;
     //stcRtcDateTimeCfg.enAmPm = 
 
-    if(stcRtcDateTimeCfg.u8Month < 1 || stcRtcDateTimeCfg.u8Month > 12)
+    //if(stcRtcDateTimeCfg.u8Month < 1 || stcRtcDateTimeCfg.u8Month > 12)
     {
-        return 1; // Invalid month
+     //   return 1; // Invalid month
     }
     if (RTC_SetDateTime(RtcDataFormatBcd, &stcRtcDateTimeCfg, Enable, Enable) != Ok)
     {

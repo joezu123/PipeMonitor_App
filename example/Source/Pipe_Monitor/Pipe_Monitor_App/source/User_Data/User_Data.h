@@ -585,7 +585,7 @@ typedef struct _DevMeasRecordData
 	unsigned short nAttitude_SC7A;		//姿态传感器数据--Z轴倾角加速度
 	char cWater_Immersion_Status;	//水浸传感器状态; 0->未浸没； 1->浸没
 	char cPhotosensitive_XYC_ALS_Status;	//光照检测状态: 0->未激活； 1->激活
-}DevMeasRecordDataSt;
+}DevMeasRecordDataSt;	//目前结构体大小为32字节
 
 /*系统运行全局变量结构体 */
 typedef struct _SystemPara

@@ -201,11 +201,15 @@ void NMEA_GPRMC_Analysis(uint8_t *buf)
 			ulValue = NMEA_Pow(10,5);
 			ulValue1 = NMEA_Pow(10,5-dx);
 			pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude=pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude*ulValue+(uint32_t)(rs*ulValue1)/60;//转换为°
-			pst_BDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat = (double)pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude / 100000.0;
-			if(pst_BDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat > 1.0)
+			if(pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude > 0)
 			{
-				pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag = 1;
+				pst_BDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat = (double)pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude / 100000.0;
+				if(pst_BDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat > 1.0)
+				{
+					pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag = 1;
+				}
 			}
+			
 		}
 		posx=NMEA_Comma_Pos(p1,4);                //南纬还是北纬
 		if(posx!=0XFF)
@@ -228,7 +232,11 @@ void NMEA_GPRMC_Analysis(uint8_t *buf)
 			ulValue1 = NMEA_Pow(10,5-dx);
 			pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude
 				= pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude*ulValue+(uint32_t)(rs*ulValue1)/60;//转换为°
-			pst_BDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lng = (double)pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude / 100000.0;
+			if(pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude > 0)
+			{
+				pst_BDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lng = (double)pst_BDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude / 100000.0;
+			
+			}
 			
 		}
 		posx = NMEA_Comma_Pos(p1,6);                //东经还是西经

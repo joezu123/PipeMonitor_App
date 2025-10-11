@@ -51,6 +51,9 @@
         "mpu_armv7.h": "c",
         "hc32f460_rtc.h": "c",
         "hc32f460_event_port.h": "c",
-        "hc32f460_timer0.h": "c"
+        "hc32f460_timer0.h": "c",
+        "hc32f460_timer6.h": "c",
+        "hc32f460_i2s.h": "c",
+        "hc32f460_dcu.h": "c"
     }
 }

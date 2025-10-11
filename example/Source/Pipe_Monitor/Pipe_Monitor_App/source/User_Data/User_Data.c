@@ -61,7 +61,7 @@ SysDeviceParaSt gs_DeviceDefaultPara =
 	{0,0,0},					//char cDeviceIMSI[15];	//设备IMSI号；是一个用于在全球范围内唯一地识别移动用户的标识符。IMSI存储在手机的SIM卡中，用于在蜂窝网络中进行用户身份验证和位置管理。
 	{0,0,0},					//char cDeviceIMEI[15];	//设备IMEI号；通常所说的手机序列号、手机“串号”，用于在移动电话网络中识别每一部独立的手机等移动通信设备，相当于移动电话的身份证。序列号共有15~17位数字
 	{'1','.','0','.','1'},	//char cDeviceHWVersion[10];	//设备硬件版本号
-	{'1','.','0','.','0','S','K'},	//char cDeviceSWVersion[10];	//设备软件版本号
+	{'1','.','0','.','1','S','K'},	//char cDeviceSWVersion[10];	//设备软件版本号
 	{'2','5','-','0','7','-','1','0'},	//char cDevicePDDate[10];		//设备生产日期: YY-MM-DD
 	{5},						//int nDeviceSampleGapCnt;	//设备设置的采样间隔时间，单位Min，注意通讯协议上的单位为s,要注意时间转换
 	{5},						//int nDeviceSaveRecordCnt;	//设备设置的保存记录时间，单位Min，注意通讯协议上的单位为s,要注意时间转换
