@@ -54,14 +54,37 @@ static SystemPataSt *pst_SC7A20SystemPara;
  ** \retval None
  **
  ******************************************************************************/
-uint16_t gus_ExtiCh04 = 0;
+
 void ExtInt04_Callback(void)
 {
+	int nValue = 0;
+	int nDifValue = 0;
     if (Set == EXINT_IrqFlgGet(ExtiCh04))
     {
-		gus_ExtiCh04++;
-		//func_SC7A20H_Read_FIFO_Buf(&pst_SC7A20SystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A[0],&pst_SC7A20SystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A[1],&pst_SC7A20SystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A[2]);
-		pst_SC7A20SystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A = SC7A20_Task();
+		nValue = SC7A20_Task();
+		if(nValue >= pst_SC7A20SystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A)
+		{
+			nDifValue = nValue - pst_SC7A20SystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A;
+		}
+		else
+		{
+			nDifValue = pst_SC7A20SystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A - nValue;
+		}
+		if(nDifValue >= 10)
+		{
+			pst_SC7A20SystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt++;
+			if(pst_SC7A20SystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt >= 3)
+			{
+				pst_SC7A20SystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt = 0;
+				pst_SC7A20SystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A = nValue;
+				pst_SC7A20SystemPara->DeviceRunPara.cBDRestartFlag = 1;	//姿态传感器数据变化过大，重新进行北斗定位
+			}
+		}
+		else
+		{
+			pst_SC7A20SystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt = 0;
+			pst_SC7A20SystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A = nValue;
+		}
         
         /* clear int request flag */
         EXINT_IrqFlgClr(ExtiCh04);

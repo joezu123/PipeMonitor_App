@@ -54,6 +54,11 @@
         "hc32f460_timer0.h": "c",
         "hc32f460_timer6.h": "c",
         "hc32f460_i2s.h": "c",
-        "hc32f460_dcu.h": "c"
+        "hc32f460_dcu.h": "c",
+        "drv_ots_temperature.h": "c",
+        "hc32f460_ots.h": "c",
+        "hc32f460_timer4_emb.h": "c",
+        "hc32f460_aes.h": "c",
+        "hc32f460_emb.h": "c"
     }
 }

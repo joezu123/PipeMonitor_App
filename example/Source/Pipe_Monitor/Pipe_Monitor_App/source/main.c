@@ -49,6 +49,7 @@
 #include "ModbusRTU.h"
 #include "Lora_TP1109.h"
 #include "RXNTTL518.h"
+#include "drv_OTS_Temperature.h"
 
 /*******************************************************************************
  * Local type definitions ('typedef')
@@ -451,6 +452,7 @@ int32_t main(void)
     func_MQTT_SK_Init(); //MQTT_SK 初始化
     func_Mainloop_Init(); //主循环初始化
     drv_Lora_TP1109_Init();
+    drv_OTS_Temperature_Init();
     //Ddl_Delay1ms(1000);
     //func_BT05_PowerDown_DeInit();
     //Ddl_Delay1ms(1000);
@@ -502,9 +504,9 @@ int32_t main(void)
     pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_BY_Integrated_Conductivity;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
     //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
-    //pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 6;
-    //pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 2;
-    //pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 2;
+    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 6;
+    pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 2;
+    pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 2;
 
     pst_MainSystemPara->DeviceRunPara.cTotalSensorCnt = pst_MainSystemPara->DevicePara.cMeasSensorCount[0] + pst_MainSystemPara->DevicePara.cMeasSensorCount[1];
     

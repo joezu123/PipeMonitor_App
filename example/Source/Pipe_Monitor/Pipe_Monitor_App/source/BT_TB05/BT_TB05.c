@@ -224,9 +224,9 @@ unsigned char guc_ERR13DelayCnt = 0;
 //BT通信处理程序
 void func_BT_Dispose(void)
 {
-	static unsigned short usSendLen = 0;	//发送数据长度
+	//static unsigned short usSendLen = 0;	//发送数据长度
 	static unsigned short usSendMaxNum = 0;
-	unsigned short usPosi = 0;
+	//unsigned short usPosi = 0;
 	uint8_t ucValueArr[200] = {0};	//发送数据数组
 
 	if(pst_BTSystemPara->UsartData.ucUsartxRecvDataFlag[MODULE_BT] == 1)  //蓝牙模块收到数据

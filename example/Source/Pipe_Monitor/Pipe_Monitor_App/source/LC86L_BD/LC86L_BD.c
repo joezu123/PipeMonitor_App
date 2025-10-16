@@ -285,7 +285,7 @@ void drv_LC86L_SendSDKCMD(uint8_t *ucDataArr, uint16_t usDataLen)
 }
 
 //static char g_AT_PQBAUD_CMD[30] = "$PQBAUD,W,9600*43";        //bd设置波特率
-static char g_AT_SETBD_CMD[30] = "$PMTK353,1,0,0,0,1*2B";        //bd 设置卫星类型:GPS+BDS
+//static char g_AT_SETBD_CMD[30] = "$PMTK353,1,0,0,0,1*2B";        //bd 设置卫星类型:GPS+BDS
 //static char g_AT_PQTXT_CMD[30] = "$PQTXT,W,1,1*22";        //bd 设置文本输出
 //static char g_AT_QGPSCFG_CMD[30] = "AT+QGPSCFG=?";        //bd 设置卫星类型:GPS+BDS
 uint8_t drv_LC86L_BD_Init(void)

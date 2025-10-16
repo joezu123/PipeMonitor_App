@@ -124,10 +124,10 @@ uint16_t func_get_onenet_test_value(uint8_t *ucDataArr, unsigned char ucType)
 //获取设备注册命令数据
 uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
 {
-    char ucTempArr[500] = {0};
+    char ucTempArr[700] = {0};
     //uint8_t ucTempDataArr[50] = {0};
-    uint8_t ucTempMonitorNameArr[600] = {0};
-    uint8_t ucParaNameArr[30] = {0};
+    uint8_t ucTempMonitorNameArr[700] = {0};
+    uint8_t ucParaNameArr[80] = {0};
     //uint8_t ucDataArr[20] = {0}; //用于存储数据
     uint16_t usDataLen = 0;
     uint8_t j = 0;
@@ -171,11 +171,14 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
             {
             case Meas_BY_Integrated_Conductivity:  //  一体式电导率
                 sprintf((char *)&ucParaNameArr[j], "\"COND\",");
-                //sprintf((char *)&ucDataArr[1], "\"%.3f\"", pst_EC200USystemPara->DeviceRunPara.esMeasData.fWaterQuality_CODValue);
+                j = strlen((char *)&ucParaNameArr);
+                sprintf((char *)&ucParaNameArr[j], "\"COND_B\",");
                 break;
             case Meas_BY_Radar_Level:
             case Meas_HZ_Radar_Level:
                 sprintf((char *)&ucParaNameArr[j], "\"water_height\",");
+                j = strlen((char *)&ucParaNameArr);
+                sprintf((char *)&ucParaNameArr[j], "\"water_height_B\",");
                 //sprintf((char *)&ucDataArr[1], "\"%.3f\"", pst_EC200USystemPara->DeviceRunPara.esMeasData.fWaterLevel);
                 break;
             #ifndef WATERLEVEL_RADAR_PRESS
@@ -189,7 +192,13 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
             case Meas_HZ_Ultrasonic_Flow:
             case Meas_HX_Radar_Ultrasonic_Flow:
             case Meas_HX_Flowmeter:
-                sprintf((char *)&ucParaNameArr[j], "\"curr_volume_s\",");
+                sprintf((char *)&ucParaNameArr[j], "\"curr_volume\","); //瞬时流量/h
+                j = strlen((char *)&ucParaNameArr);
+                sprintf((char *)&ucParaNameArr[j], "\"curr_volume_B\",");
+                j = strlen((char *)&ucParaNameArr);
+                sprintf((char *)&ucParaNameArr[j], "\"flow_velocity\",");
+                j = strlen((char *)&ucParaNameArr);
+                sprintf((char *)&ucParaNameArr[j], "\"flow_velocity_B\",");
                 ucMeasWaterVolumeFlag = 1;
                 //sprintf((char *)&ucDataArr[1], "\"%.3f\"", pst_EC200USystemPara->DeviceRunPara.esMeasData.fVolumeValue);
                 break;
@@ -201,14 +210,14 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
             //(void)strcat((char *)ucTempDataArr, ucDataArr);
         }
     }
-    
 
     if(ucMeasWaterVolumeFlag == 1)
     {
         //当前设备支持流量测量，因此要加上累计流量数据
         memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
         sprintf((char *)&ucParaNameArr[j], "\"total_volume\",");
-
+        j = strlen((char *)&ucParaNameArr);
+        sprintf((char *)&ucParaNameArr[j], "\"total_volume_B\",");
         (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
     }
 
@@ -234,6 +243,26 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
     //memset(ucDataArr, 0, sizeof(ucDataArr));
     sprintf((char *)&ucParaNameArr[0], "\"photosensitive\",");
     //sprintf((char *)&ucDataArr[0], ",\"%d\"]}}", pst_EC200USystemPara->DeviceRunPara.esDeviceSensorsData.cPhotosensitive_XYC_ALS_Status);
+    (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
+
+    //设备蓝牙连接状态
+    memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
+    sprintf((char *)&ucParaNameArr[0], "\"BT_Connected\",");
+    (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
+
+    //设备是否开启调试模式标志
+    memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
+    sprintf((char *)&ucParaNameArr[0], "\"Debug_Model\",");
+    (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
+
+    //设备是否开启长供电模式
+    memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
+    sprintf((char *)&ucParaNameArr[0], "\"LongPowerModel\",");
+    (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
+
+    //设备MCU内部温度
+    memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
+    sprintf((char *)&ucParaNameArr[0], "\"DevTemperature\",");
     (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
 
     //设备开机时间
@@ -279,17 +308,27 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
 //获取设备监测项数据上报报文
 uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
 {
-    uint8_t ucTempArr[800] = {0};
-    uint8_t ucTempValueArr[6][150] = {{0}}; //用于存储数据
+    uint8_t ucTempArr[2300] = {0};
+    uint8_t ucTempValueArr[12][150] = {{0}}; //用于存储数据
     uint8_t ucTempAttiArr[50] = {0}; //用于存储姿态数据
     uint8_t ucTempWaterImmersionArr[50] = {0}; //用于存储水浸数据
     uint8_t ucTempPhotosensitiveArr[50] = {0}; //用于存储光照数据
+    uint8_t ucBT_ConnArr[50] = {0}; //用于存储设备蓝牙连接状态数据
+    uint8_t ucDebugModelArr[50] = {0};  //用于存储设备是否开启调试模式数据
+    uint8_t ucLongPowerModelArr[50] = {0};  //用于存储设备是否开启长供电模式数据
+    uint8_t ucDevTempArr[150] = {0};    //用于存储设备内部MCU温度数据
     //uint8_t ucParaNameArr[10] = {0};
     uint8_t ucWaterLevel_Radar_Flag = 0;    //雷达液位测量传感器存在标志位
+    #ifndef WATERLEVEL_RADAR_PRESS
     uint8_t ucWaterLevel_Pressure_Flag = 0; //压力液位测量传感器存在标志位
+    #endif
     uint8_t ucWaterQuality_COD_Flag = 0; //水质COD测量传感器存在标志位
     uint8_t ucWaterQuality_COND_Flag = 0; //水质电导率测量传感器存在标志位
     uint8_t ucMeasWaterVolumeFlag = 0; //流量测量传感器存在标志位
+    uint8_t ucRightValueCnt = 0;
+    double dRightValueSum = 0.0;
+    //uint8_t j = 0;
+    uint8_t k = 0;
 
     uint16_t usDataLen = 0;
     //uint8_t ucMeasWaterVolumeFlag = 0;
@@ -298,7 +337,7 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     int nPosi = 0;
     uint8_t ucRecordCnt = 0;
     uint32_t ulRecordCnt = 0;
-    DevMeasRecordDataSt st_TempValue;
+    DevMeasRecordDataSt st_TempValue[10];
     unsigned long ulTime = 0;
     time_t now;
     //time(&now);
@@ -357,6 +396,7 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
             case Meas_HZ_Radar_Level:
                 ucWaterLevel_Radar_Flag = 1;
                 memcpy(&ucTempValueArr[0], "\"water_height\":[", 16);
+                memcpy(&ucTempValueArr[6], "\"water_height_B\":[", 18);
                 break;
             #ifndef WATERLEVEL_RADAR_PRESS
             case Meas_BY_Pressure_Level:
@@ -366,11 +406,13 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
             #endif
             case Meas_HX_WaterQuality_COD:
                 ucWaterQuality_COD_Flag = 1;
-                memcpy(&ucTempValueArr[2], "\"COD\":[", 7);
+                memcpy(&ucTempValueArr[1], "\"COD\":[", 7);
+                memcpy(&ucTempValueArr[7], "\"COD_B\":[", 9);
                 break;
             case Meas_BY_Integrated_Conductivity:
                 ucWaterQuality_COND_Flag = 1;
-                memcpy(&ucTempValueArr[3], "\"COND\":[", 8);
+                memcpy(&ucTempValueArr[2], "\"COND\":[", 8);
+                memcpy(&ucTempValueArr[8], "\"COND_B\":[", 10);
                 break;
             case Meas_Flowmeter:
             case Meas_HZ_Radar_Ultrasonic_Flow:
@@ -378,29 +420,87 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
             case Meas_HX_Radar_Ultrasonic_Flow:
             case Meas_HX_Flowmeter:
                 ucMeasWaterVolumeFlag = 1;
-                memcpy(&ucTempValueArr[4], "\"curr_volume_s\":[", 17);
+                memcpy(&ucTempValueArr[3], "\"curr_volume\":[", 15);
+                memcpy(&ucTempValueArr[9], "\"curr_volume_B\":[", 17);
+                memcpy(&ucTempValueArr[4], "\"flow_velocity\":[", 17);
+                memcpy(&ucTempValueArr[10], "\"flow_velocity_B\":[", 19);
                 memcpy(&ucTempValueArr[5], "\"total_volume\":[", 16);
+                memcpy(&ucTempValueArr[11], "\"total_volume_B\":[", 18);
                 break;
             default:
                 break;
             }
         }
     }
-    
 
     memcpy(&ucTempAttiArr[0], "\"attitude\":[", 12);
     memcpy(&ucTempWaterImmersionArr[0], "\"water_immersion\":[", 19);
     memcpy(&ucTempPhotosensitiveArr[0], "\"photosensitive\":[", 18);
+    memcpy(&ucBT_ConnArr[0], "\"BT_Connected\":[", 16);
+    memcpy(&ucDebugModelArr[0], "\"Debug_Model\":[", 15);
+    memcpy(&ucLongPowerModelArr[0], "\"LongPowerModel\":[", 19);
+    memcpy(&ucDevTempArr[0], "\"DevTemperature\":[", 18);
 
     if(pst_EC200USystemPara->DeviceRunPara.cBarTouchFlag == 0)
     {
         //根据本次要上传的数据个数，从存储中读取该数据
         for(nPosi=0; nPosi<ucRecordCnt; nPosi++)
         {
-            func_Get_Device_MeasData_Record(pst_EC200USystemPara->DevicePara.nDeviceRecordCnt - ulRecordCnt + nPosi, &st_TempValue);
+            func_Get_Device_MeasData_Record(pst_EC200USystemPara->DevicePara.nDeviceRecordCnt - ulRecordCnt + nPosi, &st_TempValue[nPosi]);
+        }
+        for(nPosi=0; nPosi<ucRecordCnt; nPosi++)
+        {
             if(ucWaterLevel_Radar_Flag == 1)
             {
-                sprintf((char *)&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "%.3lf,", (double)st_TempValue.fWaterLevel);
+                if((double)st_TempValue[nPosi].fWaterLevel < 0.01)  //当出现数据异常时
+                {
+                    ucRightValueCnt = 0;
+                    dRightValueSum = 0.0;
+                    if(nPosi < 1)   //当前异常数据为本次要上传数据的第一项
+                    {
+                        for(k=1; k<ucRecordCnt; k++)    //判断本次上传的数据中，后续部分是否存在正确数据，若存在，则记录相关数据
+                        {
+                            if((double)st_TempValue[k].fWaterLevel >= 0.01)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterLevel;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterLevel;
+                        }
+                    }
+                    else
+                    {
+                        for(k=0; k<nPosi; k++)
+                        {
+                            if((double)st_TempValue[k].fWaterLevel >= 0.01)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterLevel;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterLevel;
+                        }
+                    }
+                }
+                else
+                {
+                    dRightValueSum = (double)st_TempValue[nPosi].fWaterLevel;
+                }
+                sprintf((char *)&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "%.3lf,", dRightValueSum);
+                sprintf((char *)&ucTempValueArr[6][strlen((char *)ucTempValueArr[6])], "%.3lf,", (double)st_TempValue[nPosi].fWaterLevel);
             }
             #ifndef WATERLEVEL_RADAR_PRESS
             if(ucWaterLevel_Pressure_Flag == 1)
@@ -410,21 +510,268 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
             #endif
             if(ucWaterQuality_COD_Flag == 1)
             {
-                sprintf((char *)&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])], "%.3lf,", (double)st_TempValue.fWaterQuality_COD);
+                if((double)st_TempValue[nPosi].fWaterQuality_COD < 10.0)  //当出现数据异常时
+                {
+                    ucRightValueCnt = 0;
+                    dRightValueSum = 0.0;
+                    if(nPosi < 1)   //当前异常数据为本次要上传数据的第一项
+                    {
+                        for(k=1; k<ucRecordCnt; k++)    //判断本次上传的数据中，后续部分是否存在正确数据，若存在，则记录相关数据
+                        {
+                            if((double)st_TempValue[k].fWaterQuality_COD >= 10.0)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterQuality_COD;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterQuality_COD;
+                        }
+                    }
+                    else
+                    {
+                        for(k=0; k<nPosi; k++)
+                        {
+                            if((double)st_TempValue[k].fWaterQuality_COD >=10.0)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterQuality_COD;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterQuality_COD;
+                        }
+                    }
+                }
+                else
+                {
+                    dRightValueSum = (double)st_TempValue[nPosi].fWaterQuality_COD;
+                }
+                sprintf((char *)&ucTempValueArr[1][strlen((char *)ucTempValueArr[1])], "%.3lf,", dRightValueSum);
+                sprintf((char *)&ucTempValueArr[7][strlen((char *)ucTempValueArr[7])], "%.3lf,", (double)st_TempValue[nPosi].fWaterQuality_COD);
             }
             if(ucWaterQuality_COND_Flag == 1)
             {
-                sprintf((char *)&ucTempValueArr[3][strlen((char *)ucTempValueArr[3])], "%.3lf,", (double)st_TempValue.fWaterQuality_COND);
+                if((double)st_TempValue[nPosi].fWaterQuality_COND < 10.0)  //当出现数据异常时
+                {
+                    ucRightValueCnt = 0;
+                    dRightValueSum = 0.0;
+                    if(nPosi < 1)   //当前异常数据为本次要上传数据的第一项
+                    {
+                        for(k=1; k<ucRecordCnt; k++)    //判断本次上传的数据中，后续部分是否存在正确数据，若存在，则记录相关数据
+                        {
+                            if((double)st_TempValue[k].fWaterQuality_COND >= 10.0)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterQuality_COND;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterQuality_COND;
+                        }
+                    }
+                    else
+                    {
+                        for(k=0; k<nPosi; k++)
+                        {
+                            if((double)st_TempValue[k].fWaterQuality_COND >=10.0)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterQuality_COND;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterQuality_COND;
+                        }
+                    }
+                }
+                else
+                {
+                    dRightValueSum = (double)st_TempValue[nPosi].fWaterQuality_COND;
+                }
+                sprintf((char *)&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])], "%.3lf,", dRightValueSum);
+                sprintf((char *)&ucTempValueArr[8][strlen((char *)ucTempValueArr[8])], "%.3lf,", (double)st_TempValue[nPosi].fWaterQuality_COND);
             }
             if(ucMeasWaterVolumeFlag == 1)
             {
-                sprintf((char *)&ucTempValueArr[4][strlen((char *)ucTempValueArr[4])], "%.3lf,", (double)st_TempValue.fWaterVolume_s);
-                sprintf((char *)&ucTempValueArr[5][strlen((char *)ucTempValueArr[5])], "%.3lf,", (double)st_TempValue.fWaterVolume_Total);
+                if((double)st_TempValue[nPosi].fWaterVolume < 10.0)  //当出现数据异常时
+                {
+                    ucRightValueCnt = 0;
+                    dRightValueSum = 0.0;
+                    if(nPosi < 1)   //当前异常数据为本次要上传数据的第一项
+                    {
+                        for(k=1; k<ucRecordCnt; k++)    //判断本次上传的数据中，后续部分是否存在正确数据，若存在，则记录相关数据
+                        {
+                            if((double)st_TempValue[k].fWaterVolume >= 10.0)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterVolume;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterVolume;
+                        }
+                    }
+                    else
+                    {
+                        for(k=0; k<nPosi; k++)
+                        {
+                            if((double)st_TempValue[k].fWaterVolume >=10.0)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterVolume;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterVolume;
+                        }
+                    }
+                }
+                else
+                {
+                    dRightValueSum = (double)st_TempValue[nPosi].fWaterVolume;
+                }
+                sprintf((char *)&ucTempValueArr[3][strlen((char *)ucTempValueArr[3])], "%.3lf,", dRightValueSum);
+                sprintf((char *)&ucTempValueArr[9][strlen((char *)ucTempValueArr[9])], "%.3lf,", (double)st_TempValue[nPosi].fWaterVolume);
+
+                if((double)st_TempValue[nPosi].fWaterSpeed < 0.01)  //当出现数据异常时
+                {
+                    ucRightValueCnt = 0;
+                    dRightValueSum = 0.0;
+                    if(nPosi < 1)   //当前异常数据为本次要上传数据的第一项
+                    {
+                        for(k=1; k<ucRecordCnt; k++)    //判断本次上传的数据中，后续部分是否存在正确数据，若存在，则记录相关数据
+                        {
+                            if((double)st_TempValue[k].fWaterSpeed >= 0.01)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterSpeed;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterSpeed;
+                        }
+                    }
+                    else
+                    {
+                        for(k=0; k<nPosi; k++)
+                        {
+                            if((double)st_TempValue[k].fWaterSpeed >= 0.01)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterSpeed;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterSpeed;
+                        }
+                    }
+                }
+                else
+                {
+                    dRightValueSum = (double)st_TempValue[nPosi].fWaterSpeed;
+                }
+                sprintf((char *)&ucTempValueArr[4][strlen((char *)ucTempValueArr[4])], "%.3lf,", dRightValueSum);
+                sprintf((char *)&ucTempValueArr[10][strlen((char *)ucTempValueArr[10])], "%.3lf,", (double)st_TempValue[nPosi].fWaterSpeed);
+
+                if((double)st_TempValue[nPosi].fWaterVolume_Total < 10.0)  //当出现数据异常时
+                {
+                    ucRightValueCnt = 0;
+                    dRightValueSum = 0.0;
+                    if(nPosi < 1)   //当前异常数据为本次要上传数据的第一项
+                    {
+                        for(k=1; k<ucRecordCnt; k++)    //判断本次上传的数据中，后续部分是否存在正确数据，若存在，则记录相关数据
+                        {
+                            if((double)st_TempValue[k].fWaterVolume_Total >= 10.0)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterVolume_Total;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterVolume_Total;
+                        }
+                    }
+                    else
+                    {
+                        for(k=0; k<nPosi; k++)
+                        {
+                            if((double)st_TempValue[k].fWaterVolume_Total >= 10.0)
+                            {
+                                ucRightValueCnt++;
+                                dRightValueSum += (double)st_TempValue[k].fWaterVolume_Total;
+                            }
+                        }
+                        if(ucRightValueCnt > 0)
+                        {
+                            dRightValueSum = dRightValueSum / ucRightValueCnt;
+                        }
+                        else
+                        {
+                            dRightValueSum = (double)st_TempValue[nPosi].fWaterVolume_Total;
+                        }
+                    }
+                }
+                else
+                {
+                    dRightValueSum = (double)st_TempValue[nPosi].fWaterVolume_Total;
+                }
+                sprintf((char *)&ucTempValueArr[5][strlen((char *)ucTempValueArr[5])], "%.3lf,", dRightValueSum);
+                sprintf((char *)&ucTempValueArr[11][strlen((char *)ucTempValueArr[11])], "%.3lf,", (double)st_TempValue[nPosi].fWaterVolume_Total);
             }
 
-            sprintf((char *)&ucTempAttiArr[strlen((char *)ucTempAttiArr)], "%d,", st_TempValue.nAttitude_SC7A);
-            sprintf((char *)&ucTempWaterImmersionArr[strlen((char *)ucTempWaterImmersionArr)], "%d,", st_TempValue.cWater_Immersion_Status);
-            sprintf((char *)&ucTempPhotosensitiveArr[strlen((char *)ucTempPhotosensitiveArr)], "%d,", st_TempValue.cPhotosensitive_XYC_ALS_Status);
+            sprintf((char *)&ucTempAttiArr[strlen((char *)ucTempAttiArr)], "%d,", st_TempValue[nPosi].nAttitude_SC7A);
+            sprintf((char *)&ucTempWaterImmersionArr[strlen((char *)ucTempWaterImmersionArr)], "%d,", st_TempValue[nPosi].cWater_Immersion_Status);
+            sprintf((char *)&ucTempPhotosensitiveArr[strlen((char *)ucTempPhotosensitiveArr)], "%d,", st_TempValue[nPosi].cPhotosensitive_XYC_ALS_Status);
+            sprintf((char *)&ucBT_ConnArr[strlen((char *)ucBT_ConnArr)], "%d,", st_TempValue[nPosi].cBT_ConnectFlag);
+            sprintf((char *)&ucDebugModelArr[strlen((char *)ucDebugModelArr)], "%d,", st_TempValue[nPosi].cDebug_Model);
+            sprintf((char *)&ucLongPowerModelArr[strlen((char *)ucLongPowerModelArr)], "%d,", st_TempValue[nPosi].cLongPowerModel);
+            sprintf((char *)&ucDevTempArr[strlen((char *)ucDevTempArr)], "%.3lf,", (double)st_TempValue[nPosi].fDevTemperature);
         }
     }
     else
@@ -432,6 +779,7 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
         if(ucWaterLevel_Radar_Flag == 1)
         {
             sprintf((char *)&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterLevel);
+            sprintf((char *)&ucTempValueArr[6][strlen((char *)ucTempValueArr[6])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterLevel);
         }
         #ifndef WATERLEVEL_RADAR_PRESS
         if(ucWaterLevel_Pressure_Flag == 1)
@@ -441,21 +789,31 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
         #endif
         if(ucWaterQuality_COD_Flag == 1)
         {
-            sprintf((char *)&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterQuality_COD);
+            sprintf((char *)&ucTempValueArr[1][strlen((char *)ucTempValueArr[1])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterQuality_COD);
+            sprintf((char *)&ucTempValueArr[7][strlen((char *)ucTempValueArr[7])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterQuality_COD);
         }
         if(ucWaterQuality_COND_Flag == 1)
         {
-            sprintf((char *)&ucTempValueArr[3][strlen((char *)ucTempValueArr[3])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterQuality_COND);
+            sprintf((char *)&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterQuality_COND);
+            sprintf((char *)&ucTempValueArr[8][strlen((char *)ucTempValueArr[8])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterQuality_COND);
         }
         if(ucMeasWaterVolumeFlag == 1)
         {
-            sprintf((char *)&ucTempValueArr[4][strlen((char *)ucTempValueArr[4])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterVolume_s);
+            sprintf((char *)&ucTempValueArr[3][strlen((char *)ucTempValueArr[3])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterVolume);
+            sprintf((char *)&ucTempValueArr[9][strlen((char *)ucTempValueArr[9])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterVolume);
+            sprintf((char *)&ucTempValueArr[4][strlen((char *)ucTempValueArr[4])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterSpeed);
+            sprintf((char *)&ucTempValueArr[10][strlen((char *)ucTempValueArr[10])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterSpeed);
             sprintf((char *)&ucTempValueArr[5][strlen((char *)ucTempValueArr[5])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterVolume_Total);
+            sprintf((char *)&ucTempValueArr[11][strlen((char *)ucTempValueArr[11])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterVolume_Total);
         }
 
         sprintf((char *)&ucTempAttiArr[strlen((char *)ucTempAttiArr)], "%d,", gSt_DevMeasRecordData.nAttitude_SC7A);
         sprintf((char *)&ucTempWaterImmersionArr[strlen((char *)ucTempWaterImmersionArr)], "%d,", gSt_DevMeasRecordData.cWater_Immersion_Status);
         sprintf((char *)&ucTempPhotosensitiveArr[strlen((char *)ucTempPhotosensitiveArr)], "%d,", gSt_DevMeasRecordData.cPhotosensitive_XYC_ALS_Status);
+        sprintf((char *)&ucBT_ConnArr[strlen((char *)ucBT_ConnArr)], "%d,", gSt_DevMeasRecordData.cBT_ConnectFlag);
+        sprintf((char *)&ucDebugModelArr[strlen((char *)ucDebugModelArr)], "%d,", gSt_DevMeasRecordData.cDebug_Model);
+        sprintf((char *)&ucLongPowerModelArr[strlen((char *)ucLongPowerModelArr)], "%d,", gSt_DevMeasRecordData.cLongPowerModel);
+        sprintf((char *)&ucDevTempArr[strlen((char *)ucDevTempArr)], "%.3lf,", (double)gSt_DevMeasRecordData.fDevTemperature);
     }
 
     if(ucWaterLevel_Radar_Flag == 1)
@@ -463,6 +821,8 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
         //去掉最后一个逗号
         memcpy(&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])-1], "],", 2);
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[0]);
+        memcpy(&ucTempValueArr[6][strlen((char *)ucTempValueArr[6])-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[6]);
     }
     #ifndef WATERLEVEL_RADAR_PRESS
     if(ucWaterLevel_Pressure_Flag == 1)
@@ -475,29 +835,49 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     if(ucWaterQuality_COD_Flag == 1)
     {
         //去掉最后一个逗号
-        memcpy(&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])-1], "],", 2);
-        (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[2]);
+        memcpy(&ucTempValueArr[1][strlen((char *)ucTempValueArr[1])-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[1]);
+        memcpy(&ucTempValueArr[7][strlen((char *)ucTempValueArr[7])-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[7]);
     }
     if(ucWaterQuality_COND_Flag == 1)
     {
         //去掉最后一个逗号
-        memcpy(&ucTempValueArr[3][strlen((char *)ucTempValueArr[3])-1], "],", 2);
-        (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[3]);
+        memcpy(&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[2]);
+        memcpy(&ucTempValueArr[8][strlen((char *)ucTempValueArr[8])-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[8]);
     }
     if(ucMeasWaterVolumeFlag == 1)
     {
         //去掉最后一个逗号
+        memcpy(&ucTempValueArr[3][strlen((char *)ucTempValueArr[3])-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[3]);
+        memcpy(&ucTempValueArr[9][strlen((char *)ucTempValueArr[9])-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[9]);
         memcpy(&ucTempValueArr[4][strlen((char *)ucTempValueArr[4])-1], "],", 2);
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[4]);
+        memcpy(&ucTempValueArr[10][strlen((char *)ucTempValueArr[10])-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[10]);
         memcpy(&ucTempValueArr[5][strlen((char *)ucTempValueArr[5])-1], "],", 2);
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[5]);
+        memcpy(&ucTempValueArr[11][strlen((char *)ucTempValueArr[11])-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[11]);
     }
     memcpy(&ucTempAttiArr[strlen((char *)ucTempAttiArr)-1], "],", 2);
     (void)strcat((char *)ucTempArr, (char *)ucTempAttiArr);
     memcpy(&ucTempWaterImmersionArr[strlen((char *)ucTempWaterImmersionArr)-1], "],", 2);
     (void)strcat((char *)ucTempArr, (char *)ucTempWaterImmersionArr);
-    memcpy(&ucTempPhotosensitiveArr[strlen((char *)ucTempPhotosensitiveArr)-1], "]}}", 3);
+    memcpy(&ucTempPhotosensitiveArr[strlen((char *)ucTempPhotosensitiveArr)-1], "],", 2);
     (void)strcat((char *)ucTempArr, (char *)ucTempPhotosensitiveArr);
+    memcpy(&ucBT_ConnArr[strlen((char *)ucBT_ConnArr)-1], "],", 2);
+    (void)strcat((char *)ucTempArr, (char *)ucBT_ConnArr);
+    memcpy(&ucDebugModelArr[strlen((char *)ucDebugModelArr)-1], "],", 2);
+    (void)strcat((char *)ucTempArr, (char *)ucDebugModelArr);
+    memcpy(&ucLongPowerModelArr[strlen((char *)ucLongPowerModelArr)-1], "],", 2);
+    (void)strcat((char *)ucTempArr, (char *)ucLongPowerModelArr);
+    memcpy(&ucDevTempArr[strlen((char *)ucDevTempArr)-1], "]}}", 3);
+    (void)strcat((char *)ucTempArr, (char *)ucDevTempArr);
     
     usDataLen = strlen((char *)ucTempArr);
 
@@ -645,6 +1025,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         switch (gE_4G_Module_Init_CMD)
         {
         case Module_START_WAIT_CMD: //
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Init;
             EC200U_4G_Module_GPIO_Init();
             //拉低4G模块电源引脚2s以上，让4G模块开机
             DCERST_PIN_RESET;
@@ -659,6 +1040,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             sprintf((char *)ucRecvCheckData, "RDY");
             break;
         case Module_TEST_AT_CMD: //测试AT指令
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_AT_Test;
             (void)strcpy((char *)ucSendBuf, "AT\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
@@ -669,11 +1051,13 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_QUERY_SIM_CARD_STATE_CMD: //查询SIM卡状态
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_SIM_Status;
             (void)strcpy((char *)ucSendBuf, "AT+CPIN?\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "+CPIN: READY");
             break;
         case Module_QUERY_SIGNAL_STRENGTH_CMD: //查询信号强度
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Signal_Strength;
             (void)strcpy((char *)ucSendBuf, "AT+CSQ\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "+CSQ:");
@@ -706,27 +1090,32 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             sprintf((char *)ucRecvCheckData, "+CGREG: 0,1");
             break;
         case Module_ACTIVATE_NETWORK_CMD: //激活网络
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Active_Network;
             (void)strcpy((char *)ucSendBuf, "AT+CGATT=1\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_QUERY_NETWORK_ACTIVATE_STATE_CMD: //查询网络激活状态
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Check_Network;
             (void)strcpy((char *)ucSendBuf, "AT+CGATT?\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "+CGATT: 1");
             break;
         
         case Module_QUERY_IMSI_CMD: //查询IMSI号
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Get_IMSI;
             (void)strcpy((char *)ucSendBuf, "AT+CIMI\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_QUERY_IMEI_CMD: //查询IMEI号
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Get_IMEI;
             (void)strcpy((char *)ucSendBuf, "AT+CGSN\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_QUERY_LOCAL_DATE_TIME_CMD: //查询本地日期时间
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Get_DateTime;
             (void)strcpy((char *)ucSendBuf, "AT+QLTS=2\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
@@ -734,16 +1123,19 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             break;
         //MQTT配置  
         case Module_SET_DATA_FORMAT_CMD: //设置数据格式
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_SET_Data_Format;
             (void)strcpy((char *)ucSendBuf, "AT+QMTCFG=\"recv/mode\",0,0,1\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_SET_MQTT_KEEPALIVE_TIME_CMD:    //心跳时间建议60s~300s.这里设置120s
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Set_KeepAlive_Time;
             (void)strcpy((char *)ucSendBuf, "AT+QMTCFG=\"keepalive\",0,120\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_SET_MQTT_VERSION_CMD:   //设置MQTT 版本
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Set_Version;
             (void)strcpy((char *)ucSendBuf, "AT+QMTCFG=\"version\",0,4\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
@@ -759,6 +1151,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             //(void)strcpy((char *)ucSendBuf, "AT+QMTOPEN=0,\"studio-mqtt.heclouds.com\",1883\r\n");
             //(void)strcpy((char *)ucSendBuf, "AT+QMTOPEN=0,\"218.85.5.161\",7243\r\n");
             //(void)strcpy((char *)ucSendBuf, "AT+QMTOPEN=0,\"220.250.29.188\",7183\r\n");
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Open_Interface;
             (void)sprintf((char *)ucSendBuf, "AT+QMTOPEN=0,\"%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cServerIP[1], pst_EC200USystemPara->DevicePara.usServerPort[1]);
             //(void)strcpy((char *)ucSendBuf, "AT+QMTCONN=0,\"ZCJ2025042801\",\"iVOw212I78\",\"version=2018-10-31&res=products\%2FiVOw212I78\%2Fdevices\%2FZCJ2025042801&et=1749953701&method=md5&sign=Ojs6ZSs5SoXw1Ckzurdsjw\%3D\%3D\"\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
@@ -782,6 +1175,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             //(void)strcpy((char *)ucSendBuf, "AT+MIPSTART=\"studio-mqtt.heclouds.com\",1883\r\n");
             //(void)strcpy((char *)ucSendBuf, "AT+QMTCONN=0,\"ZCJ2025042802\",\"jP1B7MpRy3\",\"version=2018-10-31&res=products\%2FjP1B7MpRy3\%2Fdevices\%2FZCJ2025042802&et=1749953701&method=md5&sign=UYUYifYvoXYzT5R7vS3Wbw\%3D\%3D\"\r\n");
             //(void)sprintf((char *)ucSendBuf, "AT+QMTCONN=0,\"%s\",\"xfgd\",\"xfgd@1234\"\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Connect_Interface;
             (void)sprintf((char *)ucSendBuf, "AT+QMTCONN=0,\"%s\",\"nbwater\",\"nbwater@1234\"\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             //(void)strcpy((char *)ucSendBuf, "AT+QMTCONN=0,\"ZCJ2025042801\",\"iVOw212I78\",\"version=2018-10-31&res=products\%2FiVOw212I78\%2Fdevices\%2FZCJ2025042801&et=1749953701&method=md5&sign=FXcY9ZA%2BJhyld8Bd3VrpQg\%3D\%3D\"\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
@@ -789,16 +1183,19 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             break;
         #ifdef CONNECT_MQTT
         case Module_SUBSCRIBE_TOPIC_REGISTER_CMD:   //订阅主题注册
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_Register;
             sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/devReg/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_SUBSCRIBE_TOPIC_DATAUPLOAD_CMD: //订阅主题数据上传
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_DataUpload;
             sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/dataUpload/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_SUBSCRIBE_TOPIC_STATUS_CMD: //订阅主题状态上报
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_StatusUpload;
             sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/devStatus/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
@@ -811,11 +1208,13 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             break;
         #endif
         case Module_SUBSCRIBE_TOPIC_SETCONFIG_CMD:  //订阅主题设置配置
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_SetPara;
             sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/setConfig/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_SUBSCRIBE_TOPIC_GETCONFIG_CMD:  //订阅主题获取配置
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_GetPara;
             sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/getConfig/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
@@ -835,6 +1234,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
 
         #endif
         case Module_PUBLISH_TOPIC_REGISTER_CMD: //发布主题注册
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_Register;
             usSendDataLen = func_Get_DevRegCMD_Data(ucSendBuf);
             sprintf((char *)ucSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0100/0004/devReg/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usSendDataLen = strlen((char *)ucSendBuf);
@@ -850,10 +1250,11 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             sprintf((char *)ucRecvCheckData, "\"res\":");
             break;
         case Module_PUBLISH_TOPIC_DATAUPLOAD_CMD:   //发布监测项数据上报主题 
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_DataUoload;
             usSendDataLen = func_Get_DataUploadCMD_Data(ucSendBuf);
             sprintf((char *)ucSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0100/0004/dataUpload/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usSendDataLen = strlen((char *)ucSendBuf);
-            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
+            //pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
             drv_mcu_USART_SendData(MODULE_4G_NB, ucSendBuf, usSendDataLen);
             Ddl_Delay1ms(400);
             pst_EC200USystemPara->UsartData.usUsartxRecvDataLen[MODULE_4G_NB] = 0;
@@ -865,6 +1266,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             sprintf((char *)ucRecvCheckData, "\"res\":");
             break;
         case Module_PUBLISH_TOPIC_STATUS_CMD:   //发布设备状态上报主题
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_StatusUpload;
             usSendDataLen = func_Get_DevStatusCMD_Data(ucSendBuf);
             sprintf((char *)ucSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0100/0004/devStatus/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usSendDataLen = strlen((char *)ucSendBuf);
@@ -1011,11 +1413,13 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                 }
                 if((ucDataUploadEnable == 0) && (pst_EC200USystemPara->DevicePara.cDeviceRegisterFlag == 1))
                 {
+                    pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_OK;
                     return 0;
                 }
                 if(pst_EC200USystemPara->DevicePara.cMonitorMode == 1)
                 {
                     pst_EC200USystemPara->DeviceRunPara.c4GInitFlag = 1;
+                    pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_OK;
                     return 0;
                 }
             }
@@ -1038,6 +1442,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                     }
                     else
                     {
+                        pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_OK;
                         return 0;
                     }
                 }
@@ -1056,6 +1461,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                     }
                     else
                     {
+                        pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_OK;
                         return 0; //注册成功，且不需要上传数据
                     }
                 }
@@ -1108,6 +1514,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                 }
                 else
                 {
+                    pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_OK;
                     return 0;
                 }
             }
@@ -1120,7 +1527,9 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                     pst_EC200USystemPara->DeviceRunPara.ulUploadStatusLostCnt = 0; //上传数据成功，清零上传记录丢失计数
                     pst_EC200USystemPara->DeviceRunPara.ulUploadStatusStartTime = 0;
                     pst_EC200USystemPara->DeviceRunPara.cLostStatusArrCnt = 0; //清除设备状态上报丢失计数
+                    pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_OK;
                 }
+                
                 return 0;
             }
             else
@@ -1185,7 +1594,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
 uint8_t drv_EC200U_4G_Module_Init(unsigned char ucDataUploadEnable)
 {
     uint8_t ucResult = 0;
-    uint16_t usRecvTimeOutCnt = 0;
+    //uint16_t usRecvTimeOutCnt = 0;
     static uint8_t ucFailedCnt = 0;
     static uint8_t ucInitFlag = 0;
     if(ucInitFlag == 0)

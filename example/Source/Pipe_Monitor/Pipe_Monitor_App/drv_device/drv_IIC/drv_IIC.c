@@ -1087,11 +1087,11 @@ void drv_mcu_OLED_IIC_SDA_PIN_SET_INPUT()
 void drv_OLED_IIC_Stop(void)
 {	
 	OLED_IIC_SCL_L;  //
-	Ddl_Delay1us(8);
+	Ddl_Delay1us(4);
 	OLED_IIC_SDA_L;
-	Ddl_Delay1us(8);
+	Ddl_Delay1us(4);
 	OLED_IIC_SCL_H;
-	Ddl_Delay1us(8);
+	Ddl_Delay1us(4);
 	OLED_IIC_SDA_H;
 }
 
@@ -1099,26 +1099,26 @@ void drv_OLED_IIC_Stop(void)
 void drv_OLED_IIC_Start(void)
 {
 	OLED_IIC_SDA_H;
-	Ddl_Delay1us(8);
+	Ddl_Delay1us(4);
 	OLED_IIC_SCL_H;
-	Ddl_Delay1us(8);	
+	Ddl_Delay1us(4);	
 	OLED_IIC_SCL_L;//SCL拉低
-	Ddl_Delay1us(8);	
+	Ddl_Delay1us(4);	
 	OLED_IIC_SDA_L;//SDA拉低
-	Ddl_Delay1us(8);
+	Ddl_Delay1us(4);
 }
 
 /************MCU向XYC_ALS发送应答/非应答信号**********************/
 void drv_OLED_IIC_ACKorNACK(uint8_t uAck)
 {	
-	Ddl_Delay1us(7);
+	Ddl_Delay1us(4);
 	OLED_IIC_SCL_H;//SCL拉高
-	Ddl_Delay1us(7);	
+	Ddl_Delay1us(4);	
 	OLED_IIC_SCL_L;//SCL拉低
 	OLED_IIC_SDA_H;      //SDA拉高
 
 	OLED_IIC_SCL_L;        //SCL    ____________时钟线拉低，才允许改变数据位，防止SDA原来为低电平
-    Ddl_Delay1us(8);	
+    Ddl_Delay1us(4);	
     
     if(uAck==1) 
 	{
@@ -1128,12 +1128,12 @@ void drv_OLED_IIC_ACKorNACK(uint8_t uAck)
 	{
         OLED_IIC_SDA_L;
     }
-    Ddl_Delay1us(13);
+    Ddl_Delay1us(6);
     OLED_IIC_SCL_H;                  //    P90:TxD_SCL     _________|~~~~~~~~~~
-    Ddl_Delay1us(13);
+    Ddl_Delay1us(6);
 
     OLED_IIC_SCL_L;                //     ~~~~~|______________
-    Ddl_Delay1us(8);
+    Ddl_Delay1us(4);
 }
 
 /****************************************************************************/
@@ -1149,15 +1149,15 @@ uint8_t drv_OLED_IIC_Checkack(void)
 	uint8_t tmp_flag = 0;
 
     OLED_IIC_SCL_L;        //SCL    ____________时钟线拉低，才允许改变数据位，防止SDA原来为低电平
-    Ddl_Delay1us(8);
+    Ddl_Delay1us(4);
     OLED_IIC_SDA_H;          //SDA  ______/------ 
-    Ddl_Delay1us(8);
+    Ddl_Delay1us(4);
 
 ///*---------------------------------------------------------------------------*/
     drv_mcu_OLED_IIC_SDA_PIN_SET_INPUT();       //I/O 设置为输入
 	
     OLED_IIC_SCL_H;          //SCL   ------------
-    Ddl_Delay1us(8);
+    Ddl_Delay1us(4);
 	
     if(OLED_IIC_SdaState) 
 	{
@@ -1165,7 +1165,7 @@ uint8_t drv_OLED_IIC_Checkack(void)
     }
 
     OLED_IIC_SCL_L;         //SCL   ------\______
-    Ddl_Delay1us(8);
+    Ddl_Delay1us(4);
 	
     drv_mcu_OLED_IIC_SDA_PIN_SET_OUTPUT();
 
@@ -1181,7 +1181,7 @@ uint8_t drv_OLED_IIC_Sendbyte(unsigned char Sdata)
 	for(i=0;i<8;i++)
 	{
 		OLED_IIC_SCL_L; 
-		Ddl_Delay1us(4);	
+		Ddl_Delay1us(2);	
     	if((temp&0x80) == 0x80)
 		{
 			OLED_IIC_SDA_H;
@@ -1191,9 +1191,9 @@ uint8_t drv_OLED_IIC_Sendbyte(unsigned char Sdata)
 			OLED_IIC_SDA_L;
 		}
 			
-		Ddl_Delay1us(4);
+		Ddl_Delay1us(2);
     	OLED_IIC_SCL_H; 
-		Ddl_Delay1us(8);
+		Ddl_Delay1us(4);
 		temp = temp<<1;
 	}
 

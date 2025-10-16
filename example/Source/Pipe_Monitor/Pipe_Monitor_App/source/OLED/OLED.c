@@ -205,6 +205,7 @@ void func_OLED_PowerUp_Init(void)
 
 void func_OLED_PowerDown_DeInit(void)
 {
+	pst_OLEDSystemPara->DeviceRunPara.eShowView = SType_Meas_Level;
 	stc_port_init_t stcPortInit;
     MEM_ZERO_STRUCT(stcPortInit);
     stcPortInit.enPinMode = Pin_Mode_Ana;

@@ -83,7 +83,7 @@ extern "C"
 #define DDL_INTERRUPTS_SHARE_ENABLE                 (DDL_OFF)
 #define DDL_KEYSCAN_ENABLE                          (DDL_OFF)
 #define DDL_MPU_ENABLE                              (DDL_OFF)
-#define DDL_OTS_ENABLE                              (DDL_OFF)
+#define DDL_OTS_ENABLE                              (DDL_ON)
 #define DDL_PWC_ENABLE                              (DDL_ON)
 #define DDL_QSPI_ENABLE                             (DDL_OFF)
 #define DDL_RMU_ENABLE                              (DDL_OFF)

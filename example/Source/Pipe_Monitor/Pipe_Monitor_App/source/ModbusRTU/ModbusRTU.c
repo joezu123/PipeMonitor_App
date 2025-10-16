@@ -648,7 +648,7 @@ unsigned char func_Get_Meas_BY_Radar_Level_Sensor_Value(en_usart_device_t ucDevi
         }
     }
 
-    if(pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fRadarEmptyHeightValue >= 0.01)
+    if((double)pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fRadarEmptyHeightValue >= 0.01)
     {
         pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fRadarWaterLevelValue = pst_MBSystemPara->DevicePara.fInit_Height - pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fRadarEmptyHeightValue;
     }
@@ -1442,7 +1442,7 @@ void func_Meas_Sensor_Dispose(void)
 	unsigned char i = 0;
     unsigned char j = 0;
     unsigned char l = 0;
-    unsigned char k = 0;
+    //unsigned char k = 0;
     unsigned char ucRes = 0;
     en_usart_device_t enType = MODULE_MEAS_SENSOR1;
     MeasSensorParaSt st_MeasSensorPara[2][10];

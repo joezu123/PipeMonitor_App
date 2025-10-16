@@ -2901,6 +2901,12 @@
                 </file>
             </group>
         </group>
+        <group>
+            <name>drv_OTS_Temperature</name>
+            <file>
+                <name>$PROJ_DIR$\..\drv_device\drv_OTS_Temperature\drv_OTS_Temperature.c</name>
+            </file>
+        </group>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\driver\src\hc32f460_adc.c</name>
         </file>
@@ -2933,6 +2939,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\driver\src\hc32f460_keyscan.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\driver\src\hc32f460_ots.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\driver\src\hc32f460_pwc.c</name>

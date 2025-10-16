@@ -35,6 +35,7 @@ D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_M
   D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\driver\inc\hc32f460_i2c.h \
   D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\driver\inc\hc32f460_icg.h \
   D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\driver\inc\hc32f460_interrupts.h \
+  D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\driver\inc\hc32f460_ots.h \
   D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\driver\inc\hc32f460_pwc.h \
   D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\driver\inc\hc32f460_rtc.h \
   D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\driver\inc\hc32f460_spi.h \

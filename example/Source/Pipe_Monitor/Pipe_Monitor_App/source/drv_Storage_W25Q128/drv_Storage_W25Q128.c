@@ -51,7 +51,7 @@
 /*******************************************************************************
  * Global variable definitions (declared in header file with 'extern')
  ******************************************************************************/
-
+extern void func_Device_Parameter_Factory_Reset(void);
 /*******************************************************************************
  * Local function prototypes ('static')
  ******************************************************************************/
@@ -875,7 +875,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;	
 	case DEV_STATUS_UPLOAD_GAP:
 		ucTmpData = *cDataArr;     
-		if((ucTmpData < 1) || (ucTmpData > 300))
+		if((ucTmpData < 1) || (ucTmpData > 200))
 		{
 			ucResult = 0;
 		}
@@ -920,7 +920,9 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		else
 		{
 			pst_W25Q128SystemPara->DevicePara.usServerPort[0] = usTmpData;
-			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usServerPort[0],SYSTEM_PARA_ADDR+((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usServerPort[0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(unsigned short));
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usServerPort[0],SYSTEM_PARA_ADDR+((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usServerPort[0]-(uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(unsigned short));
+			#pragma diag_warning=Pa039
 		}
 		break;
 	case DEV_IP_PORT2:
@@ -932,7 +934,9 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		else
 		{
 			pst_W25Q128SystemPara->DevicePara.usServerPort[1] = usTmpData;
-			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usServerPort[1],SYSTEM_PARA_ADDR+((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usServerPort[1]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(unsigned short));
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usServerPort[1],SYSTEM_PARA_ADDR+((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usServerPort[1]-(uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(unsigned short));
+			#pragma diag_warning=Pa039
 		}
 		break;
 	case DEV_DEBUG_MODEL:
@@ -950,7 +954,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 	case DEV_INSTALL_HEIGHT:
 		//memcpy(&pst_W25Q128SystemPara->DevicePara.fTotal_Volume, cDataArr, sizeof(float));
 		fTmpData = ((float*)cDataArr);
-		if((*fTmpData < 0.2) || (*fTmpData > 10.0))
+		if(((double)*fTmpData < 0.2) || (((double)*fTmpData > 10.0)))
 		{
 			ucResult = 0;
 		}
@@ -987,6 +991,9 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 			pst_W25Q128SystemPara->DeviceRunPara.usLongPowerModelWaitCnt = 0;
 			//W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDebugModel,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cDebugModel-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
 		}
+		break;
+	case DEV_FACTORY_RESET:
+		func_Device_Parameter_Factory_Reset();
 		break;
 	default:
 		break;
@@ -1067,6 +1074,27 @@ void func_Device_Parameter_Init(void)
 		memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceSWVersion[0],&gs_DeviceDefaultPara.cDeviceSWVersion[0],10);
 		W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDeviceSWVersion[0],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cDeviceSWVersion[0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),10);
 	}
+}
+
+//复位设备参数为出厂设置
+void func_Device_Parameter_Factory_Reset(void)
+{
+	char cDeviceID[17] = {0};
+	char cDevicePDDate[10] = {0};
+	//保存原有的设备ID和生产日期
+	memcpy(&cDeviceID[0], &pst_W25Q128SystemPara->DevicePara.cDeviceID[0], 17);
+	memcpy(&cDevicePDDate[0], &pst_W25Q128SystemPara->DevicePara.cDevicePDDate[0], 10);
+	
+	memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], &gs_DeviceDefaultPara, sizeof(gs_DeviceDefaultPara));
+	
+	memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], &cDeviceID[0], 17);
+	memcpy(&pst_W25Q128SystemPara->DevicePara.cDevicePDDate[0], &cDevicePDDate[0], 10);
+	W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDeviceID[0],SYSTEM_PARA_ADDR,sizeof(gs_DeviceDefaultPara));
+	pst_W25Q128SystemPara->DeviceRunPara.cTotalSensorCnt = pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[0] + pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[1];
+	pst_W25Q128SystemPara->DeviceRunPara.cDebugModel = 0;
+	pst_W25Q128SystemPara->DeviceRunPara.cLongPowerModel = 0;
+	pst_W25Q128SystemPara->DeviceRunPara.usLongPowerModelWaitCnt = 0;
+	//func_System_Soft_Reset();
 }
 
 /******************************************************************************

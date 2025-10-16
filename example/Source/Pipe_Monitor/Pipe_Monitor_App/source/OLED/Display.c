@@ -627,7 +627,7 @@ void func_Connect_Server_Status_View_Show(void)
 	{
 		sTestArr[0] = 0x051F;	//R
 	}
-	else if(pst_OLEDSystemPara->DeviceRunPara.enUploadStatus == Status_Upload)
+	else if(pst_OLEDSystemPara->DeviceRunPara.enUploadStatus == Status_MQTT_Publish_Topic_DataUoload)
 	{
 		sTestArr[0] = 0x0522;	//U
 	}
@@ -1137,7 +1137,7 @@ void func_Measure_Water_Quality_View_Show(unsigned char ucCnt)
 void func_Meas_Sensor_Value_View_Show(unsigned char ucCnt)
 {
 	signed short sTestArr[20] = {0};
-	char cID[10] = {0};
+	//char cID[10] = {0};
 	//uint8_t i = 0;
 	func_DateTime_Battery_Status_View_Show();
 	//姿态
@@ -1168,7 +1168,7 @@ void func_GPSData_View_Show(unsigned char ucCnt)
 {
 	signed short sTestArr[20] = {0};
 	float fValue = 0.0;
-	char cID[10] = {0};
+	//char cID[10] = {0};
 	//uint8_t i = 0;
 	func_DateTime_Battery_Status_View_Show();
 	if(pst_OLEDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude < 1)

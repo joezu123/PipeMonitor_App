@@ -26,7 +26,7 @@
 #define MB_FUNC_HANDLERS_MAX                    ( 16 )
 #define REG_INPUT_START 0x1000
 #define REG_INPUT_NREGS 0xD000
-#define MD_MAX_REG_UNIT 60
+#define MD_MAX_REG_UNIT 70
 /*******************************************************************************
  * Global variable definitions (declared in header file with 'extern')
  ******************************************************************************/
@@ -240,6 +240,16 @@ eMBErrorCode Unit_RW_DeviceUploadGap_func( unsigned char * pucRegBuffer, unsigne
     return Short_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, usValue,DEV_UPLOAD_GAP);
 }
 
+//设备MCU内置温度传感器数据
+eMBErrorCode Unit_R_DeviceTemperature_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    if(eMode == MB_REG_READ)
+    {  
+        float fVlaue = (float)pst_MBSystemPara->DeviceRunPara.esDeviceSensorsData.fDevTemperature;
+        return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_BEGIN_PARA);      
+    }
+    return MB_ENOERR;
+}
 
 
 //设备当前纬度数据
@@ -572,6 +582,27 @@ eMBErrorCode Unit_RW_Device_LongPower_Model_func( unsigned char * pucRegBuffer, 
     return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_LONGPOWER_MODEL);
 }
 
+//设备恢复出厂设置
+eMBErrorCode Unit_W_Device_Factory_Reset_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    if(eMode == MB_REG_WRITE)
+    { 
+        return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, 1, DEV_FACTORY_RESET);
+    }
+    return MB_ENOERR;
+}
+
+//设备4G联网状态信息
+eMBErrorCode Unit_R_Device_4G_Connect_Status_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    unsigned char cVlaue = (unsigned char)pst_MBSystemPara->DeviceRunPara.enUploadStatus;
+    if(eMode == MB_REG_WRITE)
+    { 
+        return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_BEGIN_PARA);
+    }
+    return MB_ENOERR;
+}
+
 
 //设备测量信息：雷达液位计
 eMBErrorCode Unit_R_DeviceRadarLevel_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
@@ -587,10 +618,10 @@ eMBErrorCode Unit_R_DevicePressLevel_func( unsigned char * pucRegBuffer, unsigne
     return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_BEGIN_PARA);
 }
 
-//设备测量信息：流量计
+//设备测量信息：流量计-瞬时流量
 eMBErrorCode Unit_R_DeviceWaterVolume_s_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
 {
-    float fVlaue = gSt_DevMeasRecordData.fWaterVolume_s;
+    float fVlaue = gSt_DevMeasRecordData.fWaterVolume;
     return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_BEGIN_PARA);
 }
 
@@ -600,6 +631,22 @@ eMBErrorCode Unit_R_DeviceWaterQuality_COND_func( unsigned char * pucRegBuffer, 
     float fVlaue = gSt_DevMeasRecordData.fWaterQuality_COND;
     return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_BEGIN_PARA);
 }
+
+//设备测量信息：流量计-流速
+eMBErrorCode Unit_R_DeviceWaterSpeed_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    float fVlaue = gSt_DevMeasRecordData.fWaterSpeed;
+    return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_BEGIN_PARA);
+}
+
+
+//设备测量信息：流量计-累计流量
+eMBErrorCode Unit_R_DeviceWaterVolume_Total_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    float fVlaue = gSt_DevMeasRecordData.fWaterVolume_Total;
+    return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_BEGIN_PARA);
+}
+
 
 //设备生产日期-只写
 eMBErrorCode Unit_W_DevicePDDate_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
@@ -642,7 +689,9 @@ static const MB_Data_Reg_Unit_S Modbus_Data_Reg_Unit[MD_MAX_REG_UNIT] =
     {MB_R_DEVICE_PARA_PD_DATE,MB_RW_DEVICE_PARA_SAMPLE_GAP_CNT - MB_R_DEVICE_PARA_PD_DATE,Unit_R_DevicePDDate_func}, 
     {MB_RW_DEVICE_PARA_SAMPLE_GAP_CNT,MB_RW_DEVICE_PARA_RECORD_GAP_CNT - MB_RW_DEVICE_PARA_SAMPLE_GAP_CNT,Unit_RW_DeviceSampleGap_func}, 
     {MB_RW_DEVICE_PARA_RECORD_GAP_CNT,MB_RW_DEVICE_PARA_UPLOAD_GAP_CNT - MB_RW_DEVICE_PARA_RECORD_GAP_CNT,Unit_RW_DeviceRecordGap_func}, 
-    {MB_RW_DEVICE_PARA_UPLOAD_GAP_CNT,1,Unit_RW_DeviceUploadGap_func}, 
+    {MB_RW_DEVICE_PARA_UPLOAD_GAP_CNT,MB_R_DEVICE_TEMPERATURE - MB_RW_DEVICE_PARA_UPLOAD_GAP_CNT,Unit_RW_DeviceUploadGap_func}, 
+    {MB_R_DEVICE_TEMPERATURE,MB_R_DEVICE_4G_CONNECT_STATUS - MB_R_DEVICE_TEMPERATURE,Unit_R_DeviceTemperature_func}, 
+    {MB_R_DEVICE_4G_CONNECT_STATUS,1,Unit_R_Device_4G_Connect_Status_func},
     
     {MB_R_DEVICE_PARA_LOCA_LATITUDE,MB_R_DEVICE_PARA_LOCA_LNGITUDE - MB_R_DEVICE_PARA_LOCA_LATITUDE,Unit_R_DeviceLatitude_func},
     {MB_R_DEVICE_PARA_LOCA_LNGITUDE,MB_R_DEVICE_PARA_BATTERY_LEVEL - MB_R_DEVICE_PARA_LOCA_LNGITUDE,Unit_R_DeviceLngitude_func}, 
@@ -686,12 +735,16 @@ static const MB_Data_Reg_Unit_S Modbus_Data_Reg_Unit[MD_MAX_REG_UNIT] =
     {MB_RW_DEVICE_DEBUG_MODEL,MB_RW_DEVICE_INSTALL_HEIGHT - MB_RW_DEVICE_DEBUG_MODEL,Unit_RW_Device_Debug_Model_func},
     {MB_RW_DEVICE_INSTALL_HEIGHT,MB_RW_DEVICE_SENSOR_BAUDRATE - MB_RW_DEVICE_INSTALL_HEIGHT,Unit_RW_Device_Install_Height_func},
     {MB_RW_DEVICE_SENSOR_BAUDRATE,MB_RW_DEVICE_LONGPOWER_MODEL - MB_RW_DEVICE_SENSOR_BAUDRATE,Unit_RW_Device_Sensor_Baud_func},
-    {MB_RW_DEVICE_LONGPOWER_MODEL,1,Unit_RW_Device_LongPower_Model_func},
+    {MB_RW_DEVICE_LONGPOWER_MODEL,MB_W_DEVICE_FACTORY_RESET_CMD - MB_RW_DEVICE_LONGPOWER_MODEL,Unit_RW_Device_LongPower_Model_func},
+    {MB_W_DEVICE_FACTORY_RESET_CMD,1,Unit_W_Device_Factory_Reset_func},
+    
 
     {MB_R_DEVICE_RADAR_LEVEL_SENSOR_VALUE,MB_R_DEVICE_PRESSURE_LEVEL_SENSOR_VALUE - MB_R_DEVICE_RADAR_LEVEL_SENSOR_VALUE,Unit_R_DeviceRadarLevel_func},
     {MB_R_DEVICE_PRESSURE_LEVEL_SENSOR_VALUE,MB_R_DEVICE_FLOWERMETER_SENSOR_VALUE - MB_R_DEVICE_PRESSURE_LEVEL_SENSOR_VALUE,Unit_R_DevicePressLevel_func},
     {MB_R_DEVICE_FLOWERMETER_SENSOR_VALUE,MB_R_DEVICE_INTEGRATED_CONDUCTIVITY_SENSOR_VALUE - MB_R_DEVICE_FLOWERMETER_SENSOR_VALUE,Unit_R_DeviceWaterVolume_s_func},
-    {MB_R_DEVICE_INTEGRATED_CONDUCTIVITY_SENSOR_VALUE,2,Unit_R_DeviceWaterQuality_COND_func},
+    {MB_R_DEVICE_INTEGRATED_CONDUCTIVITY_SENSOR_VALUE,MB_R_DEVICE_FLOWERSPEED_SENSOR_VALUE - MB_R_DEVICE_INTEGRATED_CONDUCTIVITY_SENSOR_VALUE,Unit_R_DeviceWaterQuality_COND_func},
+    {MB_R_DEVICE_FLOWERSPEED_SENSOR_VALUE,MB_R_DEVICE_FLOWERMETER_TOTAL_SENSOR_VALUE - MB_R_DEVICE_FLOWERSPEED_SENSOR_VALUE,Unit_R_DeviceWaterSpeed_func},
+    {MB_R_DEVICE_FLOWERMETER_TOTAL_SENSOR_VALUE,2,Unit_R_DeviceWaterVolume_Total_func},
     
     {MB_W_DEVICE_PARA_PD_DATE,5,Unit_W_DevicePDDate_func}, 
     {MB_W_DEVICE_RESET_CMD,1,Unit_W_DeviceReset_func},

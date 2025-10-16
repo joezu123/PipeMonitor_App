@@ -42,6 +42,7 @@
 #include "drv_RTC.h"
 #include "drv_LKT4202.h"
 #include "RXNTTL518.h"
+#include "drv_OTS_Temperature.h"
 //#include "ModbusRTU.h"
 
 /*******************************************************************************
@@ -564,7 +565,7 @@ void func_System_Timer1s_Dispose(void)
 void func_NFC_Check_Dispose(void)
 {
 	char ucNFCFindCardFlag = 0;
-	char j = 0;
+	//char j = 0;
 
 	//开启NFC电源及初始化配置，要注意，每次接触事件，仅初始化一次
 	if(guc_NFCPWRInitFlag == 0)
@@ -676,9 +677,37 @@ void func_Get_Device_Sensors_Value(void)
 	static unsigned char ucRetryCnt = 0;
 	float fValue = 0.0;
 	static unsigned char ucChangeCnt = 0;
+	int nValue = 0;
+	int nDifValue = 0;
+	short sValue = 0;
+	short sDifValue = 0;
 
 	//pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.cPhotosensitive_XYC_ALS_Status = 0;
-	pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.sPhotosensitive_XYC_ALS_Data = func_ReadPhoto_XYC_ALS_Data();
+	//pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.sPhotosensitive_XYC_ALS_Data = func_ReadPhoto_XYC_ALS_Data();
+	sValue = func_ReadPhoto_XYC_ALS_Data();
+	if(sValue >= pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.sPhotosensitive_XYC_ALS_Data)
+	{
+		sDifValue = sValue - pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.sPhotosensitive_XYC_ALS_Data;
+	}
+	else
+	{
+		sDifValue = pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.sPhotosensitive_XYC_ALS_Data - sValue;
+	}
+	if(sDifValue >= 20)
+	{
+		pst_MainloopSystemPara->DeviceRunPara.cBoardSensorXYCValueChangeCnt++;
+		if(pst_MainloopSystemPara->DeviceRunPara.cBoardSensorXYCValueChangeCnt >= 3)
+		{
+			pst_MainloopSystemPara->DeviceRunPara.cBoardSensorXYCValueChangeCnt = 0;
+			pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.sPhotosensitive_XYC_ALS_Data = sValue;
+			pst_MainloopSystemPara->DeviceRunPara.cBDRestartFlag = 1;	//姿态传感器数据变化过大，重新进行北斗定位
+		}
+	}
+	else
+	{
+		pst_MainloopSystemPara->DeviceRunPara.cBoardSensorXYCValueChangeCnt = 0;
+		pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.sPhotosensitive_XYC_ALS_Data = sValue;
+	}
 	if((pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.sPhotosensitive_XYC_ALS_Data > 30))
 	//if(pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.cPhotosensitive_XYC_ALS_Status == 0)
 	{
@@ -691,8 +720,31 @@ void func_Get_Device_Sensors_Value(void)
 		pst_MainloopSystemPara->DeviceRunPara.usDevStatus &= 0xFFEF;
 	}
 	
-	//func_SC7A20H_Read_FIFO_Buf(&pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A[0],&pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A[1],&pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A[2]);
-	pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A = SC7A20_Task();
+	//获取姿态传感器数据
+	nValue = SC7A20_Task();
+	if(nValue >= pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A)
+	{
+		nDifValue = nValue - pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A;
+	}
+	else
+	{
+		nDifValue = pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A - nValue;
+	}
+	if(nDifValue >= 10)
+	{
+		pst_MainloopSystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt++;
+		if(pst_MainloopSystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt >= 3)
+		{
+			pst_MainloopSystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt = 0;
+			pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A = nValue;
+			pst_MainloopSystemPara->DeviceRunPara.cBDRestartFlag = 1;	//姿态传感器数据变化过大，重新进行北斗定位
+		}
+	}
+	else
+	{
+		pst_MainloopSystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt = 0;
+		pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A = nValue;
+	}
 	
 	//读取水浸传感器状态
 	drv_Get_Water_Immersion_Sensor_Status(&pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status, &pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fWater_Immersion_Level);
@@ -728,7 +780,7 @@ void func_Get_Device_Sensors_Value(void)
 		pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.ucBattery_Level_Flag = 1;	//电池电量正常
 	}
 
-	if((fValue + 2.0) < pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent)
+	if(((double)fValue + 2.0) < (double)pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent)
 	{
 		ucChangeCnt++;
 		if(ucChangeCnt > 3)
@@ -763,6 +815,10 @@ void func_Get_Device_Sensors_Value(void)
 			}
 		}
 	}
+
+	//获取设备MCU 温度
+	func_OTS_Temperature_GetValue(&pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fDevTemperature);
+
 	pst_MainloopSystemPara->DeviceRunPara.cTimer1sTriggerFlag = 0;
 }
 
@@ -789,6 +845,10 @@ void func_Save_Device_MeasRecord_Dispose()
 	#endif
 	gSt_DevMeasRecordData.cWater_Immersion_Status = pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status;
 	gSt_DevMeasRecordData.cPhotosensitive_XYC_ALS_Status = pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.cPhotosensitive_XYC_ALS_Status;
+	gSt_DevMeasRecordData.cBT_ConnectFlag = pst_MainloopSystemPara->DeviceRunPara.cDeviceBTConnectFlag;
+	gSt_DevMeasRecordData.cDebug_Model = pst_MainloopSystemPara->DeviceRunPara.cDebugModel;
+	gSt_DevMeasRecordData.cLongPowerModel = pst_MainloopSystemPara->DeviceRunPara.cLongPowerModel;
+	gSt_DevMeasRecordData.fDevTemperature = pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fDevTemperature;
 
 	if(pst_MainloopSystemPara->DeviceRunPara.nDeviceCurSaveRecordCount >= pst_MainloopSystemPara->DevicePara.nDeviceSaveRecordCnt)
 	{
@@ -812,22 +872,24 @@ void func_Save_Device_MeasRecord_Dispose()
 						|| (pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Radar_Ultrasonic_Flow)
 						|| (pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Ultrasonic_Flow))
 					{
-						gSt_DevMeasRecordData.fWaterVolume_s = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fFlowValue;
-						pst_MainloopSystemPara->DevicePara.fTotal_Volume += pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fFlowValue;
+						gSt_DevMeasRecordData.fWaterVolume = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fFlowValue;
+						pst_MainloopSystemPara->DevicePara.fTotal_Volume  = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fPositiveCumulativeTraffic;//+= pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fFlowValue;
 						#pragma diag_suppress=Pa039
 						func_Save_Device_Parameter(DEV_TOTAL_VOLUME, (unsigned char*)&pst_MainloopSystemPara->DevicePara.fTotal_Volume);
 						#pragma diag_warning=Pa039
 						gSt_DevMeasRecordData.fWaterVolume_Total = pst_MainloopSystemPara->DevicePara.fTotal_Volume;
+						gSt_DevMeasRecordData.fWaterSpeed = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fCross_SectionVelocity;
 					}
 					else if((pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Radar_Ultrasonic_Flow)
 						|| (pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Flowmeter))
 					{
-						gSt_DevMeasRecordData.fWaterVolume_s = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fFlowValue;
-						pst_MainloopSystemPara->DevicePara.fTotal_Volume += pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fFlowValue;
+						gSt_DevMeasRecordData.fWaterVolume = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fFlowValue;
+						pst_MainloopSystemPara->DevicePara.fTotal_Volume = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fCumulativeTraffic;//+= pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fFlowValue;
 						#pragma diag_suppress=Pa039
 						func_Save_Device_Parameter(DEV_TOTAL_VOLUME, (unsigned char*)&pst_MainloopSystemPara->DevicePara.fTotal_Volume);
 						#pragma diag_warning=Pa039
 						gSt_DevMeasRecordData.fWaterVolume_Total = pst_MainloopSystemPara->DevicePara.fTotal_Volume;
+						gSt_DevMeasRecordData.fWaterSpeed = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fCross_SectionVelocity;
 					}
 					else if(pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Pressure_Level)
 					{
@@ -857,7 +919,11 @@ void func_Save_Device_MeasRecord_Dispose()
 					if((ucPressLevelExistFlag == 1) && (ucRadarLevelExistFlag == 1))
 					{
 						fDifValue = gSt_DevMeasRecordData.fWaterLevel_Radar - gSt_DevMeasRecordData.fWaterLevel_Pres;
-						if((fabs(fDifValue) >= 0.3) && (gSt_DevMeasRecordData.fWaterLevel_Pres > 0.3))
+						if((fabs((double)fDifValue) >= 0.3) && ((double)gSt_DevMeasRecordData.fWaterLevel_Pres > 0.3))
+						{
+							gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Pres;
+						}
+						else if(((double)gSt_DevMeasRecordData.fWaterLevel_Radar < 0.01) && ((double)gSt_DevMeasRecordData.fWaterLevel_Pres > 0.01))
 						{
 							gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Pres;
 						}
@@ -898,7 +964,7 @@ void func_Save_Device_MeasRecord_Dispose()
 			//pst_MainloopSystemPara->DeviceRunPara.nDeviceCurSaveRecordCount = 0;
 			ucSaveRecordFlag = 0;
 			//将本次采集的数据存入存储中
-			if((double)pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent >= 30.0)
+			if((double)pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent >= 10.0)
 			{
 				func_Save_Device_MeasData();
 				pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt++;
@@ -940,6 +1006,13 @@ void func_BD_Data_Dispose(void)
 	#endif
 	unsigned char ucBDData[800] = {0};
 	#if 1
+	//判断当前是否需要重新进行BD定位，触发条件：姿态传感器数据偏差10度；光敏传感器数据偏差20
+	if((pst_MainloopSystemPara->DeviceRunPara.cBDRestartFlag == 1) && (pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag == 1))
+	{
+		pst_MainloopSystemPara->DeviceRunPara.cBDRestartFlag = 0;
+		pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag = 0;
+		pst_MainloopSystemPara->DeviceRunPara.cBD_GetValueCnt = 0;
+	}
 	if(pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag == 0)
 	{
 		if((pst_MainloopSystemPara->UsartData.enUsart3Source == MODULE_NFC_RFID) || (pst_MainloopSystemPara->DeviceRunPara.cBD_GetValueCnt == 0))
@@ -975,7 +1048,6 @@ void func_BD_Data_Dispose(void)
 			{
 				pst_MainloopSystemPara->DeviceRunPara.cBD_GetDataFlag = 0;
 			}
-			
 		}
 		else
 		{

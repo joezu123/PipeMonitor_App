@@ -198,6 +198,8 @@ typedef enum _SavePara
 	DEV_INSTALL_HEIGHT,	//设备安装井深
 	DEV_SENSOR_BAUDRATE,	//设备485波特率
 	DEV_LONGPOWER_MODEL,	//设备长供电模式
+	DEV_FACTORY_RESET,	//设备恢复出厂设置
+	DEV_4G_CONNECT_STATUS,	//4G连接状态
 	DEV_END_PARA
 }en_SaveParaCMD;
 
@@ -324,6 +326,7 @@ typedef struct _SysDeviceSensorData
 	char cMagnetic_Bar_Status;				//磁控检测状态； 0->未激活； 1->激活
 	char cPhotosensitive_XYC_ALS_Status;	//光照检测状态: 0->未激活； 1->激活
 	short sPhotosensitive_XYC_ALS_Data;	//光照传感器数据
+	float fDevTemperature;	//设备MCU 内置温度传感器数据
 	NMEA_MsgSt esBD_NEMAData;				//北斗定位信息结构体
 }SysDeviceSensorsData;
 
@@ -432,8 +435,30 @@ typedef enum _PowerType
 typedef enum _UploadModuleStatus
 {
 	Status_OK,			//在线
+	Status_Init,		//初始化
+	Status_AT_Test,		//AT测试
+	Status_SIM_Status,	//SIM状态
+	Status_Signal_Strength,	//信号强度
 	Status_Register,	//注册
-	Status_Upload,		//上传数据
+	Status_Active_Network,	//激活网络
+	Status_Check_Network,	//查询网络状态
+	Status_Get_IMSI,		//获取IMSI
+	Status_Get_IMEI,		//获取IMEI
+	Status_Get_DateTime,	//获取日期时间
+	Status_MQTT_SET_Data_Format,	//MQTT 设置数据格式
+	Status_MQTT_Set_KeepAlive_Time,	//MQTT 设置心跳时间
+	Status_MQTT_Set_Version,		//MQTT 设置版本
+	Status_MQTT_Open_Interface,		//MQTT 打开端口
+	Status_MQTT_Connect_Interface,	//MQTT 连接端口
+	Status_MQTT_Subscribe_Topic_Register,	//MQTT 订阅注册主题
+	Status_MQTT_Subscribe_Topic_DataUpload,	//MQTT 订阅监测项上报主题
+	Status_MQTT_Subscribe_Topic_StatusUpload,	//MQTT 订阅状态上报主题
+	Status_MQTT_Subscribe_Topic_SetPara,	//MQTT 订阅设置参数主题
+	Status_MQTT_Subscribe_Topic_GetPara,	//MQTT 订阅读取参数主题
+	Status_MQTT_Publish_Topic_Register,		//MQTT 发布注册主题
+	Status_MQTT_Publish_Topic_DataUoload,	//MQTT 发布监测项上传主题
+	Status_MQTT_Publish_Topic_StatusUpload,	//MQTT 发布状态上报主题
+	//Status_Upload,		//上传数据
 	Status_Err			//异常
 }eUploadModuleStatus;
 
@@ -513,6 +538,9 @@ typedef struct _SysDeviceRunPara
 	char c4GInitWaitCnt;	//开机4G初始化等待时间
 	char cLongPowerModel;	//设备长供电模式，给外接传感器进行30分钟供电，便于外接传感器进行调试，比如雷达液位计通过蓝牙小程序调试等
 	unsigned short usLongPowerModelWaitCnt;	//长供电模式，当前等待时间，单位s
+	char cBoardSensorXYCValueChangeCnt;	//板级XYC传感器数据变化计数值
+	char cBoardSensorPhotoValueChangeCnt;	//板级光照传感器数据变化计数值
+	char cBDRestartFlag;	//北斗重启标志位
 	char cBlackLightFlag;		//是否为黑光图像站设备 	
 	BlackLightDataSt st_BlackLightData;	//黑光图像站数据结构体
 	//char c4GTimerCnt;
@@ -580,12 +608,17 @@ typedef struct _DevMeasRecordData
 	float fWaterLevel_Pres;		//液位-压力
 	float fWaterQuality_COND;		//水质-电导率
 	float fWaterQuality_COD;		//水质-COD
-	float fWaterVolume_s;			//流量-瞬时流量 m³/s
+	float fWaterVolume;			//流量-瞬时流量 m³/h
+	float fWaterSpeed;			//流量-流速
 	float fWaterVolume_Total;	//流量-累计流量 m³
 	unsigned short nAttitude_SC7A;		//姿态传感器数据--Z轴倾角加速度
 	char cWater_Immersion_Status;	//水浸传感器状态; 0->未浸没； 1->浸没
 	char cPhotosensitive_XYC_ALS_Status;	//光照检测状态: 0->未激活； 1->激活
-}DevMeasRecordDataSt;	//目前结构体大小为32字节
+	char cBT_ConnectFlag;	//蓝牙连接状态: 0->未连接；1->连接
+	char cDebug_Model;		//设备是否处于调试模式: 0->正常模式： 1->调试模式
+	char cLongPowerModel;	//设备是否处于长供电模式: 0->正常模式; 1->长供电模式
+	float fDevTemperature;	//设备MCU内部温度
+}DevMeasRecordDataSt;	//目前结构体大小为43字节
 
 /*系统运行全局变量结构体 */
 typedef struct _SystemPara

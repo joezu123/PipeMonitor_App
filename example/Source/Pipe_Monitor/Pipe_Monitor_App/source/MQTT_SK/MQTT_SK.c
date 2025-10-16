@@ -477,14 +477,14 @@ void MQTT_Send_SetConfig_Result(unsigned char ucRes, char* cmsgIdArr)
 uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 {
 	char cDataBuf[1500] = {0};
-	char cBuf[50] = {0};
-	uint16_t usDataLen = 0;
-	uint16_t usDataLen1 = 0;
-	char *cp_Data;
-	char *cp_Data1;
-	char *cp_Data2;
+	//char cBuf[50] = {0};
+	//uint16_t usDataLen = 0;
+	//uint16_t usDataLen1 = 0;
+	//char *cp_Data;
+	//char *cp_Data1;
+	//char *cp_Data2;
 	//uint8_t i = 0;
-	uint8_t cSetResult = 0;
+	//uint8_t cSetResult = 0;
 
 	uint16_t usStartPosi = 0;
 	uint16_t usRecvDataLen = 0;
@@ -930,6 +930,16 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_LONGPOWER_MODEL, (unsigned char*)&pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
 				}
+				else if (strcmp(pItem, "\"DevFactoryResetEnable\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					//pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_FACTORY_RESET, (unsigned char*)&pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
+				}
 			}
 		}
 	}
@@ -1043,16 +1053,16 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, char* cmsgIdArr)
 		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][9]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备总流量
-	sprintf((char *)ucTempArr+usDataLen, "\"DevTotalFlow\":%.3f,", pst_MQTTSystemPara->DevicePara.fTotal_Volume);
+	sprintf((char *)ucTempArr+usDataLen, "\"DevTotalFlow\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fTotal_Volume);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接状态信息：纬度
-	sprintf((char *)ucTempArr+usDataLen, "\"DevLat\":%.6f,", pst_MQTTSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat);
+	sprintf((char *)ucTempArr+usDataLen, "\"DevLat\":%.6f,", (double)pst_MQTTSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat);
 	usDataLen = strlen((char *)ucTempArr);																					
 	//拼接状态信息：经度
-	sprintf((char *)ucTempArr+usDataLen, "\"DevLng\":%.6f,", pst_MQTTSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lng);
+	sprintf((char *)ucTempArr+usDataLen, "\"DevLng\":%.6f,", (double)pst_MQTTSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lng);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接状态信息：电量百分比
-	sprintf((char *)ucTempArr+usDataLen, "\"DevBatteryPer\":%f,", pst_MQTTSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent * 100);
+	sprintf((char *)ucTempArr+usDataLen, "\"DevBatteryPer\":%f,", (double)pst_MQTTSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备状态信息：水浸标志
 	sprintf((char *)ucTempArr+usDataLen, "\"DevWaterImmi\":%d,", pst_MQTTSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status);
@@ -1067,7 +1077,7 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, char* cmsgIdArr)
 	sprintf((char *)ucTempArr+usDataLen, "\"DevAlarmStatus\":%d,", pst_MQTTSystemPara->DeviceRunPara.usDevStatus);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备测量信息
-	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorValue\":[%.3f,%.3f,%.3f,%.3f],",gSt_DevMeasRecordData.fWaterLevel_Radar,gSt_DevMeasRecordData.fWaterLevel_Pres,gSt_DevMeasRecordData.fWaterQuality_COND,gSt_DevMeasRecordData.fWaterVolume_s);
+	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorValue\":[%.3f,%.3f,%.3f,%.3f,%.3f,%.3f],",(double)gSt_DevMeasRecordData.fWaterLevel_Radar,(double)gSt_DevMeasRecordData.fWaterLevel_Pres,(double)gSt_DevMeasRecordData.fWaterQuality_COND,(double)gSt_DevMeasRecordData.fWaterVolume,(double)gSt_DevMeasRecordData.fWaterSpeed,(double)gSt_DevMeasRecordData.fWaterVolume_Total);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备状态报文上报间隔
 	sprintf((char *)ucTempArr+usDataLen, "\"DevUploadStatusGap\":%d,", pst_MQTTSystemPara->DevicePara.ucUploadStatusGap);
@@ -1088,7 +1098,7 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, char* cmsgIdArr)
 	sprintf((char *)ucTempArr+usDataLen, "\"DevDebugEnable\":%d,", pst_MQTTSystemPara->DeviceRunPara.cDebugModel);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备安装高度
-	sprintf((char *)ucTempArr+usDataLen, "\"DevInstallHeight\":%.3f,", pst_MQTTSystemPara->DevicePara.fInit_Height);
+	sprintf((char *)ucTempArr+usDataLen, "\"DevInstallHeight\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fInit_Height);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备传感器波特率
 	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorBaud\":%d", pst_MQTTSystemPara->DevicePara.cSensorBaudRate);
@@ -1096,6 +1106,7 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, char* cmsgIdArr)
 	//拼接设备长供电模式
 	sprintf((char *)ucTempArr+usDataLen, "\"DevLongPowerEnable\":%d,", pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
 	usDataLen = strlen((char *)ucTempArr);
+	
 	//拼接结束符
 	sprintf((char *)ucTempArr+usDataLen, "}}");
 	usDataLen = strlen((char *)ucTempArr);
@@ -1135,6 +1146,7 @@ uint8_t MQTT_SK_Get_Config(unsigned short usBasePosi)
 	usSendDataLen += 2;
 	//sprintf((char *)ucRecvCheckData, "\"res\":");
 	drv_mcu_USART_SendData(MODULE_4G_NB, (uint8_t*)ucSendBuf, usSendDataLen);
+	return 0;
 }
 
 /**
