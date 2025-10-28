@@ -177,7 +177,7 @@ uint8_t drv_LKT4202_Send_DecryKEY(uint8_t* cKeyBuf)
 }
 
 //发送加密数据
-uint8_t drv_LKT4202_SendData_Encry(uint8_t *uBaseDataArr, char *uEnDataArr)
+uint8_t drv_LKT4202_SendData_Encry(uint8_t *uBaseDataArr, char *uEnDataArr, unsigned short usDataLen)
 {
 	uint8_t ucRes = 0;
 	char ucSendBuf[30] = {0};
@@ -186,27 +186,63 @@ uint8_t drv_LKT4202_SendData_Encry(uint8_t *uBaseDataArr, char *uEnDataArr)
 	char cCheckBuf[2] = {0x90,0x00};
 	char ucRecvBuf[20] = {0};
 	unsigned short usPosition = 0;
+	char cBuf[16] = {0};
+	memset(cBuf,0x01,16);
 
-	memcpy(ucSendBuf,"\x00\x15",2);
-	memcpy(ucSendBuf+2,cCMDBuf,5);
-	memcpy(ucSendBuf+7,uBaseDataArr,16);
-
-	drv_SM4_IIC_Reset();
-	ucRes = drv_SM4_IIC_SendApdu(23,ucSendBuf,ucRecvBuf,&usRecvLen);
-
-	if(ucRes == 0)
+	unsigned char i,j,k;
+	unsigned short usPosi = 0;
+	i = usDataLen / 16;
+	j = usDataLen % 16;
+	if(j != 0)
 	{
-		ucRes = func_Array_Find_Str(ucRecvBuf+2, usRecvLen, cCheckBuf, 2, &usPosition);
+		memcpy(cBuf,uBaseDataArr+i*16,j);
+		i = i+1;
+	}
+
+	for(k=0; k<i; k++)
+	{
+		//usPosi = k*16;
+		memset(ucSendBuf,0,30);
+		memcpy(ucSendBuf,"\x00\x15",2);
+		memcpy(ucSendBuf+2,cCMDBuf,5);
+		if((j != 0) && (k==(i-1)))
+		{
+			memcpy(ucSendBuf+7,cBuf,16);
+		}
+		else
+		{
+			memcpy(ucSendBuf+7,uBaseDataArr+usPosi,16);
+		}
+
+		drv_SM4_IIC_Reset();
+		ucRes = drv_SM4_IIC_SendApdu(23,ucSendBuf,ucRecvBuf,&usRecvLen);
+
 		if(ucRes == 0)
 		{
-			memcpy(uEnDataArr, ucRecvBuf+2, 16);
+			ucRes = func_Array_Find_Str(ucRecvBuf+2, usRecvLen, cCheckBuf, 2, &usPosition);
+			if(ucRes == 0)
+			{
+				if((j != 0) && (k==(i-1)))
+				{
+					memcpy(uEnDataArr+usPosi, ucRecvBuf+2, j);
+				}
+				else
+				{
+					memcpy(uEnDataArr+usPosi, ucRecvBuf+2, 16);
+				}
+			}
 		}
+		else
+		{
+			ucRes = 1;
+		}
+		usPosi = usPosi+16;
 	}
 	return ucRes;
 }	
 
 //获取解密数据
-uint8_t drv_LKT4202_SendData_Decry(uint8_t *uBaseDataArr, char *uDeDataArr)
+uint8_t drv_LKT4202_SendData_Decry(uint8_t *uBaseDataArr, char *uDeDataArr, unsigned short usDataLen)
 {
 	uint8_t ucRes = 0;
 	char ucSendBuf[30] = {0};
@@ -215,21 +251,50 @@ uint8_t drv_LKT4202_SendData_Decry(uint8_t *uBaseDataArr, char *uDeDataArr)
 	char ucRecvBuf[20] = {0};
 	char cCheckBuf[2] = {0x90,0x00};
 	unsigned short usPosition = 0;
+	char cBuf[16] = {0};
 
-	memcpy(ucSendBuf,"\x00\x15",2);
-	memcpy(ucSendBuf+2,cCMDBuf,5);
-	memcpy(ucSendBuf+7,uBaseDataArr,16);
-
-	drv_SM4_IIC_Reset();
-	ucRes = drv_SM4_IIC_SendApdu(23,ucSendBuf,ucRecvBuf,&usRecvLen);
-
-	if(ucRes == 0)
+	unsigned char i,j,k;
+	unsigned short usPosi = 0;
+	i = usDataLen / 16;
+	j = usDataLen % 16;
+	if(j != 0)
 	{
-		ucRes = func_Array_Find_Str(ucRecvBuf+2, usRecvLen, cCheckBuf, 2, &usPosition);
+		memcpy(cBuf,uBaseDataArr+i*16,j);
+		i = i+1;
+	}
+
+	for(k=0; k<i; k++)
+	{
+		memcpy(ucSendBuf,"\x00\x15",2);
+		memcpy(ucSendBuf+2,cCMDBuf,5);
+		if((j != 0) && (k==(i-1)))
+		{
+			memcpy(ucSendBuf+7,cBuf,16);
+		}
+		else
+		{
+			memcpy(ucSendBuf+7,uBaseDataArr+usPosi,16);
+		}
+
+		drv_SM4_IIC_Reset();
+		ucRes = drv_SM4_IIC_SendApdu(23,ucSendBuf,ucRecvBuf,&usRecvLen);
+
 		if(ucRes == 0)
 		{
-			memcpy(uDeDataArr, ucRecvBuf+2, 16);
+			ucRes = func_Array_Find_Str(ucRecvBuf+2, usRecvLen, cCheckBuf, 2, &usPosition);
+			if(ucRes == 0)
+			{
+				if((j != 0) && (k==(i-1)))
+				{
+					memcpy(uDeDataArr+usPosi, ucRecvBuf+2, j);
+				}
+				else
+				{
+					memcpy(uDeDataArr+usPosi, ucRecvBuf+2, 16);
+				}
+			}
 		}
+		usPosi = usPosi+16;
 	}
 	return ucRes;
 }	

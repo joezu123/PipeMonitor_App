@@ -596,7 +596,7 @@ eMBErrorCode Unit_W_Device_Factory_Reset_func( unsigned char * pucRegBuffer, uns
 eMBErrorCode Unit_R_Device_4G_Connect_Status_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
 {
     unsigned char cVlaue = (unsigned char)pst_MBSystemPara->DeviceRunPara.enUploadStatus;
-    if(eMode == MB_REG_WRITE)
+    //if(eMode == MB_REG_WRITE)
     { 
         return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_BEGIN_PARA);
     }

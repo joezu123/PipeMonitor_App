@@ -502,7 +502,7 @@ void func_System_Timer1s_Dispose(void)
     if(pst_MainloopSystemPara->DeviceRunPara.cMeasDelayFlag == 1)
     {
         pst_MainloopSystemPara->DeviceRunPara.cMeasDelayCnt++;
-        if(pst_MainloopSystemPara->DeviceRunPara.cMeasDelayCnt >= 10)
+        if(pst_MainloopSystemPara->DeviceRunPara.cMeasDelayCnt >= 25)
         {
             cMeasSensorEventFinishFlag = 1;
             pst_MainloopSystemPara->DeviceRunPara.cMeasDelayCnt = 0;
@@ -825,7 +825,7 @@ void func_Get_Device_Sensors_Value(void)
 //设备测量记录保存
 void func_Save_Device_MeasRecord_Dispose()
 {
-	uint8_t ucRecordFlag = 0;
+	static uint8_t ucRecordFlag = 0;
 	uint8_t ucPressLevelExistFlag = 0;
 	uint8_t ucRadarLevelExistFlag = 0;
 	float fDifValue = 0.0;
@@ -860,6 +860,7 @@ void func_Save_Device_MeasRecord_Dispose()
 	{
 		if(pst_MainloopSystemPara->DeviceRunPara.cMeasDelayCnt >= 15)
 		{
+			pst_MainloopSystemPara->DeviceRunPara.cSaveDataTimeDelayFlag = 1;
 			ucTimeFlag = 1;
 		}
 		if(pst_MainloopSystemPara->DeviceRunPara.cGetMeasSensorValueFlag == 1)
@@ -966,6 +967,7 @@ void func_Save_Device_MeasRecord_Dispose()
 			//将本次采集的数据存入存储中
 			if((double)pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent >= 10.0)
 			{
+				ucRecordFlag = 0;
 				func_Save_Device_MeasData();
 				pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt++;
 				if(pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt >= ((16777216/SYSTEM_RECORD_SIZE) - 1))
@@ -1148,6 +1150,14 @@ void func_4G_Connect_Server_Dispose(void)
 			{
 				pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_DIAG;
 				drv_mcu_Timer4_Start();
+			}
+		}
+		else if(ucRes == 1)
+		{
+			if(pst_MainloopSystemPara->DeviceRunPara.c4GUploadDataContinueFlag == 1)
+			{
+				pst_MainloopSystemPara->DeviceRunPara.c4GUploadDataContinueFlag = 0;
+				drv_EC200U_4G_Module_Init(1);
 			}
 		}
 	}

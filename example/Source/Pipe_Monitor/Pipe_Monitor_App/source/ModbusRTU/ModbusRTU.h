@@ -36,7 +36,7 @@ extern "C"
 #define HZ_RADAR_ULTRASONIC_FLOW_SENSOR_ADDR 0x34 //航征-雷达超声波流量计设备地址
 #define HZ_RADAR_WATER_LEVEL_SENSOR_ADDR 0x35 //航征-雷达水位计设备地址
 
-#define HX_FLOWMETER_SENSOR_ADDR 0x10 //恒星-截污流量计设备地址
+#define HX_FLOWMETER_SENSOR_ADDR 0x1 //恒星-截污流量计设备地址
 #define HX_WATER_QUALITY_COD_SENSOR_ADDR 0x11 //恒星-水质COD传感器设备地址
 #define HX_RADAR_ULTRASONIC_FLOW_SENSOR_ADDR 0x12 //恒星-雷达超声波流量计设备地址
 

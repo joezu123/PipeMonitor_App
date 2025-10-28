@@ -20,7 +20,7 @@ extern "C"
 #endif
 
 /*******************************************************************************
- * Include files
+ * Include files	
  ******************************************************************************/
 
 /*******************************************************************************
@@ -35,11 +35,12 @@ extern "C"
 //#define TIMER1_DISPOSE 1 //定时器1处理
 
 #define USART_DATA_LEN_MAX  800
-#define USART4_SEND_DATA_MAX  1500
+#define USART4_SEND_DATA_MAX  2500
 #define DEVICE_HW_VERSION   "V1.0.0"
 #define DEVICE_SW_VERSION   "V1.0.0"
 #define RECORD_DATA_FORMAT	16	//记录数据格式：每条记录所占用字节数，例如1液位+1流量+2水质=4*4=16
 #define EEP_VERSION	3			//存储版本号
+//#define SM4_ENTRY_ENABLE	1	//SM4加密使能
 
 #define DUMMY_BYTE     					0xff 
 
@@ -68,6 +69,7 @@ typedef enum _PARA_TYPE
 	Type_Short,	//双字节
 	Type_Float,	//四字节
 	Type_Float_Low,	//四字节，低位在前
+	Type_Float_CDAB,	//四字节，CDAB顺序
 	Type_Long,	//四字节
 	Type_Arr	
 }enPara_Type;
@@ -541,6 +543,11 @@ typedef struct _SysDeviceRunPara
 	char cBoardSensorXYCValueChangeCnt;	//板级XYC传感器数据变化计数值
 	char cBoardSensorPhotoValueChangeCnt;	//板级光照传感器数据变化计数值
 	char cBDRestartFlag;	//北斗重启标志位
+	int nSignalStrength;	//信号强度
+	char cSaveDataTimeDelayFlag;	//保存数据时间延迟标志位
+	char c4GUploadDataContinueFlag;	//4G上传数据连续标志位
+	//char cModbusNULLCnt;	//Modbus通讯NULL计数值
+	//char cModbusNULLCnt111;
 	char cBlackLightFlag;		//是否为黑光图像站设备 	
 	BlackLightDataSt st_BlackLightData;	//黑光图像站数据结构体
 	//char c4GTimerCnt;
@@ -630,6 +637,69 @@ typedef struct _SystemPara
 	
 }SystemPataSt;
 
+#define CONNECT_MQTT	1
+typedef enum _4G_Module_Init_State
+{
+	Module_START_WAIT_CMD = 0,	//等待模块启动完成
+	Module_DCE_RST_STAGE1,
+	Module_DCE_RST_STAGE2,
+	Module_DCE_RST_STAGE3,
+	//Module_DCE_RST_STAGE4,
+	Module_TEST_AT_CMD,	//测试AT指令
+	Module_TEST_ATE0_CMD,	//关闭回显
+	Module_QUERY_SIM_CARD_STATE_CMD,	//查询SIM卡状态
+	Module_QUERY_SIGNAL_STRENGTH_CMD,	//查询信号强度
+	//Module_QICSGP_CMD,	//设置PDP上下文参数; APN等
+	//Module_QIACT_CMD,	//激活PDP上下文; APN等
+	//Module_PDP_TEST_CMD,
+	Module_QUERY_PS_DOMAIN_REG_STATE_CMD,	//查询PS域注册状态
+	Module_ACTIVATE_NETWORK_CMD,			//激活网络
+	Module_QUERY_NETWORK_ACTIVATE_STATE_CMD,	//查询网络激活状态
+	
+	Module_QUERY_IMSI_CMD,	//查询IMSI号
+	Module_QUERY_IMEI_CMD,	//查询IMEI号
+	Module_QUERY_LOCAL_DATE_TIME_CMD,	//查询本地日期时间
+	Module_SET_DATA_FORMAT_CMD,	//设置数据格式
+	Module_SET_MQTT_KEEPALIVE_TIME_CMD,	//设置MQTT心跳时间
+	Module_SET_MQTT_VERSION_CMD,	//设置MQTT协议版本; 4->3.1.1； 3->3.1
+	//Module_Check_MQTT_OPEN_CMD1,	//检查MQTT是否打开
+	Module_OPEN_MQTT_INTERFACE_CMD,	//打开物联网云端口
+	//Module_Check_MQTT_OPEN_CMD2,	//检查MQTT是否打开
+	//Module_Check_MQTT_CONN_CMD1,	//检查MQTT连接状态
+	Module_CONN_MQTT_INTERFACE_CMD,	//连接物联网云端口
+	//Module_Check_MQTT_CONN_CMD2,	//检查MQTT连接状态
+	//Module_CONNECT_CMD,	//连接MQTT服务器
+	//Module_SUBSCRIBE_TOPIC_CMD,	//订阅主题
+	//Module_CHECKPUBEX_CMD,	//检查MQTT订阅状态
+	#ifdef CONNECT_MQTT
+	Module_SUBSCRIBE_TOPIC_REGISTER_CMD,	//订阅主题注册
+	Module_SUBSCRIBE_TOPIC_DATAUPLOAD_CMD,	//订阅主题数据上传
+	Module_SUBSCRIBE_TOPIC_STATUS_CMD,	//订阅主题状态上报
+	//Module_SUBSCRIBE_TOPIC_ALARMDATA_CMD,	//订阅主题报警数据上报
+	Module_SUBSCRIBE_TOPIC_SETCONFIG_CMD,	//订阅主题参数配置
+	Module_SUBSCRIBE_TOPIC_GETCONFIG_CMD,	//订阅主题参数获取
+	//Module_SUBSCRIBE_TOPIC_GETDATA_CMD,		//订阅主题获取数据
+	//Module_SUBSCRIBE_DATAPT_CMD,	//订阅主题数据透传
+
+	Module_PUBLISH_TOPIC_REGISTER_CMD,	//发布主题注册
+	Module_PUBLISH_TOPIC_DATAUPLOAD_CMD,	//发布主题数据上传
+	//Module_PUBLISH_TOPIC_DATABASEUPLOAD_CMD,	//发布监测项原始数据上传
+	Module_PUBLISH_TOPIC_SATATUSUPLOAD_CMD,	//发布主题状态上报
+	Module_PUBLISH_TOPIC_STATUS_CMD,	//发布主题状态上报
+	Module_PUBLISH_TOPIC_ALARMDATA_CMD,	//发布主题报警数据上报
+	Module_PUBLISH_TOPIC_SETCONFIG_CMD,	//发布主题参数配置
+	Module_PUBLISH_TOPIC_GETCONFIG_CMD,	//发布主题参数获取
+	Module_PUBLISH_TOPIC_GETDATA_CMD,		//发布主题获取数据
+	Module_PUBLISH_TOPIC_DATAPT_CMD,	//发布主题数据透传
+	#endif
+	Module_PUBLISH_TOPIC_CMD,	//发布主题
+	
+	Module_DISCONNECT_MQTT_INTERFACE_CMD,	//断开MQTT服务器
+	Module_CLOSE_CONN_CMD,	//关闭MQTT客户端网络
+	Module_TUNS_TOPIC_CMD,	//退订主题
+	Module_INIT_STATE_MAX
+}en_4G_Module_Init_State;
+
 extern unsigned char guc_OLED_Buf[128][8];	//OLED显示数据缓存;8*8=64行128列
 extern unsigned char  picc_atqa[2],picc_uid[15],picc_sak[3];
 extern unsigned char guc_TextBDData[20];
@@ -646,6 +716,7 @@ extern unsigned char guc_SystemTestFlag;
 extern unsigned short gus_SystemTestArr[10];
 extern unsigned char ucMeasPosi;
 extern unsigned char ucMeasValue[10];
+extern en_4G_Module_Init_State gE_4G_Module_Init_CMD;
 //extern unsigned short gus_BarCnt;
 //extern unsigned short gus_BarCnt1;
 /*******************************************************************************

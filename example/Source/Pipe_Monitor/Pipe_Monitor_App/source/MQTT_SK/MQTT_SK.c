@@ -485,7 +485,11 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 	//char *cp_Data2;
 	//uint8_t i = 0;
 	//uint8_t cSetResult = 0;
-
+	int nParaValue = 0;
+	char cParaArrValue[50] = {0};
+	char cTempArrValue[20] = {0};
+	float fParaValue = 0.0;
+	char cParaValue = 0;
 	uint16_t usStartPosi = 0;
 	uint16_t usRecvDataLen = 0;
 	char *pStr;
@@ -495,7 +499,15 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 	uint8_t j = 0;
 	uint8_t ucRes = 1;
 	char cmsgIdArr[20] = {0};
+	unsigned short usTempRecvDataLen = 0;
 	//char cValueBuf[300] = {0};
+
+	Ddl_Delay1ms(300);
+	usTempRecvDataLen = strlen(pst_MQTTSystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB]);
+	if(usTempRecvDataLen > pst_MQTTSystemPara->UsartData.usUsartxRecvDataLen[MODULE_4G_NB])
+	{
+		pst_MQTTSystemPara->UsartData.usUsartxRecvDataLen[MODULE_4G_NB] = usTempRecvDataLen;
+	}
 
 	//查找数据起始位置
 	if(func_Array_Find_Str(&pst_MQTTSystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB][usBasePosi],pst_MQTTSystemPara->UsartData.usUsartxRecvDataLen[MODULE_4G_NB],"data\":{",7, &usStartPosi) == 0)
@@ -518,6 +530,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 		}
 		for (j = 0; j < i && j < 40; j++)
 		{
+			memset(cParaArrValue, 0, 50);
 			pItem = strtok(czItem[j], ":");
 			if (pItem != NULL)
 			{
@@ -528,9 +541,10 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					memcpy(pst_MQTTSystemPara->DevicePara.cDeviceID, pItem, 16);
+					memcpy(cParaArrValue, pItem, 16);
+					//memcpy(pst_MQTTSystemPara->DevicePara.cDeviceID, pItem, 16);
 					//#pragma diag_suppress=Pa039
-					ucRes = func_Save_Device_Parameter(DEV_ID, (unsigned char*)&pst_MQTTSystemPara->DevicePara.cDeviceID);
+					ucRes = func_Save_Device_Parameter(DEV_ID, (unsigned char*)&cParaArrValue);
 					//g_rRun_info.ucDownFlg = atoi(pItem);
 				}
 				else if (strcmp(pItem, "\"DevSampGap\"") == 0)
@@ -540,9 +554,10 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.nDeviceSampleGapCnt = atoi(pItem);
+					nParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.nDeviceSampleGapCnt = atoi(pItem);
 					#pragma diag_suppress=Pa039
-					ucRes = func_Save_Device_Parameter(DEV_SAMPLE_GAP, (unsigned char*)&pst_MQTTSystemPara->DevicePara.nDeviceSampleGapCnt);
+					ucRes = func_Save_Device_Parameter(DEV_SAMPLE_GAP, (unsigned char*)&nParaValue);
 					#pragma diag_warning=Pa039
 					//memcpy(g_rRun_info.uczName, pItem, strlen(pItem) > 21?21:strlen(pItem));
 				}
@@ -553,9 +568,10 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.nDeviceSaveRecordCnt = atoi(pItem);
+					nParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.nDeviceSaveRecordCnt = atoi(pItem);
 					#pragma diag_suppress=Pa039
-					ucRes = func_Save_Device_Parameter(DEV_RECORD_GAP, (unsigned char*)&pst_MQTTSystemPara->DevicePara.nDeviceSaveRecordCnt);
+					ucRes = func_Save_Device_Parameter(DEV_RECORD_GAP, (unsigned char*)&nParaValue);
 					#pragma diag_warning=Pa039
 					//memcpy(g_rRun_info.uczWifiName, pItem, 10);
 				}
@@ -566,9 +582,10 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.nDeviceUploadCnt = atoi(pItem);
+					nParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.nDeviceUploadCnt = atoi(pItem);
 					#pragma diag_suppress=Pa039
-					ucRes = func_Save_Device_Parameter(DEV_UPLOAD_GAP, (unsigned char*)&pst_MQTTSystemPara->DevicePara.nDeviceUploadCnt);
+					ucRes = func_Save_Device_Parameter(DEV_UPLOAD_GAP, (unsigned char*)&nParaValue);
 					#pragma diag_warning=Pa039
 					//memcpy(g_rRun_info.uczWifiPwd, pItem, 10);
 				}
@@ -579,8 +596,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[0] = atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_SENSOR_ENABLE_1, (unsigned char*)&pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[0]);
+					cParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[0] = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_SENSOR_ENABLE_1, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"Dev485Enable2\"") == 0)
 				{
@@ -589,8 +607,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[1] = atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_SENSOR_ENABLE_2, (unsigned char*)&pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[1]);
+					cParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[1] = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_SENSOR_ENABLE_2, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorCnt1\"") == 0)
 				{
@@ -599,8 +618,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.cMeasSensorCount[0] = atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_SENSOR_CNT_1, (unsigned char*)&pst_MQTTSystemPara->DevicePara.cMeasSensorCount[0]);
+					cParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.cMeasSensorCount[0] = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_SENSOR_CNT_1, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorCnt2\"") == 0)
 				{
@@ -609,8 +629,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.cMeasSensorCount[1] = atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_SENSOR_CNT_2, (unsigned char*)&pst_MQTTSystemPara->DevicePara.cMeasSensorCount[1]);
+					cParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.cMeasSensorCount[1] = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_SENSOR_CNT_2, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType1[0]\"") == 0)
 				{
@@ -619,8 +640,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[0][0] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR1_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[0][0]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][0] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR1_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType1[1]\"") == 0)
 				{
@@ -629,8 +651,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[0][1] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR2_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[0][1]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][1] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR2_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType1[2]\"") == 0)
 				{
@@ -639,8 +662,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[0][2] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR3_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[0][2]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][2] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR3_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType1[3]\"") == 0)
 				{
@@ -649,8 +673,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[0][3] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR4_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[0][3]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][3] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR4_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType1[4]\"") == 0)
 				{
@@ -659,8 +684,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[0][4] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR5_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[0][4]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][4] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR5_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType1[5]\"") == 0)
 				{
@@ -669,8 +695,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[0][5] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR6_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[0][5]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][5] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR6_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType1[6]\"") == 0)
 				{
@@ -679,8 +706,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[0][6] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR7_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[0][6]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][6] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR7_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType1[7]\"") == 0)
 				{
@@ -689,8 +717,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[0][7] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR8_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[0][7]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][7] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR8_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType1[8]\"") == 0)
 				{
@@ -699,8 +728,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[0][8] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR9_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[0][8]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][8] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR9_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType1[9]\"") == 0)
 				{
@@ -709,8 +739,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[0][9] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR10_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[0][9]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][9] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR10_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType2[0]\"") == 0)
 				{
@@ -719,8 +750,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[1][0] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR1_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[1][0]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][0] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR1_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType2[1]\"") == 0)
 				{
@@ -729,8 +761,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[1][1] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR2_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[1][1]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][1] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR2_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType2[2]\"") == 0)
 				{
@@ -739,8 +772,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[1][2] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR3_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[1][2]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][2] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR3_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType2[3]\"") == 0)
 				{
@@ -749,8 +783,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[1][3] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR4_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[1][3]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][3] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR4_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType2[4]\"") == 0)
 				{
@@ -759,8 +794,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[1][4] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR5_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[1][4]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][4] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR5_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType2[5]\"") == 0)
 				{
@@ -769,8 +805,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[1][5] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR6_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[1][5]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][5] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR6_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType2[6]\"") == 0)
 				{
@@ -779,8 +816,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[1][6] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR7_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[1][6]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][6] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR7_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType2[7]\"") == 0)
 				{
@@ -789,8 +827,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[1][7] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR8_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[1][7]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][7] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR8_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType2[8]\"") == 0)
 				{
@@ -799,8 +838,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[1][8] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR9_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[1][8]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][8] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR9_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevSensorType2[9]\"") == 0)
 				{
@@ -809,8 +849,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.eMeasSensor[1][9] = (EMeasSensorType)atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR10_TYPE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.eMeasSensor[1][9]);
+					cParaValue = (EMeasSensorType)atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][9] = (EMeasSensorType)atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR10_TYPE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevTotalFlow\"") == 0)
 				{
@@ -819,9 +860,10 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.fTotal_Volume = atof(pItem);
+					fParaValue = atof(pItem);
+					//pst_MQTTSystemPara->DevicePara.fTotal_Volume = atof(pItem);
 					#pragma diag_suppress=Pa039
-					ucRes = func_Save_Device_Parameter(DEV_TOTAL_VOLUME, (unsigned char*)&pst_MQTTSystemPara->DevicePara.fTotal_Volume);
+					ucRes = func_Save_Device_Parameter(DEV_TOTAL_VOLUME, (unsigned char*)&fParaValue);
 					#pragma diag_warning=Pa039
 				}
 				else if (strcmp(pItem, "\"DevReset\"") == 0)
@@ -841,8 +883,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.ucUploadStatusGap = atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_STATUS_UPLOAD_GAP, (unsigned char*)&pst_MQTTSystemPara->DevicePara.ucUploadStatusGap);
+					cParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.ucUploadStatusGap = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_STATUS_UPLOAD_GAP, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevServerIP1\"") == 0)
 				{
@@ -851,8 +894,11 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					memcpy(pst_MQTTSystemPara->DevicePara.cServerIP[0], pItem, strlen(pItem) > 16?16:strlen(pItem));
-					ucRes = func_Save_Device_Parameter(DEV_IP_ADDRESS1, (unsigned char*)&pst_MQTTSystemPara->DevicePara.cServerIP[0]);
+					memcpy(cParaArrValue, pItem, strlen(pItem) > 16?16:strlen(pItem));
+					//memcpy(cParaArrValue,&cParaArrValue[1],strlen(cParaArrValue)-2);
+					memset(cTempArrValue,0,20);
+					memcpy(cTempArrValue, &cParaArrValue[1], strlen(cParaArrValue)-2);
+					ucRes = func_Save_Device_Parameter(DEV_IP_ADDRESS1, (unsigned char*)&cTempArrValue);
 				}
 				else if (strcmp(pItem, "\"DevServerIP2\"") == 0)
 				{
@@ -861,8 +907,11 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					memcpy(pst_MQTTSystemPara->DevicePara.cServerIP[1], pItem, strlen(pItem) > 16?16:strlen(pItem));
-					ucRes = func_Save_Device_Parameter(DEV_IP_ADDRESS2, (unsigned char*)&pst_MQTTSystemPara->DevicePara.cServerIP[1]);
+					memcpy(cParaArrValue, pItem, strlen(pItem) > 16?16:strlen(pItem));
+					//memcpy(cParaArrValue,&cParaArrValue[1],strlen(cParaArrValue)-2);
+					memset(cTempArrValue,0,20);
+					memcpy(cTempArrValue, &cParaArrValue[1], strlen(cParaArrValue)-2);
+					ucRes = func_Save_Device_Parameter(DEV_IP_ADDRESS2, (unsigned char*)&cTempArrValue);
 				}
 				else if (strcmp(pItem, "\"DevServerPort1\"") == 0)
 				{
@@ -871,9 +920,10 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.usServerPort[0] = atoi(pItem);
+					nParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.usServerPort[0] = atoi(pItem);
 					#pragma diag_suppress=Pa039
-					ucRes = func_Save_Device_Parameter(DEV_IP_PORT1, (unsigned char*)&pst_MQTTSystemPara->DevicePara.usServerPort[0]);
+					ucRes = func_Save_Device_Parameter(DEV_IP_PORT1, (unsigned char*)&nParaValue);
 					#pragma diag_warning=Pa039
 				}
 				else if (strcmp(pItem, "\"DevServerPort2\"") == 0)
@@ -883,9 +933,10 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.usServerPort[1] = atoi(pItem);
+					nParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.usServerPort[1] = atoi(pItem);
 					#pragma diag_suppress=Pa039
-					ucRes = func_Save_Device_Parameter(DEV_IP_PORT2, (unsigned char*)&pst_MQTTSystemPara->DevicePara.usServerPort[1]);
+					ucRes = func_Save_Device_Parameter(DEV_IP_PORT2, (unsigned char*)&nParaValue);
 					#pragma diag_warning=Pa039
 				}
 				else if (strcmp(pItem, "\"DevDebugEnable\"") == 0)
@@ -895,8 +946,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DeviceRunPara.cDebugModel = atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_DEBUG_MODEL, (unsigned char*)&pst_MQTTSystemPara->DeviceRunPara.cDebugModel);
+					cParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DeviceRunPara.cDebugModel = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_DEBUG_MODEL, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevInstallHeight\"") == 0)
 				{
@@ -905,9 +957,10 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.fInit_Height = atof(pItem);
+					fParaValue = atof(pItem);
+					//pst_MQTTSystemPara->DevicePara.fInit_Height = atof(pItem);
 					#pragma diag_suppress=Pa039
-					ucRes = func_Save_Device_Parameter(DEV_INSTALL_HEIGHT, (unsigned char*)&pst_MQTTSystemPara->DevicePara.fInit_Height);
+					ucRes = func_Save_Device_Parameter(DEV_INSTALL_HEIGHT, (unsigned char*)&fParaValue);
 					#pragma diag_warning=Pa039
 				}
 				else if (strcmp(pItem, "\"DevSensorBaud\"") == 0)
@@ -917,8 +970,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DevicePara.cSensorBaudRate = atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_SENSOR_BAUDRATE, (unsigned char*)&pst_MQTTSystemPara->DevicePara.cSensorBaudRate);
+					cParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DevicePara.cSensorBaudRate = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_SENSOR_BAUDRATE, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevLongPowerEnable\"") == 0)
 				{
@@ -927,8 +981,9 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
-					pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel = atoi(pItem);
-					ucRes = func_Save_Device_Parameter(DEV_LONGPOWER_MODEL, (unsigned char*)&pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
+					cParaValue = atoi(pItem);
+					//pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_LONGPOWER_MODEL, (unsigned char*)&cParaValue);
 				}
 				else if (strcmp(pItem, "\"DevFactoryResetEnable\"") == 0)
 				{
@@ -1101,10 +1156,10 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, char* cmsgIdArr)
 	sprintf((char *)ucTempArr+usDataLen, "\"DevInstallHeight\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fInit_Height);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备传感器波特率
-	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorBaud\":%d", pst_MQTTSystemPara->DevicePara.cSensorBaudRate);
+	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorBaud\":%d,", pst_MQTTSystemPara->DevicePara.cSensorBaudRate);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备长供电模式
-	sprintf((char *)ucTempArr+usDataLen, "\"DevLongPowerEnable\":%d,", pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
+	sprintf((char *)ucTempArr+usDataLen, "\"DevLongPowerEnable\":%d", pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
 	usDataLen = strlen((char *)ucTempArr);
 	
 	//拼接结束符
@@ -1146,6 +1201,7 @@ uint8_t MQTT_SK_Get_Config(unsigned short usBasePosi)
 	usSendDataLen += 2;
 	//sprintf((char *)ucRecvCheckData, "\"res\":");
 	drv_mcu_USART_SendData(MODULE_4G_NB, (uint8_t*)ucSendBuf, usSendDataLen);
+	Ddl_Delay1ms(800);
 	return 0;
 }
 

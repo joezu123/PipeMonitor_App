@@ -392,7 +392,7 @@ int32_t main(void)
     {
         //轮询喂狗
         PORT_SetBits(WATCHDOG_DONE_PORT,WATCHDOG_DONE_PIN);
-        Ddl_Delay1ms(500);
+        Ddl_Delay1ms(500); 
         PORT_ResetBits(WATCHDOG_DONE_PORT,WATCHDOG_DONE_PIN);
         Ddl_Delay1ms(500);
     }
@@ -492,24 +492,32 @@ int32_t main(void)
     //pst_MainSystemPara->DevicePara.cMonitorMode = 1;
     //pst_MainSystemPara->DevicePara.cDeviceIdenFlag = 0;
     //pst_MainSystemPara->DevicePara.cDeviceRegisterFlag = 0;
-    pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
-    pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
-    pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 1;
-    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 2;
     if(pst_MainSystemPara->DevicePara.cMonitorMode == 0)
     {
         ucMonitorFlag = 1;
     }
+    #if 1
+    pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 3;
+    
     pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Pressure_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_BY_Integrated_Conductivity;
-    pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
     //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
-    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 6;
-    pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 2;
-    pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 2;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HZ_Radar_Ultrasonic_Flow;
+    #endif
+    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 5;
+    pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 1;
+    pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 1;
+    //memcpy(pst_MainSystemPara->DevicePara.cServerIP[1],"220.250.29.188",strlen("220.250.29.188"));
+    //pst_MainSystemPara->DevicePara.cServerIP[1][14] = '0'; 0
+    //pst_MainSystemPara->DevicePara.usServerPort[1] = 7183;
 
     pst_MainSystemPara->DeviceRunPara.cTotalSensorCnt = pst_MainSystemPara->DevicePara.cMeasSensorCount[0] + pst_MainSystemPara->DevicePara.cMeasSensorCount[1];
-    
+    pst_MainSystemPara->DeviceRunPara.cMeasShowViewCnt = (pst_MainSystemPara->DeviceRunPara.cTotalSensorCnt + 1) / 2;
+    pst_MainSystemPara->DeviceRunPara.cCurMeasShowViewCnt = 0;
     #ifndef JOE_TEST
     #if 0
     if((pst_MainSystemPara->DevicePara.cDeviceIdenFlag == 1) && (pst_MainSystemPara->DeviceRunPara.c4GInitFlag == 0) && (pst_MainSystemPara->DevicePara.cMonitorMode == 0))
@@ -587,22 +595,32 @@ int32_t main(void)
     //drv_LKT4202_Random_Test();
 
     uint8_t ucTestKey[16] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F,0x10};
+    //uint8_t ucTestKey[16] = {0x31,0x36,0x39,0x33,0x31,0x36,0x34,0x39,0x30,0x40,0x51,0x51,0x2e,0x43,0x4f,0x4d};
     drv_LKT4202_Send_EncryKEY(ucTestKey);
     drv_LKT4202_Send_DecryKEY(ucTestKey);
 
     //uint8_t ucTestData[16] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F,0x10};
-    uint8_t cTestDataArr[16] = {0};
+    uint8_t cTestDataArr[16] = {0x00};
+    for(i=0; i<16; i++)
+    {
+        cTestDataArr[i] = 0x30+i;
+    }
+    //cTestDataArr[17] = 0x02;
+    //cTestDataArr[18] = 0x03;
     uint8_t ucEncryData[16] = {0};
     uint8_t ucDecryData[16] = {0};
-    sprintf((char*)&cTestDataArr[0],"%.3f",1.234); //将浮点数转换为字符串
-    sprintf((char*)&cTestDataArr[7],"%.3f",1316.943); //将浮点数转换为字符串
+    //sprintf((char*)&cTestDataArr[0],"%.3f",1.234); //将浮点数转换为字符串
+    //sprintf((char*)&cTestDataArr[7],"%.3f",1316.943); //将浮点数转换为字符串
+    //for(i=0; i<2; i++)
+    {
+        drv_LKT4202_SendData_Encry(cTestDataArr, (char*)ucEncryData,16);
+        drv_LKT4202_SendData_Decry(ucEncryData, (char*)ucDecryData,16);
+    }
     
-    drv_LKT4202_SendData_Encry(cTestDataArr, (char*)ucEncryData);
-    drv_LKT4202_SendData_Decry(ucEncryData, (char*)ucDecryData);
-    float fValue1 = 0.0;
-    float fValue2 = 0.0;
-    sscanf((char*)&ucDecryData[0], "%f", &fValue1);
-    sscanf((char*)&ucDecryData[7], "%f", &fValue2);
+    //float fValue1 = 0.0;
+    //float fValue2 = 0.0;
+    //sscanf((char*)&ucDecryData[0], "%f", &fValue1);
+    //sscanf((char*)&ucDecryData[7], "%f", &fValue2);
     //OLED_Test(4);
     //光照感应初始化
     drv_Photosensitive_XYC_ALS_Init();
@@ -835,7 +853,7 @@ int32_t main(void)
         #else
         //磁棒状态检测
         if(pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status == 1)
-        {
+        { 
             //开启OLED电源及初始化配置，要注意，每次接触事件，仅初始化一次
             if(guc_NFCPWRInitFlag == 0)
             {

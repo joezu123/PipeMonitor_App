@@ -331,8 +331,11 @@ static void OcoIrqCallback(void)
     if(pst_TimerSystemPara->DeviceRunPara.cMeasDelayFlag == 1)
     {
         pst_TimerSystemPara->DeviceRunPara.cMeasDelayCnt++;
-        if(pst_TimerSystemPara->DeviceRunPara.cMeasDelayCnt >= 20)
+        if((pst_TimerSystemPara->DeviceRunPara.cMeasDelayCnt >= 25) && (pst_TimerSystemPara->DeviceRunPara.cSaveDataTimeDelayFlag == 1))
         {
+            pst_TimerSystemPara->DeviceRunPara.cSaveDataTimeDelayFlag = 0;
+           // pst_TimerSystemPara->DeviceRunPara.cModbusNULLCnt = 0;
+            //pst_TimerSystemPara->DeviceRunPara.cModbusNULLCnt111 = 0;
             if(pst_TimerSystemPara->DevicePara.cMonitorMode == 0)
             {
                 cMeasSensorEventFinishFlag = 1;
@@ -341,7 +344,7 @@ static void OcoIrqCallback(void)
             }
             else
             {
-                pst_TimerSystemPara->DeviceRunPara.cMeasDelayCnt = 5;
+                pst_TimerSystemPara->DeviceRunPara.cMeasDelayCnt = 15;
             }
         }
     }

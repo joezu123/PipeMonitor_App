@@ -895,7 +895,8 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		}
 		else
 		{
-			strcpy(&pst_W25Q128SystemPara->DevicePara.cServerIP[0][0],(char*)cDataArr);
+			memset(&pst_W25Q128SystemPara->DevicePara.cServerIP[0][0],0,16);
+			memcpy(&pst_W25Q128SystemPara->DevicePara.cServerIP[0][0],(char*)cDataArr,strlen((char*)cDataArr));
 			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cServerIP[0][0],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cServerIP[0][0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),16);
 		}
 		break;
@@ -907,7 +908,8 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		}
 		else
 		{
-			strcpy(&pst_W25Q128SystemPara->DevicePara.cServerIP[1][0],(char*)cDataArr);
+			memset(&pst_W25Q128SystemPara->DevicePara.cServerIP[1][0],0,16);
+			memcpy(&pst_W25Q128SystemPara->DevicePara.cServerIP[1][0],(char*)cDataArr,strlen((char*)cDataArr));
 			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cServerIP[1][0],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cServerIP[1][0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),16);
 		}
 		break;

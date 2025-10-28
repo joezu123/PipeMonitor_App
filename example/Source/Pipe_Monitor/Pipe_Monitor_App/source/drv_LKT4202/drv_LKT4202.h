@@ -46,8 +46,8 @@ extern "C"
 extern uint8_t drv_LKT4202_Init(void);
 extern uint8_t drv_LKT4202_Send_EncryKEY(uint8_t* cKeyBuf);
 extern uint8_t drv_LKT4202_Send_DecryKEY(uint8_t* cKeyBuf);
-extern uint8_t drv_LKT4202_SendData_Encry(uint8_t *uBaseDataArr, char *uEnDataArr);
-extern uint8_t drv_LKT4202_SendData_Decry(uint8_t *uBaseDataArr, char *uDeDataArr);
+extern uint8_t drv_LKT4202_SendData_Encry(uint8_t *uBaseDataArr, char *uEnDataArr, unsigned short usDataLen);
+extern uint8_t drv_LKT4202_SendData_Decry(uint8_t *uBaseDataArr, char *uDeDataArr, unsigned short usDataLen);
 extern uint8_t drv_LKT4202_Create_MFFile(void);
 extern uint8_t drv_LKT4202_Create_KeyFile(void);
 extern uint8_t drv_LKT4202_Random_Test(void);

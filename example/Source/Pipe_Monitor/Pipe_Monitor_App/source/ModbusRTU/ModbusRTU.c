@@ -230,20 +230,31 @@ void RegData_HL_Swap_func(unsigned char * OScbuf,const unsigned char * ScData,un
     unsigned char bufData[256];
     memcpy(bufData,ScData,IDataNum);
     
-    for(i=0; i<SwapNum; i++)
+    if(HLflag == 2)
     {
-        for(j=0; j<Typelong; j++)
+        OScbuf[0] = bufData[2];
+        OScbuf[1] = bufData[3];
+        OScbuf[2] = bufData[0];
+        OScbuf[3] = bufData[1];
+    }
+    else
+    {
+        for(i=0; i<SwapNum; i++)
         {
-            if(HLflag == 0)
-            {   
-                OScbuf[i*Typelong + j ] = bufData[i*Typelong + j];
-            }
-            else    //返回的数据是一个字符串数组
-            {    
-                OScbuf[i*Typelong + Typelong -1 - j] = bufData[i*Typelong + j];
+            for(j=0; j<Typelong; j++)
+            {
+                if(HLflag == 0)
+                {   
+                    OScbuf[i*Typelong + j ] = bufData[i*Typelong + j];
+                }
+                else    //返回的数据是一个字符串数组
+                {    
+                    OScbuf[i*Typelong + Typelong -1 - j] = bufData[i*Typelong + j];
+                }
             }
         }
     }
+    
 }
 
 /*************************************************
@@ -416,6 +427,7 @@ unsigned char* drv_Wait_RecvData_And_CrcCheck(enPara_Type enPaType, unsigned sho
             pst_MBSystemPara->DeviceRunPara.cModbusErrCnt++;
             if(pst_MBSystemPara->DeviceRunPara.cModbusErrCnt > 20)
             {
+                //pst_MBSystemPara->DeviceRunPara.cModbusNULLCnt111++;
                 pst_MBSystemPara->DeviceRunPara.cModbusErrCnt = 0;
                 pst_MBSystemPara->DeviceRunPara.usDevStatus |= 0x0020; //设置设备异常状态
             }
@@ -450,6 +462,10 @@ unsigned char* drv_Wait_RecvData_And_CrcCheck(enPara_Type enPaType, unsigned sho
     {
         RegData_HL_Swap_func(guc_RTURecvArr,(unsigned char*)&pst_MBSystemPara->UsartData.ucUsart4RecvDataArr[3],usRegNum*2,0,usRegNum*2);
     }
+    else if(enPaType == Type_Float_CDAB) //浮点数四字节，高位在前，低位在后，对换位置
+    {
+        RegData_HL_Swap_func(guc_RTURecvArr,(unsigned char*)&pst_MBSystemPara->UsartData.ucUsart4RecvDataArr[3],usRegNum*2,2,usRegNum*2);
+    }
 	
 	//fValue = *((float*)ucRecvDataValueArr);
 	return &guc_RTURecvArr[0];
@@ -472,6 +488,7 @@ unsigned char func_Rts_Control_And_SendData(en_usart_device_t ucDeviceType,unsig
     }
 
     pst_MBSystemPara->UsartData.ucUsartxRecvDataFlag[3] = 0;
+    memset(pst_MBSystemPara->UsartData.ucUsart4RecvDataArr,0,1100);
     drv_mcu_USART_SendData(ucDeviceType,ucSendData,usDataLen);
     
     usRecvTimeOutCnt = 0;
@@ -483,8 +500,9 @@ unsigned char func_Rts_Control_And_SendData(en_usart_device_t ucDeviceType,unsig
         if(usRecvTimeOutCnt >= usDelayCnt)
         {
             pst_MBSystemPara->DeviceRunPara.cModbusErrCnt++;
-            if(pst_MBSystemPara->DeviceRunPara.cModbusErrCnt > 20)
+            if(pst_MBSystemPara->DeviceRunPara.cModbusErrCnt > 3)
             {
+                //pst_MBSystemPara->DeviceRunPara.cModbusNULLCnt++;
                 pst_MBSystemPara->DeviceRunPara.cModbusErrCnt = 0;
                 pst_MBSystemPara->DeviceRunPara.usDevStatus |= 0x0020; //设置设备异常状态
             }
@@ -562,8 +580,16 @@ unsigned char func_Get_Meas_BY_Integrated_Conductivity_Sensor_Value(en_usart_dev
             {
                 *pfMeasValue = 0.0;/* code */
                 ucResult = 1;
+                return ucResult;
             }
-            
+        }
+        else
+        {
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_IntegratedConductivityData.fConductivityValue = 0.0;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_IntegratedConductivityData.fTemperatureValue = 0.0;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_IntegratedConductivityData.fSalinityValue = 0.0;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_IntegratedConductivityData.fTDSValue = 0.0;
+            return 1;
         }
     }
 	
@@ -603,6 +629,10 @@ float func_Get_Meas_Flowermeter_Sensor_Value(en_usart_device_t ucDeviceType)
         {
             ucResult = 1;
         }
+    }
+    else
+    {
+        fMeasValue = 0.0;
     }
 	return fMeasValue;
 }
@@ -646,6 +676,10 @@ unsigned char func_Get_Meas_BY_Radar_Level_Sensor_Value(en_usart_device_t ucDevi
             *fMeasValue = 0.0;
             ucResult = 1;
         }
+    }
+    else
+    {
+        *fMeasValue = 0.0;
     }
 
     if((double)pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fRadarEmptyHeightValue >= 0.01)
@@ -699,6 +733,10 @@ unsigned char func_Get_Meas_BY_Pressure_Level_Sensor_Value(en_usart_device_t ucD
             *fMeasValue = 0.0;
             ucResult = 1;
         }
+    }
+    else
+    {
+        *fMeasValue = 0.0;
     }
 	return ucResult;
 }
@@ -805,7 +843,7 @@ unsigned char func_Get_Meas_HZ_Radar_Ultrasonic_Flow_Sensor_Value(en_usart_devic
             if(eMeasSensorType == Meas_HZ_Radar_Ultrasonic_Flow)
             {
                 usCMD = 0x0014; //获取横滚角
-            }
+            }   
             else
             {
                 usCMD = 0x0094; //获取横滚角
@@ -891,6 +929,21 @@ unsigned char func_Get_Meas_HZ_Radar_Ultrasonic_Flow_Sensor_Value(en_usart_devic
                 ucResult = 1;
                 break;
             }
+        }
+        else
+        {
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fFlowValue = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fPositiveCumulativeTraffic = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fDischargeArea = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fSurfaceVelocity = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fCross_SectionVelocity = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fWaterLevel = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fEmptyHeight = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fRadarRoll_Angle = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fRadarVertical_Angle = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fRadarInstallHeight = 0.0f;
+            ucResult = 1;
+            return ucResult;
         }
     }
 	return ucResult;
@@ -981,6 +1034,14 @@ unsigned char func_Get_Meas_HZ_Radar_Level_Sensor_Value(en_usart_device_t ucDevi
                 ucResult = 1;
                 break;
             }
+        }
+        else
+        {
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarEmptyHeightValue = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarRoll_Angle = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarVertical_Angle = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarInstallHeight = 0.0f;
+            return 1;
         }
         if(j == 0)
         {
@@ -1085,11 +1146,28 @@ unsigned char func_Get_Meas_HX_Radar_Ultrasonic_Flow_Sensor_Value(en_usart_devic
                 break;
             }
         }
+        else
+        {
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fCross_SectionVelocity = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fWaterLevel = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fTemperature = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fSurfaceVelocity = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fUltraFlowVelocity = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fRadarVertical_Angle = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fRadarRoll_Angle = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fEmptyHeight = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fFlowValue = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fCumulativeTraffic = 0.0f;
+            ucResult = 1;
+            return ucResult;
+        }
     }
     
 	return ucResult;
 }
 
+//unsigned char ucTestRecvCnt = 0;
+//unsigned char ucTestRecvBuf[20][4] = {{0}};
 //获取恒星-截污流量计瞬时流量数据
 unsigned char func_Get_Meas_HX_Flow_Sensor_Value(en_usart_device_t ucDeviceType)
 {
@@ -1102,6 +1180,8 @@ unsigned char func_Get_Meas_HX_Flow_Sensor_Value(en_usart_device_t ucDeviceType)
     unsigned char j = 0;
 	char *pcRecvData = NULL;
     unsigned char ucResult = 1;
+    //unsigned short usValue = 0;
+    //float fValue = 0.0;
 
     for(j=0; j<6; j++)
     {
@@ -1132,6 +1212,23 @@ unsigned char func_Get_Meas_HX_Flow_Sensor_Value(en_usart_device_t ucDeviceType)
             usCMD = 0x000A;
             fMeasValue = &pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fCumulativeTraffic;
             break;
+        #if 0
+        case 6: //读取设备版本号
+            usCMD = 0x1000;
+            usRegNum = 1;
+            fMeasValue = &fValue;//pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fDeviceVersion;
+            break;
+        case 7:
+            usCMD = 0x1005;
+            usRegNum = 1;
+            fMeasValue = &fValue;//pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fDeviceVersion;
+            break;
+        case 8:
+            usCMD = 0x1007;
+            usRegNum = 1;
+            fMeasValue = &fValue;//pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fDeviceVersion;
+            break;
+        #endif
         default:
             break;
         }
@@ -1148,7 +1245,14 @@ unsigned char func_Get_Meas_HX_Flow_Sensor_Value(en_usart_device_t ucDeviceType)
         ucResult = func_Rts_Control_And_SendData(ucDeviceType,ucSendBuf,i, 50);
         if(ucResult == 0)
         {
-            pcRecvData = (char *)drv_Wait_RecvData_And_CrcCheck(Type_Float_Low , 2);
+            if(j < 6)
+            {
+                pcRecvData = (char *)drv_Wait_RecvData_And_CrcCheck(Type_Float_CDAB , 2);
+            }
+            else
+            {
+                pcRecvData = (char *)drv_Wait_RecvData_And_CrcCheck(Type_Short , 1);
+            }
             if(pcRecvData != NULL)
             {
                 *fMeasValue = *((float*)pcRecvData);
@@ -1160,6 +1264,17 @@ unsigned char func_Get_Meas_HX_Flow_Sensor_Value(en_usart_device_t ucDeviceType)
                 ucResult = 1;
                 break;
             }
+        }
+        else
+        {
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fSurfaceVelocity = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fWaterLevel = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fTemperature = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fVoltage = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fFlowValue = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fCumulativeTraffic = 0.0f;
+            ucResult = 1;
+            return ucResult;
         }
     }
     
@@ -1264,6 +1379,16 @@ unsigned char func_Get_Meas_HX_WaterQuality_COD_Sensor_Value(en_usart_device_t u
                 ucResult = 1;
                 break;
             }
+        }
+        else
+        {
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_WaterQuality_CODData.ucSensorStatus = 0;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_WaterQuality_CODData.fCODValue = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_WaterQuality_CODData.fTurbidity = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_WaterQuality_CODData.fCODSignalValue = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_WaterQuality_CODData.fTurbiditySignalValue = 0.0f;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHX_WaterQuality_CODData.fTemperature = 0.0f;
+            return 1;
         }
     }
     
@@ -1460,6 +1585,7 @@ void func_Meas_Sensor_Dispose(void)
     
     for(j=0; j<2; j++)
     {
+        ucCnt = 0;
         //如果是第二个模块，则切换到485-2
         if(j == 1)
         {
@@ -1502,6 +1628,7 @@ void func_Meas_Sensor_Dispose(void)
         //Ddl_Delay1ms(500);
         //根据当前配置的外接设备数量，进行设备型号查询及处理
         //for(l=0; l<2; l++)
+        //Ddl_Delay1ms(20000);
         {
             ucRetryCnt = 0;
             for(i=0; i<pst_MBSystemPara->DevicePara.cMeasSensorCount[l];)
@@ -1552,8 +1679,8 @@ void func_Meas_Sensor_Dispose(void)
                     //drv_mcu_ChangeUSART4_Baud(9600); //切换波特率到9600
                     if(ucRes == 0)
                     {
-                        i++;
                         st_MeasSensorPara[l][i].cGetDataFlag = 1; //获取数据成功
+                        i++;
                         ucRetryCnt = 0;
                         ucCnt++;
                         if(ucCnt >= pst_MBSystemPara->DevicePara.cMeasSensorCount[l])
