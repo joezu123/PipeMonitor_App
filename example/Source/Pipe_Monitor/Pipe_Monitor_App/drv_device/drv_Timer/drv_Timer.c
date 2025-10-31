@@ -77,6 +77,7 @@ static void OcoIrqCallback(void)
 	static unsigned char ucBarLostCnt = 0;
     static unsigned char uc4GInitWaitFlag = 0;  //开机4G初始化
     static unsigned short usLongPowerWaitFlag = 0;   //长供电模式等待标志
+    static char c4GPowerOffFlag = 0;	//4G模块关机标志位
     static char cInitFlag = 0;
 
     TIMER4_OCO_ClearIrqFlag(TIMER4_UNIT, TIMER4_OCO_HIGH_CH);
@@ -433,10 +434,25 @@ static void OcoIrqCallback(void)
     {
         usLongPowerWaitFlag = 1;
     }
+
+    if(pst_TimerSystemPara->DeviceRunPara.c4GInitFailedFlag == 1)
+    {
+        pst_TimerSystemPara->DeviceRunPara.c4GPowerOffCnt++;
+        if(pst_TimerSystemPara->DeviceRunPara.c4GPowerOffCnt >= 10)
+        {
+            pst_TimerSystemPara->DeviceRunPara.c4GPowerOffCnt = 0;
+            pst_TimerSystemPara->DeviceRunPara.c4GInitFailedFlag = 0;
+            c4GPowerOffFlag = 1;
+        }
+    }
+    else
+    {
+        c4GPowerOffFlag = 1;
+    }
 	//当前引起定时器产生的事件均已处理完后，关闭定时器，退出诊断模式
     if((cBarEventFinishFlag == 1) && (cServerEventFinishFlag == 1) && (cMeasSensorEventFinishFlag == 1) 
 		&& (pst_TimerSystemPara->DeviceRunPara.cConnectServerFlag == 0) && (cBTEventFinishFlag == 1)
-		&& (cBTWaitConnectEventFinishFlag == 1) && (uc4GInitWaitFlag == 1) && (usLongPowerWaitFlag == 1))
+		&& (cBTWaitConnectEventFinishFlag == 1) && (uc4GInitWaitFlag == 1) && (usLongPowerWaitFlag == 1) && (c4GPowerOffFlag == 1))
     {
         ucBarLostCnt = 0;
         drv_mcu_Timer4_Stop();

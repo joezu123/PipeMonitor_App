@@ -460,6 +460,7 @@ typedef enum _UploadModuleStatus
 	Status_MQTT_Publish_Topic_Register,		//MQTT 发布注册主题
 	Status_MQTT_Publish_Topic_DataUoload,	//MQTT 发布监测项上传主题
 	Status_MQTT_Publish_Topic_StatusUpload,	//MQTT 发布状态上报主题
+	Status_Init_Failed,	//初始化失败
 	//Status_Upload,		//上传数据
 	Status_Err			//异常
 }eUploadModuleStatus;
@@ -546,6 +547,9 @@ typedef struct _SysDeviceRunPara
 	int nSignalStrength;	//信号强度
 	char cSaveDataTimeDelayFlag;	//保存数据时间延迟标志位
 	char c4GUploadDataContinueFlag;	//4G上传数据连续标志位
+	char c4GInitFailedCnt;	//4G初始化失败计数值
+	char c4GInitFailedFlag;	//4G初始化失败标志位
+	char c4GPowerOffCnt;	//4G模块断电标志位
 	//char cModbusNULLCnt;	//Modbus通讯NULL计数值
 	//char cModbusNULLCnt111;
 	char cBlackLightFlag;		//是否为黑光图像站设备 	
@@ -709,7 +713,7 @@ extern unsigned char guc_SystemPowerInitFlag;
 extern unsigned char guc_LcdDipRevesAttr;
 extern unsigned char guc_NFC_Card_Flag;
 extern SysDeviceParaSt gs_DeviceDefaultPara;
-extern unsigned char guc_RTURecvArr[20];
+extern unsigned char guc_RTURecvArr[100];
 extern char gc_SystemPosi;
 extern DevMeasRecordDataSt gSt_DevMeasRecordData;	//设备测量数据记录结构体
 extern unsigned char guc_SystemTestFlag;

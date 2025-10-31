@@ -61,6 +61,8 @@ void func_EC200U_4G_PownDown_Deinit(void)
     PORT_ResetBits(EC200U_4G_MODULE_RST_PORT, EC200U_4G_MODULE_RST_PIN);
     PORT_ResetBits(USART1_TX_PORT, USART1_TX_PIN);
     PORT_ResetBits(USART1_RX_PORT, USART1_TX_PIN);
+    PORT_SetFunc(USART1_RX_PORT, USART1_RX_PIN, Func_Spi2_Nss0, Disable);
+    PORT_SetFunc(USART1_TX_PORT, USART1_TX_PIN, Func_Spi2_Sck, Disable);
 }
 
 /**
@@ -85,6 +87,8 @@ void EC200U_4G_Module_GPIO_Init(void)
     stcGpioInit.enPullUp = Enable;
     (void)PORT_Init(USART1_RX_PORT, USART1_RX_PIN, &stcGpioInit);
     #endif
+    PORT_SetFunc(USART1_RX_PORT, USART1_RX_PIN, USART1_RX_FUNC, Disable);
+    PORT_SetFunc(USART1_TX_PORT, USART1_TX_PIN, USART1_TX_FUNC, Disable);
 
     PWRDCE_PIN_OPEN();
     Ddl_Delay1ms(100);
@@ -326,6 +330,32 @@ uint8_t ucWaterQuality_COD_Flag = 0; //水质COD测量传感器存在标志位
 uint8_t ucWaterQuality_COND_Flag = 0; //水质电导率测量传感器存在标志位
 uint8_t ucMeasWaterVolumeFlag = 0; //流量测量传感器存在标志位
 uint8_t ucMeasSensorExistFlag = 0; //测量传感器存在标志位
+
+//CRC校验的范围：去除起始帧68，结束帧16，以及crc本身以外的全部数据。CRC16标准为crc16/xmodem标准，算法如下：
+unsigned short CRC16_SM4(unsigned char *puchMsg, unsigned int usDataLen)  
+{  
+    unsigned short wCRCin = 0x0000;  
+    unsigned short wCPoly = 0x1021;  
+    unsigned char wChar = 0;  
+    
+    while (usDataLen--)     
+    {  
+        wChar = *(puchMsg++);  
+        wCRCin ^= (wChar << 8);  
+        for(int i = 0;i < 8;i++)  
+        {  
+            if(wCRCin & 0x8000)  
+            {
+                wCRCin = (wCRCin << 1) ^ wCPoly; 
+            }
+            else  
+            {
+                wCRCin = wCRCin << 1;  
+            }
+        }  
+    }  
+    return (wCRCin) ;  
+}
 //获取设备监测项数据上报报文
 uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
 {
@@ -934,6 +964,9 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
         usDataLength = usDataLen + 16-l;
     }
     drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
+    unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
+    memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
+    usDataLength += 2;
     memcpy(ucDataArr, ucEntryArr, usDataLength);
     usDataLen = usDataLength;
     #else
@@ -1207,6 +1240,9 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
         usDataLength = usDataLen + 16-l;
     }
     drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
+    unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
+    memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
+    usDataLength += 2;
     memcpy(ucDataArr, ucEntryArr, usDataLength);
     usDataLen = usDataLength;
     #else
@@ -1320,6 +1356,9 @@ uint16_t func_Get_DevStatusCMD_Data(uint8_t *ucDataArr)
     }
     
     drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
+    unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
+    memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
+    usDataLength += 2;
     memcpy(ucDataArr, ucEntryArr, usDataLength);
     usDataLen = usDataLength;
     #else
@@ -1864,14 +1903,14 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                     if(pst_EC200USystemPara->DeviceRunPara.cBarTouchFlag != 3)
                     {
                         //上传数据成功
-                        if(pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt == (pst_EC200USystemPara->DevicePara.nDeviceUploadCnt / pst_EC200USystemPara->DevicePara.nDeviceSaveRecordCnt))
+                        if(pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt == pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt)
                         {
                             pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt = 0; //上传数据成功，清零上传记录丢失计数
                             pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime = 0;
                         }
                         else
                         {
-                            if((pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt + pst_EC200USystemPara->DevicePara.nDeviceUploadCnt / pst_EC200USystemPara->DevicePara.nDeviceSaveRecordCnt) >= pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt)
+                            if((pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt) >= pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt)
                             {
                                 pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt -= (pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt);
                                 if(pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt == 0)

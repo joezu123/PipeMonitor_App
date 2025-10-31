@@ -505,11 +505,11 @@ int32_t main(void)
     pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Pressure_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_BY_Integrated_Conductivity;
     //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
-    pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_HX_Flowmeter;//Meas_BY_Radar_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HZ_Radar_Ultrasonic_Flow;
     #endif
     pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 5;
-    pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 1;
+    pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 1;     
     pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 1;
     //memcpy(pst_MainSystemPara->DevicePara.cServerIP[1],"220.250.29.188",strlen("220.250.29.188"));
     //pst_MainSystemPara->DevicePara.cServerIP[1][14] = '0'; 0
@@ -517,7 +517,7 @@ int32_t main(void)
 
     pst_MainSystemPara->DeviceRunPara.cTotalSensorCnt = pst_MainSystemPara->DevicePara.cMeasSensorCount[0] + pst_MainSystemPara->DevicePara.cMeasSensorCount[1];
     pst_MainSystemPara->DeviceRunPara.cMeasShowViewCnt = (pst_MainSystemPara->DeviceRunPara.cTotalSensorCnt + 1) / 2;
-    pst_MainSystemPara->DeviceRunPara.cCurMeasShowViewCnt = 0;
+    pst_MainSystemPara->DeviceRunPara.cCurMeasShowViewCnt = 0;  
     #ifndef JOE_TEST
     #if 0
     if((pst_MainSystemPara->DevicePara.cDeviceIdenFlag == 1) && (pst_MainSystemPara->DeviceRunPara.c4GInitFlag == 0) && (pst_MainSystemPara->DevicePara.cMonitorMode == 0))

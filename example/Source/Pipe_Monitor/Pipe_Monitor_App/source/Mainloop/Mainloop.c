@@ -945,6 +945,7 @@ void func_Save_Device_MeasRecord_Dispose()
 						}
 					}
 					#endif
+					pst_MainloopSystemPara->DeviceRunPara.esMeasData.fVolumeValue = gSt_DevMeasRecordData.fWaterVolume;
 					ucRecordFlag = 1;
 				}
 			}
@@ -1120,7 +1121,7 @@ void func_4G_Connect_Server_Dispose(void)
 		}
 	}
 	
-	if((pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag == 1) && (pst_MainloopSystemPara->DeviceRunPara.c4GInitFlag == 1))
+	if((pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag == 1) && (pst_MainloopSystemPara->DeviceRunPara.c4GInitFlag == 1) && (pst_MainloopSystemPara->DeviceRunPara.c4GInitFailedFlag == 0))
 	{
 		pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_DIAG;
 		ucRes = drv_EC200U_4G_Module_Init(1);
@@ -1130,11 +1131,25 @@ void func_4G_Connect_Server_Dispose(void)
 			ucRetryCnt++;
 			if(ucRetryCnt > 3)
 			{
+				pst_MainloopSystemPara->DeviceRunPara.enUploadStatus = Status_Init_Failed;
 				ucRetryCnt = 0;
 				pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_RUN;
 				pst_MainloopSystemPara->DeviceRunPara.usDevStatus |= 0x0001;
 				pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag = 0;
 				pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag = 0;
+				pst_MainloopSystemPara->DeviceRunPara.c4GInitFailedCnt++;
+				if(pst_MainloopSystemPara->DeviceRunPara.c4GInitFailedCnt > 3)
+				{
+					pst_MainloopSystemPara->DeviceRunPara.c4GInitFailedCnt = 0;
+					pst_MainloopSystemPara->DeviceRunPara.c4GInitFailedFlag = 1;
+					pst_MainloopSystemPara->DeviceRunPara.c4GPowerOffCnt = 0;
+					func_EC200U_4G_PownDown_Deinit();   //关闭4G电源
+					if(pst_MainloopSystemPara->DeviceRunPara.cTimer4StartFlag == 0)
+					{
+						pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_DIAG;
+						drv_mcu_Timer4_Start();
+					}
+				}
 			}
 		}
 		else if(ucRes == 0)
@@ -1152,7 +1167,7 @@ void func_4G_Connect_Server_Dispose(void)
 				drv_mcu_Timer4_Start();
 			}
 		}
-		else if(ucRes == 1)
+		else if(ucRes == 1)	//接连两次通讯，将完整的监测项报文发送到平台
 		{
 			if(pst_MainloopSystemPara->DeviceRunPara.c4GUploadDataContinueFlag == 1)
 			{
@@ -1160,6 +1175,10 @@ void func_4G_Connect_Server_Dispose(void)
 				drv_EC200U_4G_Module_Init(1);
 			}
 		}
+	}
+	if(pst_MainloopSystemPara->DeviceRunPara.c4GInitFailedFlag == 1)
+	{
+		func_EC200U_4G_PownDown_Deinit();   //关闭4G电源
 	}
 }
 
