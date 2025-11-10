@@ -505,7 +505,7 @@ int32_t main(void)
     pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Pressure_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_BY_Integrated_Conductivity;
     //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
-    pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_HX_Flowmeter;//Meas_BY_Radar_Level;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HZ_Radar_Ultrasonic_Flow;
     #endif
     pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 5;

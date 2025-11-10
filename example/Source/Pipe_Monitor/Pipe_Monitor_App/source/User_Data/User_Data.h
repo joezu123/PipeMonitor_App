@@ -39,8 +39,8 @@ extern "C"
 #define DEVICE_HW_VERSION   "V1.0.0"
 #define DEVICE_SW_VERSION   "V1.0.0"
 #define RECORD_DATA_FORMAT	16	//记录数据格式：每条记录所占用字节数，例如1液位+1流量+2水质=4*4=16
-#define EEP_VERSION	3			//存储版本号
-//#define SM4_ENTRY_ENABLE	1	//SM4加密使能
+#define EEP_VERSION	2			//存储版本号
+//=#define SM4_ENTRY_ENABLE	1	//SM4加密使能
 
 #define DUMMY_BYTE     					0xff 
 

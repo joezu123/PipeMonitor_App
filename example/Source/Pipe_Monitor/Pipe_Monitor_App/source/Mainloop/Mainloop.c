@@ -989,6 +989,15 @@ void func_Save_Device_MeasRecord_Dispose()
 					if(pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordLostCnt == 0)
 					{
 						pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now; //记录上传数据开始时间
+						if(pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordStartTime < 1762136855)
+						{
+							drv_mcu_Get_RTC_Time(pst_MainloopSystemPara->DeviceRunPara.cDeviceCurDateTime);
+							sscanf(pst_MainloopSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
+							tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
+							tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
+							tm.tm_isdst = -1; // 自动判断夏令时
+							now = mktime(&tm) - 8*60*60; 
+						}
 					}
 					//pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordLostCnt += pst_MainloopSystemPara->DevicePara.nDeviceUploadCnt / pst_MainloopSystemPara->DevicePara.nDeviceSaveRecordCnt;
 					pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordLostCnt++;

@@ -419,6 +419,10 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     }
     else
     {
+        if(pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime < 1762136855)
+        {
+            pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now-(pst_EC200USystemPara->DevicePara.nDeviceUploadCnt * 60); //记录上传数据开始时间
+        }
         ulTime = pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime;
     }
 
@@ -1284,7 +1288,6 @@ void func_Get_DevStatusData(void)
     {
         pst_EC200USystemPara->DeviceRunPara.cLostStatusArrCnt = 0; //超过最大记录数，清零
     }
-
 }
 
 //获取设备状态上报报文
@@ -1541,7 +1544,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             //(void)strcpy((char *)ucSendBuf, "AT+QMTOPEN=0,\"218.85.5.161\",7243\r\n");
             //(void)strcpy((char *)ucSendBuf, "AT+QMTOPEN=0,\"220.250.29.188\",7183\r\n");
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Open_Interface;
-            (void)sprintf((char *)ucSendBuf, "AT+QMTOPEN=0,\"%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cServerIP[1], pst_EC200USystemPara->DevicePara.usServerPort[1]);
+            (void)sprintf((char *)ucSendBuf, "AT+QMTOPEN=0,\"%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cServerIP[0], pst_EC200USystemPara->DevicePara.usServerPort[0]);
             //(void)strcpy((char *)ucSendBuf, "AT+QMTCONN=0,\"ZCJ2025042801\",\"iVOw212I78\",\"version=2018-10-31&res=products\%2FiVOw212I78\%2Fdevices\%2FZCJ2025042801&et=1749953701&method=md5&sign=Ojs6ZSs5SoXw1Ckzurdsjw\%3D\%3D\"\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "QMTOPEN");
@@ -1563,9 +1566,9 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             //(void)strcpy((char *)ucSendBuf, "AT+QMTCONN=0,\"clientid\",\"username\",\"userpwd\"\r\n");
             //(void)strcpy((char *)ucSendBuf, "AT+MIPSTART=\"studio-mqtt.heclouds.com\",1883\r\n");
             //(void)strcpy((char *)ucSendBuf, "AT+QMTCONN=0,\"ZCJ2025042802\",\"jP1B7MpRy3\",\"version=2018-10-31&res=products\%2FjP1B7MpRy3\%2Fdevices\%2FZCJ2025042802&et=1749953701&method=md5&sign=UYUYifYvoXYzT5R7vS3Wbw\%3D\%3D\"\r\n");
-            //(void)sprintf((char *)ucSendBuf, "AT+QMTCONN=0,\"%s\",\"xfgd\",\"xfgd@1234\"\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            (void)sprintf((char *)ucSendBuf, "AT+QMTCONN=0,\"%s\",\"xfgd\",\"xfgd@1234\"\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Connect_Interface;
-            (void)sprintf((char *)ucSendBuf, "AT+QMTCONN=0,\"%s\",\"nbwater\",\"nbwater@1234\"\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+           // (void)sprintf((char *)ucSendBuf, "AT+QMTCONN=0,\"%s\",\"nbwater\",\"nbwater@1234\"\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             //(void)strcpy((char *)ucSendBuf, "AT+QMTCONN=0,\"ZCJ2025042801\",\"iVOw212I78\",\"version=2018-10-31&res=products\%2FiVOw212I78\%2Fdevices\%2FZCJ2025042801&et=1749953701&method=md5&sign=FXcY9ZA%2BJhyld8Bd3VrpQg\%3D\%3D\"\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
@@ -1573,50 +1576,50 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         #ifdef CONNECT_MQTT
         case Module_SUBSCRIBE_TOPIC_REGISTER_CMD:   //订阅主题注册
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_Register;
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/devReg/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/devReg/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_SUBSCRIBE_TOPIC_DATAUPLOAD_CMD: //订阅主题数据上传
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_DataUpload;
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/dataUpload/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/dataUpload/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_SUBSCRIBE_TOPIC_STATUS_CMD: //订阅主题状态上报
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_StatusUpload;
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/devStatus/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/devStatus/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         #if 0
         case Module_SUBSCRIBE_TOPIC_ALARMDATA_CMD: //订阅主题报警数据上报
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/alarmData/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/alarmData/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         #endif
         case Module_SUBSCRIBE_TOPIC_SETCONFIG_CMD:  //订阅主题设置配置
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_SetPara;
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/setConfig/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/setConfig/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_SUBSCRIBE_TOPIC_GETCONFIG_CMD:  //订阅主题获取配置
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_GetPara;
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/getConfig/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/getConfig/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         #if 0
         case Module_SUBSCRIBE_TOPIC_GETDATA_CMD:    //订阅主题获取数据
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/getData/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/getData/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
        
         case Module_SUBSCRIBE_DATAPT_CMD: //订阅主题数据透传
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0100/0004/dataPt/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/dataPt/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
@@ -1625,7 +1628,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         case Module_PUBLISH_TOPIC_REGISTER_CMD: //发布主题注册
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_Register;
             usSendDataLen = func_Get_DevRegCMD_Data(ucSendBuf);
-            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0100/0004/devReg/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
+            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/devReg/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usTempSendLen = strlen((char *)ucTempSendBuf);
             //pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
             drv_mcu_USART_SendData(MODULE_4G_NB, ucTempSendBuf, usTempSendLen);
@@ -1642,7 +1645,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         case Module_PUBLISH_TOPIC_DATAUPLOAD_CMD:   //发布监测项数据上报主题 
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_DataUoload;
             usSendDataLen = func_Get_DataUploadCMD_Data(ucSendBuf);
-            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0100/0004/dataUpload/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
+            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/dataUpload/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usTempSendLen = strlen((char *)ucTempSendBuf);
             //pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
             drv_mcu_USART_SendData(MODULE_4G_NB, ucTempSendBuf, usTempSendLen);
@@ -1659,7 +1662,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         case Module_PUBLISH_TOPIC_DATABASEUPLOAD_CMD:   //发布监测项数据上报主题 
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_DataUoload;
             usSendDataLen = func_Get_BaseDataUploadCMD_Data(ucSendBuf);
-            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0100/0004/dataUpload/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
+            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/dataUpload/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usTempSendLen = strlen((char *)ucTempSendBuf);
             //pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
             drv_mcu_USART_SendData(MODULE_4G_NB, ucTempSendBuf, usTempSendLen);
@@ -1676,7 +1679,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         case Module_PUBLISH_TOPIC_SATATUSUPLOAD_CMD:   //发布监测项状态数据上报主题 
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_DataUoload;
             usSendDataLen = func_Get_StatusUploadCMD_Data(ucSendBuf);
-            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0100/0004/dataUpload/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
+            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/dataUpload/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usTempSendLen = strlen((char *)ucTempSendBuf);
             //pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
             drv_mcu_USART_SendData(MODULE_4G_NB, ucTempSendBuf, usTempSendLen);
@@ -1692,7 +1695,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         case Module_PUBLISH_TOPIC_STATUS_CMD:   //发布设备状态上报主题
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_StatusUpload;
             usSendDataLen = func_Get_DevStatusCMD_Data(ucSendBuf);
-            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0100/0004/devStatus/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
+            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/devStatus/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usTempSendLen = strlen((char *)ucTempSendBuf);
             //pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
             drv_mcu_USART_SendData(MODULE_4G_NB, ucTempSendBuf, usTempSendLen);
