@@ -158,72 +158,84 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
                                                             pst_EC200USystemPara->DevicePara.nDeviceUploadCnt);
 
     sprintf((char *)ucTempMonitorNameArr,"\"colmonitor\":[");
-    //if(pst_EC200USystemPara->DevicePara.cMeasSensorCount > 0)
-    //拼接外接传感器数据
-    for(l=0; l<2; l++)
+
+    if(pst_EC200USystemPara->DeviceRunPara.cBlackLightFlag == 0)
     {
-        for(i=0; i<pst_EC200USystemPara->DevicePara.cMeasSensorCount[l]; i++)
+        //if(pst_EC200USystemPara->DevicePara.cMeasSensorCount > 0)
+        //拼接外接传感器数据
+        for(l=0; l<2; l++)
         {
-            memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
-            //memset(ucDataArr, 0, sizeof(ucDataArr));
-            j = 0;
-            //if(i != 0)
+            for(i=0; i<pst_EC200USystemPara->DevicePara.cMeasSensorCount[l]; i++)
             {
-            //    ucParaNameArr[j++] = ',';
-            }
-            
-            //ucDataArr[0] = ',';
-            switch (pst_EC200USystemPara->DevicePara.eMeasSensor[l][i])
-            {
-            case Meas_BY_Integrated_Conductivity:  //  一体式电导率
-                sprintf((char *)&ucParaNameArr[j], "\"COND\",");
-                j = strlen((char *)&ucParaNameArr);
-                sprintf((char *)&ucParaNameArr[j], "\"COND_B\",");
-                break;
-            case Meas_BY_Radar_Level:
-            case Meas_HZ_Radar_Level:
-                sprintf((char *)&ucParaNameArr[j], "\"water_height\",");
-                j = strlen((char *)&ucParaNameArr);
-                sprintf((char *)&ucParaNameArr[j], "\"water_height_B\",");
+                memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
+                //memset(ucDataArr, 0, sizeof(ucDataArr));
+                j = 0;
+                //if(i != 0)
+                {
+                //    ucParaNameArr[j++] = ',';
+                }
+                
+                //ucDataArr[0] = ',';
+                switch (pst_EC200USystemPara->DevicePara.eMeasSensor[l][i])
+                {
+                case Meas_BY_Integrated_Conductivity:  //  一体式电导率
+                    sprintf((char *)&ucParaNameArr[j], "\"COND\",");
+                    j = strlen((char *)&ucParaNameArr);
+                    sprintf((char *)&ucParaNameArr[j], "\"COND_B\",");
+                    break;
+                case Meas_BY_Radar_Level:
+                case Meas_HZ_Radar_Level:
+                    sprintf((char *)&ucParaNameArr[j], "\"water_height\",");
+                    j = strlen((char *)&ucParaNameArr);
+                    sprintf((char *)&ucParaNameArr[j], "\"water_height_B\",");
+                    //sprintf((char *)&ucDataArr[1], "\"%.3f\"", pst_EC200USystemPara->DeviceRunPara.esMeasData.fWaterLevel);
+                    break;
+                #ifndef WATERLEVEL_RADAR_PRESS
+                case Meas_BY_Pressure_Level:
+                    sprintf((char *)&ucParaNameArr[j], "\"pipeline_water_height\",");
                 //sprintf((char *)&ucDataArr[1], "\"%.3f\"", pst_EC200USystemPara->DeviceRunPara.esMeasData.fWaterLevel);
-                break;
-            #ifndef WATERLEVEL_RADAR_PRESS
-            case Meas_BY_Pressure_Level:
-                sprintf((char *)&ucParaNameArr[j], "\"pipeline_water_height\",");
-            //sprintf((char *)&ucDataArr[1], "\"%.3f\"", pst_EC200USystemPara->DeviceRunPara.esMeasData.fWaterLevel);
-                break;
-            #endif
-            case Meas_Flowmeter:
-            case Meas_HZ_Radar_Ultrasonic_Flow:
-            case Meas_HZ_Ultrasonic_Flow:
-            case Meas_HX_Radar_Ultrasonic_Flow:
-            case Meas_HX_Flowmeter:
-                sprintf((char *)&ucParaNameArr[j], "\"curr_volume\","); //瞬时流量/h
-                j = strlen((char *)&ucParaNameArr);
-                sprintf((char *)&ucParaNameArr[j], "\"curr_volume_B\",");
-                j = strlen((char *)&ucParaNameArr);
-                sprintf((char *)&ucParaNameArr[j], "\"flow_velocity\",");
-                j = strlen((char *)&ucParaNameArr);
-                sprintf((char *)&ucParaNameArr[j], "\"flow_velocity_B\",");
-                ucMeasWaterVolumeFlag = 1;
-                //sprintf((char *)&ucDataArr[1], "\"%.3f\"", pst_EC200USystemPara->DeviceRunPara.esMeasData.fVolumeValue);
-                break;
-            default:
-                break;
+                    break;
+                #endif
+                case Meas_Flowmeter:
+                case Meas_HZ_Radar_Ultrasonic_Flow:
+                case Meas_HZ_Ultrasonic_Flow:
+                case Meas_HX_Radar_Ultrasonic_Flow:
+                case Meas_HX_Flowmeter:
+                    sprintf((char *)&ucParaNameArr[j], "\"curr_volume\","); //瞬时流量/h
+                    j = strlen((char *)&ucParaNameArr);
+                    sprintf((char *)&ucParaNameArr[j], "\"curr_volume_B\",");
+                    j = strlen((char *)&ucParaNameArr);
+                    sprintf((char *)&ucParaNameArr[j], "\"flow_velocity\",");
+                    j = strlen((char *)&ucParaNameArr);
+                    sprintf((char *)&ucParaNameArr[j], "\"flow_velocity_B\",");
+                    ucMeasWaterVolumeFlag = 1;
+                    //sprintf((char *)&ucDataArr[1], "\"%.3f\"", pst_EC200USystemPara->DeviceRunPara.esMeasData.fVolumeValue);
+                    break;
+                default:
+                    break;
+                }
+                
+                (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
+                //(void)strcat((char *)ucTempDataArr, ucDataArr);
             }
-            
+        }
+
+        if(ucMeasWaterVolumeFlag == 1)
+        {
+            //当前设备支持流量测量，因此要加上累计流量数据
+            memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
+            sprintf((char *)&ucParaNameArr[j], "\"total_volume\",");
+            j = strlen((char *)&ucParaNameArr);
+            sprintf((char *)&ucParaNameArr[j], "\"total_volume_B\",");
             (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
-            //(void)strcat((char *)ucTempDataArr, ucDataArr);
         }
     }
-
-    if(ucMeasWaterVolumeFlag == 1)
+    else    //黑光图像站
     {
-        //当前设备支持流量测量，因此要加上累计流量数据
         memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
-        sprintf((char *)&ucParaNameArr[j], "\"total_volume\",");
-        j = strlen((char *)&ucParaNameArr);
-        sprintf((char *)&ucParaNameArr[j], "\"total_volume_B\",");
+        //memset(ucDataArr, 0, sizeof(ucDataArr));
+        j = 0;
+        sprintf((char *)&ucParaNameArr[j], "\"pictime\",\"picture\",\"piccount\",\"index\",");
         (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
     }
 
@@ -356,6 +368,91 @@ unsigned short CRC16_SM4(unsigned char *puchMsg, unsigned int usDataLen)
     }  
     return (wCRCin) ;  
 }
+
+void hex_to_str(uint8_t *pucData, uint16_t ucDataLen, uint8_t *pucStr)
+{
+    uint8_t ddl, ddh;
+    uint16_t i;
+    for (i = 0; i < ucDataLen; i++)
+    {
+        ddh = ('0' + pucData[i] / 16);
+        ddl = ('0' + pucData[i] % 16);
+        if (ddh > '9')
+        {
+            ddh = ddh + ('a' - '9' - 1);
+        }
+        if (ddl > '9')
+        {
+            ddl = ddl + ('a' - '9' - 1);
+        }
+        pucStr[i * 2] = ddh;
+        pucStr[i * 2 + 1] = ddl;
+    }
+}
+
+//获取设备发送黑光图像站照片数据
+uint16_t func_Get_BlackLightDataUploadCMD_Data(uint8_t *ucDataArr, unsigned char* ucPosi)
+{
+    uint8_t ucTempArr[1200] = {0};
+    uint8_t ucArr[100] = {0};
+    struct tm tm;
+    unsigned short usDataLen = 0;
+    unsigned char ucLen = 0;
+    //time(&now);
+    drv_mcu_Get_RTC_Time(pst_EC200USystemPara->DeviceRunPara.cDeviceCurDateTime);
+    sscanf(pst_EC200USystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
+    tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
+    tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
+    tm.tm_isdst = -1;
+    now = mktime(&tm) - 8*60*60; //将时间转换为UTC时间，减去8小时
+    ulTime = pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime;
+    sprintf((char *)ucTempArr, "{\"clientId\":\"%s\",\"pver\":24,\"beginTime\":%ld,\"msgId\":%ld,\"gap\":%d,\"data\":{\"pictime\":[%ld],\"picture\":[\"", 
+                                                                                        pst_EC200USystemPara->DevicePara.cDeviceID,
+                                                                                        (long)now,
+                                                                                        (long)now,
+                                                                                        pst_EC200USystemPara->DevicePara.nDeviceSaveRecordCnt * 60,
+                                                                                        ulTime);
+    usDataLen = strlen((char *)ucTempArr);
+    //sprintf((char *)ucTempArr[strlen(ucTempArr)],"%s", &pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0]);
+    if(*ucPosi < pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt - 1)
+    {
+        hex_to_str(&pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0],400,&ucTempArr[strlen(ucTempArr)]);
+    }
+    else
+    {
+        hex_to_str(&pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0],pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ulCurGetDataSize - ((pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt-1) * 400),&ucTempArr[strlen(ucTempArr)]);
+    }
+    
+    //memcpy((char *)ucTempArr[strlen(ucTempArr)], &pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0],1024);
+    //usDataLen += 1024;
+    //(void)strcat((char *)ucTempArr, &pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0]);
+    sprintf((char*)&ucTempArr[strlen(ucTempArr)],"\"],\"piccount\":[%d],\"index\":[%d]}}",pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt,*ucPosi);
+    //ucLen = strlen((char *)ucArr);
+    //(void)strcat((char *)ucTempArr[usDataLen], ucArr);
+    //usDataLen += ucLen;
+    usDataLen = strlen((char *)ucTempArr);
+    #ifdef SM4_ENTRY_ENABLE
+    l = usDataLen % 16;
+    if(l != 0)
+    {
+        usDataLength = usDataLen + 16-l;
+    }
+    drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
+    unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
+    memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
+    usDataLength += 2;
+    memcpy(ucDataArr, ucEntryArr, usDataLength);
+    usDataLen = usDataLength;
+    #else
+    //memset(ucTempArr,0,strlen((char *)ucTempArr));
+    //drv_LKT4202_SendData_Decry(ucEntryArr, (char*)ucTempArr,usDataLength);
+    //usDataLen = strlen((char *)ucEntryArr);
+
+    memcpy(ucDataArr, ucTempArr, usDataLen);
+    #endif
+    return usDataLen;                          
+}
+
 //获取设备监测项数据上报报文
 uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
 {
@@ -1190,6 +1287,10 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
 
     if(pst_EC200USystemPara->DeviceRunPara.cBarTouchFlag == 0)
     {
+        if(pst_EC200USystemPara->DeviceRunPara.cBlackLightFlag == 1)
+        {
+            ucRecordCnt = 1;
+        }
         //根据本次要上传的数据个数，从存储中读取该数据
         for(nPosi=0; nPosi<ucRecordCnt; nPosi++)
         {
@@ -1393,6 +1494,16 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
     uint16_t usRecvLen = 0;
     unsigned short usPosition = 0;
     char cCSQ[2] = {0};
+    int nClientType = 4;
+
+    if(pst_EC200USystemPara->DeviceRunPara.cBlackLightFlag == 0)
+    {
+        nClientType = 4;
+    }
+    else
+    {
+        nClientType = 7;
+    }
 
     //if((ucDataUploadEnable == 0) )
     //{
@@ -1576,50 +1687,51 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         #ifdef CONNECT_MQTT
         case Module_SUBSCRIBE_TOPIC_REGISTER_CMD:   //订阅主题注册
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_Register;
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/devReg/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/000%d/devReg/%s\",2\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_SUBSCRIBE_TOPIC_DATAUPLOAD_CMD: //订阅主题数据上传
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_DataUpload;
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/dataUpload/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/000%d/dataUpload/%s\",2\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_SUBSCRIBE_TOPIC_STATUS_CMD: //订阅主题状态上报
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_StatusUpload;
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/devStatus/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/000%d/devStatus/%s\",2\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         #if 0
         case Module_SUBSCRIBE_TOPIC_ALARMDATA_CMD: //订阅主题报警数据上报
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/alarmData/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/000%d/alarmData/%s\",2\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         #endif
         case Module_SUBSCRIBE_TOPIC_SETCONFIG_CMD:  //订阅主题设置配置
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_SetPara;
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/setConfig/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/000%d/setConfig/%s\",2\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         case Module_SUBSCRIBE_TOPIC_GETCONFIG_CMD:  //订阅主题获取配置
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_GetPara;
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/getConfig/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/000%d/getConfig/%s\",2\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
+            pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucCurPhotoDataCnt = 0;
             break;
         #if 0
         case Module_SUBSCRIBE_TOPIC_GETDATA_CMD:    //订阅主题获取数据
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/getData/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/000%d/getData/%s\",2\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
        
         case Module_SUBSCRIBE_DATAPT_CMD: //订阅主题数据透传
-            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/0004/dataPt/%s\",2\r\n",pst_EC200USystemPara->DevicePara.cDeviceID);
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/000%d/dataPt/%s\",2\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID);
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
@@ -1628,7 +1740,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         case Module_PUBLISH_TOPIC_REGISTER_CMD: //发布主题注册
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_Register;
             usSendDataLen = func_Get_DevRegCMD_Data(ucSendBuf);
-            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/devReg/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
+            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/000%d/devReg/%s\",%d\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usTempSendLen = strlen((char *)ucTempSendBuf);
             //pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
             drv_mcu_USART_SendData(MODULE_4G_NB, ucTempSendBuf, usTempSendLen);
@@ -1644,8 +1756,17 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             break;
         case Module_PUBLISH_TOPIC_DATAUPLOAD_CMD:   //发布监测项数据上报主题 
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_DataUoload;
-            usSendDataLen = func_Get_DataUploadCMD_Data(ucSendBuf);
-            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/dataUpload/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
+            pst_EC200USystemPara->DeviceRunPara.c4GUploadDataContinueFlag = 1;
+            if(pst_EC200USystemPara->DeviceRunPara.cBlackLightFlag == 0)
+            {
+                usSendDataLen = func_Get_DataUploadCMD_Data(ucSendBuf);
+            }
+            else
+            {
+                usSendDataLen = func_Get_BlackLightDataUploadCMD_Data(ucSendBuf,&pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucCurPhotoDataCnt);
+            }
+            
+            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/000%d/dataUpload/%s\",%d\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usTempSendLen = strlen((char *)ucTempSendBuf);
             //pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
             drv_mcu_USART_SendData(MODULE_4G_NB, ucTempSendBuf, usTempSendLen);
@@ -1662,7 +1783,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         case Module_PUBLISH_TOPIC_DATABASEUPLOAD_CMD:   //发布监测项数据上报主题 
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_DataUoload;
             usSendDataLen = func_Get_BaseDataUploadCMD_Data(ucSendBuf);
-            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/dataUpload/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
+            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/000%d/dataUpload/%s\",%d\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usTempSendLen = strlen((char *)ucTempSendBuf);
             //pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
             drv_mcu_USART_SendData(MODULE_4G_NB, ucTempSendBuf, usTempSendLen);
@@ -1679,7 +1800,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         case Module_PUBLISH_TOPIC_SATATUSUPLOAD_CMD:   //发布监测项状态数据上报主题 
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_DataUoload;
             usSendDataLen = func_Get_StatusUploadCMD_Data(ucSendBuf);
-            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/dataUpload/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
+            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/000%d/dataUpload/%s\",%d\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usTempSendLen = strlen((char *)ucTempSendBuf);
             //pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
             drv_mcu_USART_SendData(MODULE_4G_NB, ucTempSendBuf, usTempSendLen);
@@ -1695,7 +1816,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         case Module_PUBLISH_TOPIC_STATUS_CMD:   //发布设备状态上报主题
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_StatusUpload;
             usSendDataLen = func_Get_DevStatusCMD_Data(ucSendBuf);
-            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/devStatus/%s\",%d\r\n",pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
+            sprintf((char *)ucTempSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/000%d/devStatus/%s\",%d\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID,usSendDataLen);
             usTempSendLen = strlen((char *)ucTempSendBuf);
             //pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
             drv_mcu_USART_SendData(MODULE_4G_NB, ucTempSendBuf, usTempSendLen);
@@ -1898,38 +2019,75 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                     }
                 }
             }
+            else if(gE_4G_Module_Init_CMD == Module_PUBLISH_TOPIC_DATAUPLOAD_CMD)
+            {
+                if(func_Array_Find_Str((char *)pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB],usRecvLen,"\"res\":0",7, &usPosition) == 0)
+                {
+                    if((pst_EC200USystemPara->DeviceRunPara.cBlackLightFlag == 0))
+                    {
+                        gE_4G_Module_Init_CMD++;
+                        ucRetryCnt = 0;
+                    }
+                    else
+                    {
+                        ucRetryCnt = 0;
+                        pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucCurPhotoDataCnt++;
+                        if(pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucCurPhotoDataCnt >= pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt)
+                        {
+                            pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucCurPhotoDataCnt = 0;
+                            gE_4G_Module_Init_CMD++;
+                        }
+                    }
+                }
+                
+            }
             else if(gE_4G_Module_Init_CMD == Module_PUBLISH_TOPIC_SATATUSUPLOAD_CMD)
             {
                 //if (strstr((char *)pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB], "\"res\":0") != NULL)
                 if(func_Array_Find_Str((char *)pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB],usRecvLen,"\"res\":0",7, &usPosition) == 0)
                 {
-                    if(pst_EC200USystemPara->DeviceRunPara.cBarTouchFlag != 3)
+                    if((pst_EC200USystemPara->DeviceRunPara.cBlackLightFlag == 0))
                     {
-                        //上传数据成功
-                        if(pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt == pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt)
+                        if(pst_EC200USystemPara->DeviceRunPara.cBarTouchFlag != 3)
                         {
-                            pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt = 0; //上传数据成功，清零上传记录丢失计数
-                            pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime = 0;
-                        }
-                        else
-                        {
-                            if((pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt) >= pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt)
-                            {
-                                pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt -= (pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt);
-                                if(pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt == 0)
-                                {
-                                    pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime = 0;
-                                }
-                                else
-                                {
-                                    pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime += pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt * pst_EC200USystemPara->DevicePara.nDeviceSaveRecordCnt * 60;
-                                }
-                            }
-                            else
+                            //上传数据成功
+                            if(pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt == pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt)
                             {
                                 pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt = 0; //上传数据成功，清零上传记录丢失计数
                                 pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime = 0;
                             }
+                            else
+                            {
+                                if((pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt) >= pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt)
+                                {
+                                    pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt -= (pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt);
+                                    if(pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt == 0)
+                                    {
+                                        pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime = 0;
+                                    }
+                                    else
+                                    {
+                                        pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime += pst_EC200USystemPara->DeviceRunPara.ucCurUploadRecordCnt * pst_EC200USystemPara->DevicePara.nDeviceSaveRecordCnt * 60;
+                                    }
+                                }
+                                else
+                                {
+                                    pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt = 0; //上传数据成功，清零上传记录丢失计数
+                                    pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime = 0;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(pst_EC200USystemPara->DeviceRunPara.cBlackLightFlag == 1)
+                        {
+                            pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucCurPhotoDataCnt++;
+                        }
+                        else
+                        {
+                            gE_4G_Module_Init_CMD++;
+                            ucRetryCnt = 0;
                         }
                     }
                 }
@@ -1937,7 +2095,6 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                 {
                     //pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt += pst_EC200USystemPara->DevicePara.nDeviceUploadCnt / pst_EC200USystemPara->DevicePara.nDeviceSaveRecordCnt; //上传数据失败，上传记录丢失计数+1
                 }
-
                 if((pst_EC200USystemPara->DeviceRunPara.cDeviceStatusUploadFlag == 1) && (pst_EC200USystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag == 1))
                 //if(pst_EC200USystemPara->DeviceRunPara.cDeviceStatusUploadFlag == 1)
                 {

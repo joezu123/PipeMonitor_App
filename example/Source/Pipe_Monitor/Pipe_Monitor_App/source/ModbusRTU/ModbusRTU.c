@@ -16,7 +16,7 @@
  ******************************************************************************/
 #include "ModbusRTU.h"
 #include "WatchDog.h"
-
+#include "time.h"
 /*******************************************************************************
  * Local type definitions ('typedef')
  ******************************************************************************/
@@ -1645,7 +1645,7 @@ unsigned char func_Set_Camera_Photo_CMD(en_usart_device_t ucDeviceType)
 }
 
 //获取具体拍照数据
-unsigned char func_Get_Photo_Data(en_usart_device_t ucDeviceType, unsigned long ulStartAddr)
+unsigned char func_Get_Photo_Data(en_usart_device_t ucDeviceType, unsigned long ulStartAddr, unsigned short *usDataLen)
 {
     unsigned char ucResult = 1;
     unsigned char ucSendBuf[14] = {0x90,0xEB,0x01,0x48,0x06,0x00};
@@ -1660,9 +1660,9 @@ unsigned char func_Get_Photo_Data(en_usart_device_t ucDeviceType, unsigned long 
     ucSendBuf[8] = (ulStartAddr >> 16) & 0xFF; //次高位
     ucSendBuf[9] = (ulStartAddr >> 24) & 0xFF; //高位
     
-    if(pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ulData_Size >= (1024 + pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ulCurGetDataSize))
+    if(pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ulData_Size >= (400 + pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ulCurGetDataSize))
     {
-        usGetDataLen = 1024; //每次获取1024字节数据
+        usGetDataLen = 400; //每次获取1024字节数据
     }
     else
     {
@@ -1685,6 +1685,7 @@ unsigned char func_Get_Photo_Data(en_usart_device_t ucDeviceType, unsigned long 
         {
             ucResult = 0;
             pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ulCurGetDataSize += usGetDataLen; //获取拍照数据大小
+            *usDataLen = usGetDataLen; //返回实际获取数据长度
         }
     }
 
@@ -1846,6 +1847,10 @@ unsigned char func_BlackLight_Sensor_Dispose(void)
     unsigned char ucRes = 0;
     static en_usart_device_t enCameraType = MODULE_MEAS_SENSOR1;
     static en_usart_device_t enMoveType = MODULE_MEAS_SENSOR2;
+    unsigned short usRecvDataLen = 0;
+    struct tm tm;
+    //time(&now);
+    time_t now;
 
     //针对黑光图像站，通讯需要做特殊处理:
     //1. 先发测试命令，确认摄像机通讯正常及摄像机对应的串口
@@ -1918,6 +1923,23 @@ unsigned char func_BlackLight_Sensor_Dispose(void)
     pst_MBSystemPara->UsartData.ucUsartxRecvDataFlag[3] = 0;
     memset(pst_MBSystemPara->UsartData.ucUsart4RecvDataArr,0,sizeof(pst_MBSystemPara->UsartData.ucUsart4RecvDataArr));
 
+    drv_mcu_Get_RTC_Time(pst_MBSystemPara->DeviceRunPara.cDeviceCurDateTime);
+    sscanf(pst_MBSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
+    tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
+    tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
+    tm.tm_isdst = -1;
+    now = mktime(&tm) - 8*60*60; //将时间转换为UTC时间，减去8小时
+    pst_MBSystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now; //记录上传数据开始时间
+    if(pst_MBSystemPara->DeviceRunPara.ulUploadRecordStartTime < 1762136855)
+    {
+        drv_mcu_Get_RTC_Time(pst_MBSystemPara->DeviceRunPara.cDeviceCurDateTime);
+        sscanf(pst_MBSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
+        tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
+        tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
+        tm.tm_isdst = -1; // 自动判断夏令时
+        now = mktime(&tm) - 8*60*60; 
+        pst_MBSystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now; //记录上传数据开始时间
+    }
     //发送拍照命令
     drv_mcu_ChangeUSART4_Source(enCameraType, 115200);
     ucRes = func_Set_Camera_Photo_CMD(enCameraType);
@@ -1928,16 +1950,20 @@ unsigned char func_BlackLight_Sensor_Dispose(void)
         //分批读取设备拍照数据
         if(pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ulData_Size > 0)
         {
+            pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt = 0;
             //pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ulCurGetDataSize = 0; //清除当前获取数据大小
             while(pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ulCurGetDataSize < pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ulData_Size)
             {
                 pst_MBSystemPara->UsartData.ucUsartxRecvDataFlag[3] = 0;
                 memset(pst_MBSystemPara->UsartData.ucUsart4RecvDataArr,0,sizeof(pst_MBSystemPara->UsartData.ucUsart4RecvDataArr));
-                ucRes = func_Get_Photo_Data(enCameraType, pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ulCurGetDataSize);
+                usRecvDataLen = 0;
+                ucRes = func_Get_Photo_Data(enCameraType, pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ulCurGetDataSize, &usRecvDataLen);
                 if(ucRes != 0) //如果获取数据异常，则退出
                 {
                     break;
                 }
+                memcpy(&pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt],&pst_MBSystemPara->UsartData.ucUsart4RecvDataArr[6],usRecvDataLen);
+                pst_MBSystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt++;
             }
         }
     }

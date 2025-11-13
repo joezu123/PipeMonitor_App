@@ -997,6 +997,7 @@ void func_Save_Device_MeasRecord_Dispose()
 							tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
 							tm.tm_isdst = -1; // 自动判断夏令时
 							now = mktime(&tm) - 8*60*60; 
+							pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now; //记录上传数据开始时间
 						}
 					}
 					//pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordLostCnt += pst_MainloopSystemPara->DevicePara.nDeviceUploadCnt / pst_MainloopSystemPara->DevicePara.nDeviceSaveRecordCnt;

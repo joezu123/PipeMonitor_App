@@ -500,17 +500,24 @@ int32_t main(void)
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 1;
-    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 3;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 0;
     
     pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Pressure_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_BY_Integrated_Conductivity;
     //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HZ_Radar_Ultrasonic_Flow;
+
+    pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_BlackLight;
     #endif
-    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 5;
-    pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 1;     
-    pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 1;
+    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 8;
+    pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 8;     
+    pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 8;
+
+
+    pst_MainSystemPara->DeviceRunPara.nDeviceCurSampleCount = 7;
+    pst_MainSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount = 7;
+    pst_MainSystemPara->DeviceRunPara.nDeviceCurSaveRecordCount = 7;
     //memcpy(pst_MainSystemPara->DevicePara.cServerIP[1],"220.250.29.188",strlen("220.250.29.188"));
     //pst_MainSystemPara->DevicePara.cServerIP[1][14] = '0'; 0
     //pst_MainSystemPara->DevicePara.usServerPort[1] = 7183;

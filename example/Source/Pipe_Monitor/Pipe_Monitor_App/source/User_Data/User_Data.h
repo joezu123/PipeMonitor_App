@@ -471,7 +471,9 @@ typedef struct _BlackLightDataStr
 	char cCompression_Radio;	//压缩比
 	unsigned long ulData_Size;	//数据大小
 	unsigned long ulCurGetDataSize;	//当前获取数据大小
-	unsigned char ucData[1024*10];	//图像数据
+	unsigned char ucPhotoDataCnt;	//图像数据个数
+	unsigned char ucCurPhotoDataCnt;	//当前传输图像数据个数
+	unsigned char ucPhotoData[136][400];	//图像数据
 }BlackLightDataSt;
 
 /*设备运行参数数据结构体 */
