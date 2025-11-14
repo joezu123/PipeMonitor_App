@@ -60,7 +60,7 @@ extern "C"
 #else
 #define USART1_RX_PORT                  (PortA)
 #define USART1_RX_PIN                   (Pin07)
-#define USART1_RX_FUNC                  (Func_Usart1_Tx)
+#define USART1_RX_FUNC                  (Func_Usart1_Rx)
 #endif
 #else
 #define USART1_RX_PORT                  (PortC)
@@ -76,7 +76,7 @@ extern "C"
 #else
 #define USART1_TX_PORT                  (PortC)
 #define USART1_TX_PIN                   (Pin04)
-#define USART1_TX_FUNC                  (Func_Usart1_Rx)
+#define USART1_TX_FUNC                  (Func_Usart1_Tx)
 #endif
 #else
 #define USART1_TX_PORT                  (PortC)

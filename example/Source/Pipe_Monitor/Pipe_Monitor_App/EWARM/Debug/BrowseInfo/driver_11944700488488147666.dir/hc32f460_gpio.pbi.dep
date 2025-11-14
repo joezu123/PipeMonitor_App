@@ -1,6 +1,6 @@
-D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\Debug\BrowseInfo\driver_11944700488488147666.dir\hc32f460_utility.pbi: \
-  D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\driver\src\hc32f460_utility.c \
-  D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\driver\inc\hc32f460_utility.h \
+D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\Debug\BrowseInfo\driver_11944700488488147666.dir\hc32f460_gpio.pbi: \
+  D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\driver\src\hc32f460_gpio.c \
+  D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\driver\inc\hc32f460_gpio.h \
   D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\mcu\common\hc32_common.h \
   D:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.2\arm\inc\c\string.h \
   D:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.2\arm\inc\c\ycheck.h \
@@ -21,4 +21,5 @@ D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_M
   D:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.2\arm\inc\c\aarch32\iccarm_builtin.h \
   D:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.2\arm\CMSIS\Core\Include\mpu_armv7.h \
   D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\mcu\common\system_hc32f460.h \
-  D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\source\ddl_config.h
+  D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\source\ddl_config.h \
+  D:\Myself\WorkProcess\SK\HC32F460_WorkProcess\example\Source\Pipe_Monitor\Pipe_Monitor_App\EWARM\..\..\..\..\..\driver\inc\hc32f460_utility.h

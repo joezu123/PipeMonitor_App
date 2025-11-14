@@ -1131,7 +1131,7 @@ void func_4G_Connect_Server_Dispose(void)
 		}
 	}
 	
-	if((pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag == 1) && (pst_MainloopSystemPara->DeviceRunPara.c4GInitFlag == 1) && (pst_MainloopSystemPara->DeviceRunPara.c4GInitFailedFlag == 0))
+	if((pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag == 1) && (pst_MainloopSystemPara->DeviceRunPara.c4GInitFlag != 0) && (pst_MainloopSystemPara->DeviceRunPara.c4GInitFailedFlag == 0))
 	{
 		pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_DIAG;
 		ucRes = drv_EC200U_4G_Module_Init(1);
@@ -1185,7 +1185,19 @@ void func_4G_Connect_Server_Dispose(void)
 				drv_EC200U_4G_Module_Init(1);
 			}
 		}
+		else if(ucRes == 6)	//SIM卡异常
+		{
+			pst_MainloopSystemPara->DeviceRunPara.enUploadStatus = Status_Init_Failed;
+			//ucRetryCnt = 0;
+			pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_RUN;
+			pst_MainloopSystemPara->DeviceRunPara.usDevStatus |= 0x0001;
+			pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag = 0;
+			pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag = 0;
+			//pst_MainloopSystemPara->DeviceRunPara.c4GInitFailedFlag = 1;
+			//pst_MainloopSystemPara->DeviceRunPara.c4GInitFailedCnt++;
+		}
 	}
+	
 	if(pst_MainloopSystemPara->DeviceRunPara.c4GInitFailedFlag == 1)
 	{
 		func_EC200U_4G_PownDown_Deinit();   //关闭4G电源

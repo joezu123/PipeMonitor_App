@@ -936,6 +936,7 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     }
     else
     {
+        ucRecordCnt = 1;
         if(ucWaterLevel_Radar_Flag == 1)
         {
             sprintf((char *)&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "%.3lf,", (double)gSt_DevMeasRecordData.fWaterLevel);
@@ -976,13 +977,28 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
 
     if(ucWaterLevel_Radar_Flag == 1)
     {
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "],", 2);
+        }
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[0][0], (char*)ucEntryValueArr[0]);
         //去掉最后一个逗号
-        memcpy(&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])-1], "],", 2);
+        
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[0]);
         
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[6][0], (char*)ucEntryValueArr[6]);
-        memcpy(&ucTempValueArr[6][strlen((char *)ucTempValueArr[6])-1], "],", 2);
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[6][strlen((char *)ucTempValueArr[6])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[6][strlen((char *)ucTempValueArr[6])], "],", 2);
+        }
         //memcpy(&ucBaseDataValueArr[0][strlen((char *)ucBaseDataValueArr[0])-1], "],", 2);
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[6]);
     }
@@ -998,57 +1014,127 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     {
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[1][0], (char*)ucEntryValueArr[1]);
         //去掉最后一个逗号
-        memcpy(&ucTempValueArr[1][strlen((char *)ucTempValueArr[1])-1], "],", 2);
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[1][strlen((char *)ucTempValueArr[1])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[1][strlen((char *)ucTempValueArr[1])], "],", 2);
+        }
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[1]);
 
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[7][0], (char*)ucEntryValueArr[7]);
         //memcpy(&ucBaseDataValueArr[1][strlen((char *)ucBaseDataValueArr[1])-1], "],", 2);
-        memcpy(&ucTempValueArr[7][strlen((char *)ucTempValueArr[7])-1], "],", 2);
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[7][strlen((char *)ucTempValueArr[7])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[7][strlen((char *)ucTempValueArr[7])], "],", 2);
+        }
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[7]);
     }
     if(ucWaterQuality_COND_Flag == 1)
     {
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[2][0], (char*)ucEntryValueArr[2]);
         //去掉最后一个逗号
-        memcpy(&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])-1], "],", 2);
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])], "],", 2);
+        }
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[2]);
 
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[8][0], (char*)ucEntryValueArr[8]);
         //memcpy(&ucBaseDataValueArr[2][strlen((char *)ucBaseDataValueArr[2])-1], "],", 2);
-        memcpy(&ucTempValueArr[8][strlen((char *)ucTempValueArr[8])-1], "],", 2);
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[8][strlen((char *)ucTempValueArr[8])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[8][strlen((char *)ucTempValueArr[8])], "],", 2);
+        }
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[8]);
     }
     if(ucMeasWaterVolumeFlag == 1)
     {
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[3][0], (char*)ucEntryValueArr[2]);
         //去掉最后一个逗号
-        memcpy(&ucTempValueArr[3][strlen((char *)ucTempValueArr[3])-1], "],", 2);
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[3][strlen((char *)ucTempValueArr[3])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[3][strlen((char *)ucTempValueArr[3])], "],", 2);
+        }
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[3]);
 
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[9][0], (char*)ucEntryValueArr[9]);
         //memcpy(&ucBaseDataValueArr[3][strlen((char *)ucBaseDataValueArr[3])-1], "],", 2);
-        memcpy(&ucTempValueArr[9][strlen((char *)ucTempValueArr[9])-1], "],", 2);
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[9][strlen((char *)ucTempValueArr[9])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[9][strlen((char *)ucTempValueArr[9])], "],", 2);
+        }
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[9]);
 
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[4][0], (char*)ucEntryValueArr[4]);
-        memcpy(&ucTempValueArr[4][strlen((char *)ucTempValueArr[4])-1], "],", 2);
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[4][strlen((char *)ucTempValueArr[4])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[4][strlen((char *)ucTempValueArr[4])], "],", 2);
+        }
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[4]);
 
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[10][0], (char*)ucEntryValueArr[10]);
         //memcpy(&ucBaseDataValueArr[4][strlen((char *)ucBaseDataValueArr[4])-1], "],", 2);
-        memcpy(&ucTempValueArr[10][strlen((char *)ucTempValueArr[10])-1], "],", 2);
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[10][strlen((char *)ucTempValueArr[10])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[10][strlen((char *)ucTempValueArr[10])], "],", 2);
+        }
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[10]);
 
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[5][0], (char*)ucEntryValueArr[5]);
-        memcpy(&ucTempValueArr[5][strlen((char *)ucTempValueArr[5])-1], "],", 2);
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[5][strlen((char *)ucTempValueArr[5])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[5][strlen((char *)ucTempValueArr[5])], "],", 2);
+        }
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[5]);
 
         //drv_LKT4202_SendData_Encry(&ucTempValueArr[11][0], (char*)ucEntryValueArr[11]);
         //memcpy(&ucBaseDataValueArr[5][strlen((char *)ucBaseDataValueArr[5])-1], "],", 2);
-        memcpy(&ucTempValueArr[11][strlen((char *)ucTempValueArr[11])-1], "],", 2);
+        if(ucRecordCnt > 0)
+        {
+            memcpy(&ucTempValueArr[11][strlen((char *)ucTempValueArr[11])-1], "],", 2);
+        }
+        else
+        {
+            memcpy(&ucTempValueArr[11][strlen((char *)ucTempValueArr[11])], "],", 2);
+        }
         (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[11]);
     }
-    if(ucMeasSensorExistFlag == 1)
+    if((ucMeasSensorExistFlag == 1) && (ucRecordCnt > 0))
     {
         memcpy(&ucTempArr[strlen((char *)ucTempArr)-1], "}}", 2);
     }
@@ -1318,24 +1404,48 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
         sprintf((char *)&ucCSQArr[strlen((char *)ucCSQArr)], "%d,", pst_EC200USystemPara->DeviceRunPara.nSignalStrength);
     }
 
-    memcpy(&ucTempAttiArr[strlen((char *)ucTempAttiArr)-1], "],", 2);
-    (void)strcat((char *)ucTempArr, (char *)ucTempAttiArr);
-    memcpy(&ucTempWaterImmersionArr[strlen((char *)ucTempWaterImmersionArr)-1], "],", 2);
-    (void)strcat((char *)ucTempArr, (char *)ucTempWaterImmersionArr);
-    memcpy(&ucTempPhotosensitiveArr[strlen((char *)ucTempPhotosensitiveArr)-1], "],", 2);
-    (void)strcat((char *)ucTempArr, (char *)ucTempPhotosensitiveArr);
-    memcpy(&ucBT_ConnArr[strlen((char *)ucBT_ConnArr)-1], "],", 2);
-    (void)strcat((char *)ucTempArr, (char *)ucBT_ConnArr);
-    memcpy(&ucDebugModelArr[strlen((char *)ucDebugModelArr)-1], "],", 2);
-    (void)strcat((char *)ucTempArr, (char *)ucDebugModelArr);
-    memcpy(&ucLongPowerModelArr[strlen((char *)ucLongPowerModelArr)-1], "],", 2);
-    (void)strcat((char *)ucTempArr, (char *)ucLongPowerModelArr);
-    memcpy(&ucDevTempArr[strlen((char *)ucDevTempArr)-1], "],", 2);
-    (void)strcat((char *)ucTempArr, (char *)ucDevTempArr);
-    memcpy(&ucBatteryArr[strlen((char *)ucBatteryArr)-1], "],", 2);
-    (void)strcat((char *)ucTempArr, (char *)ucBatteryArr);
-    memcpy(&ucCSQArr[strlen((char *)ucCSQArr)-1], "]}}", 3);
-    (void)strcat((char *)ucTempArr, (char *)ucCSQArr);
+    if(ucRecordCnt > 0)
+    {
+        memcpy(&ucTempAttiArr[strlen((char *)ucTempAttiArr)-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempAttiArr);
+        memcpy(&ucTempWaterImmersionArr[strlen((char *)ucTempWaterImmersionArr)-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempWaterImmersionArr);
+        memcpy(&ucTempPhotosensitiveArr[strlen((char *)ucTempPhotosensitiveArr)-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempPhotosensitiveArr);
+        memcpy(&ucBT_ConnArr[strlen((char *)ucBT_ConnArr)-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucBT_ConnArr);
+        memcpy(&ucDebugModelArr[strlen((char *)ucDebugModelArr)-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucDebugModelArr);
+        memcpy(&ucLongPowerModelArr[strlen((char *)ucLongPowerModelArr)-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucLongPowerModelArr);
+        memcpy(&ucDevTempArr[strlen((char *)ucDevTempArr)-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucDevTempArr);
+        memcpy(&ucBatteryArr[strlen((char *)ucBatteryArr)-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucBatteryArr);
+        memcpy(&ucCSQArr[strlen((char *)ucCSQArr)-1], "]}}", 3);
+        (void)strcat((char *)ucTempArr, (char *)ucCSQArr);
+    }
+    else
+    {
+        memcpy(&ucTempAttiArr[strlen((char *)ucTempAttiArr)], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempAttiArr);
+        memcpy(&ucTempWaterImmersionArr[strlen((char *)ucTempWaterImmersionArr)], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempWaterImmersionArr);
+        memcpy(&ucTempPhotosensitiveArr[strlen((char *)ucTempPhotosensitiveArr)], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucTempPhotosensitiveArr);
+        memcpy(&ucBT_ConnArr[strlen((char *)ucBT_ConnArr)], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucBT_ConnArr);
+        memcpy(&ucDebugModelArr[strlen((char *)ucDebugModelArr)], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucDebugModelArr);
+        memcpy(&ucLongPowerModelArr[strlen((char *)ucLongPowerModelArr)], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucLongPowerModelArr);
+        memcpy(&ucDevTempArr[strlen((char *)ucDevTempArr)], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucDevTempArr);
+        memcpy(&ucBatteryArr[strlen((char *)ucBatteryArr)], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucBatteryArr);
+        memcpy(&ucCSQArr[strlen((char *)ucCSQArr)], "]}}", 3);
+        (void)strcat((char *)ucTempArr, (char *)ucCSQArr);
+    }
 
     usDataLen = strlen((char *)ucTempArr);
     #ifdef SM4_ENTRY_ENABLE
@@ -1603,7 +1713,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             (void)strcpy((char *)ucSendBuf, "AT+CGATT?\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "+CGATT: 1");
-            break;
+            break;  
         
         case Module_QUERY_IMSI_CMD: //查询IMSI号
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Get_IMSI;
@@ -1756,7 +1866,11 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             break;
         case Module_PUBLISH_TOPIC_DATAUPLOAD_CMD:   //发布监测项数据上报主题 
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Publish_Topic_DataUoload;
-            pst_EC200USystemPara->DeviceRunPara.c4GUploadDataContinueFlag = 1;
+            if(pst_EC200USystemPara->DeviceRunPara.cBlackLightFlag == 1)
+            {
+                pst_EC200USystemPara->DeviceRunPara.c4GUploadDataContinueFlag = 1;
+            }
+            
             if(pst_EC200USystemPara->DeviceRunPara.cBlackLightFlag == 0)
             {
                 usSendDataLen = func_Get_DataUploadCMD_Data(ucSendBuf);
@@ -2161,7 +2275,15 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                     u8Temp = 0;
                     if(gE_4G_Module_Init_CMD < Module_SUBSCRIBE_TOPIC_GETCONFIG_CMD)
                     {
-                        return 2;
+                        if(gE_4G_Module_Init_CMD == Module_QUERY_SIM_CARD_STATE_CMD)
+                        {
+                            return 6;
+                        }
+                        else
+                        {
+                            return 2;
+                        }
+                       
                     }
                     else
                     {
@@ -2195,7 +2317,7 @@ uint8_t drv_EC200U_4G_Module_Init(unsigned char ucDataUploadEnable)
     //if(ucDataUploadEnable == 1)
     {
         ucResult = EC200U_4G_Module_Configuration_Init(ucDataUploadEnable);
-        if((ucResult == 0) || (ucResult == 2))
+        if((ucResult == 0) || (ucResult == 2) || (ucResult == 6))
         {
             ucFailedCnt = 0;
             gE_4G_Module_Init_CMD = Module_START_WAIT_CMD;
