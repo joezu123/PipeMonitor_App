@@ -55,7 +55,7 @@ en_4G_Module_Init_State gE_4G_Module_Init_CMD = Module_START_WAIT_CMD;
 SysDeviceParaSt gs_DeviceDefaultPara = 
 {
 	//char cDeviceID[16];	//设备ID:MQ+4位厂商代码+4位客户端类型+6位自定义字符串
-	{'M','Q','0','1','0','0','0','0','0','4','0','0','0','0','1','7',0},			
+	{'M','Q','0','0','0','0','0','0','0','4','0','0','0','0','0','2',0},			
 	{0},						//char cDeviceIdenFlag;	//设备是否经过NFC认证标志位	0->未验证
 	{0},						//char cDeviceRegisterFlag;	//设备是否在服务器通讯上注册标志位	0->未注册
 	{0,0,0},					//char cDeviceIMSI[15];	//设备IMSI号；是一个用于在全球范围内唯一地识别移动用户的标识符。IMSI存储在手机的SIM卡中，用于在蜂窝网络中进行用户身份验证和位置管理。

@@ -433,6 +433,40 @@ void func_diplay_NFCCheck_Menu(void)
 	func_Display_128x64(0);
 }
 
+//姿态传感器数据变化后，提示“请勿触碰设备，请联系电话”
+void func_display_ConnectPhone_Menu(void)
+{
+	signed short sTestArr[20] = {0};
+	clear_screen();
+	memset(guc_OLED_Buf,0,sizeof(guc_OLED_Buf));
+	sTestArr[0] = 0x001E;	//请
+	sTestArr[1] = 0x0046;	//勿
+	sTestArr[2] = 0x0047;	//触
+	sTestArr[3] = 0x0048;	//碰
+	sTestArr[4] = 0x000F;	//设
+	sTestArr[5] = 0x0010;	//备
+	sTestArr[6] = 0x0017;	//,
+	sTestArr[7] = 0x001E;	//请
+	sTestArr[8] = 0x001F;	//联
+	sTestArr[9] = 0x0020;	//系
+	sTestArr[10] = 0xFFFF;
+	func_display_string(0,20,&sTestArr[0]);
+	sTestArr[0] = 0x0501;
+	sTestArr[1] = 0x0503;
+	sTestArr[2] = 0x0503;
+	sTestArr[3] = 0x0500;
+	sTestArr[4] = 0x0506;
+	sTestArr[5] = 0x0509;
+	sTestArr[6] = 0x0503;
+	sTestArr[7] = 0x0501;
+	sTestArr[8] = 0x0507;
+	sTestArr[9] = 0x0502;
+	sTestArr[10] = 0x0506;
+	sTestArr[11] = 0xFFFF;
+	func_display_string(0,40,&sTestArr[0]);
+	func_Display_128x64(0);
+}
+
 //显示日期时间，电池电量等状态信息界面
 void func_DateTime_Battery_Status_View_Show()
 {
@@ -1289,7 +1323,7 @@ void func_PowerOn_View_Show(unsigned char ucCnt)
 	func_Display_128x64(0);
 }
 
-/*******************************************************************************
+/****************************	q+***************************************************
  * Function implementation - global ('extern') and local ('static')
  ******************************************************************************/
 

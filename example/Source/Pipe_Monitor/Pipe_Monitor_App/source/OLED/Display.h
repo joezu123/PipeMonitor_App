@@ -58,6 +58,9 @@ extern void func_Device_SW_HW_View_Show(unsigned char ucCnt);
 extern void func_Device_Status_View_Show(unsigned char ucCnt);
 extern void func_PowerOn_View_Show(unsigned char ucCnt);
 
+
+extern void func_display_ConnectPhone_Menu(void);
+
 extern void func_Measure_Data_View_Show(unsigned char ucCnt);
 
 #ifdef __cplusplus

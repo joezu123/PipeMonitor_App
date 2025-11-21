@@ -62,8 +62,26 @@ void RtcPeriod_IrqCallback(void)
 {
     //static uint16_t u16Cnt = 0;
     unsigned short usTime = pst_RTCSystemPara->DeviceRunPara.cDevUploadStatusTime * 60;
+    static unsigned char ucTimeCnt = 0;
     /* Recover clock. */
     PWC_IrqClkRecover();
+    pst_RTCSystemPara->DeviceRunPara.cRTC_1MIN_ReflashFlag = 1;
+    if(pst_RTCSystemPara->DeviceRunPara.cShowConnectFlag == 2)
+    {
+        ucTimeCnt++;
+        if(ucTimeCnt >= 2)
+        {
+            ucTimeCnt = 0;
+            pst_RTCSystemPara->DeviceRunPara.cShowConnectFlag = 0;
+        }
+    }
+    if(pst_RTCSystemPara->DeviceRunPara.cPowerOffFlag == 1)
+    {
+        if(pst_RTCSystemPara->DeviceRunPara.cPowerOffCnt < 10)
+        {
+            pst_RTCSystemPara->DeviceRunPara.cPowerOffCnt++;
+        }
+    }
     if(pst_RTCSystemPara->DeviceRunPara.eCurPowerType == Power_ON)	//开机状态下
     {
         #ifndef HW_VERSION_V1_1
@@ -72,7 +90,7 @@ void RtcPeriod_IrqCallback(void)
         MAINPWR3V8_PIN_OPEN();	//打开3.8V电源
         #endif
 
-        pst_RTCSystemPara->DeviceRunPara.cRTC_1MIN_ReflashFlag = 1;
+        
         if(pst_RTCSystemPara->DevicePara.cMonitorMode == 0)
         {
             pst_RTCSystemPara->DeviceRunPara.usUploadStatusDataCurCnt++;
@@ -110,6 +128,10 @@ void RtcPeriod_IrqCallback(void)
         {
             pst_RTCSystemPara->DeviceRunPara.cBD_LostDataCnt++;
         }
+    }
+    else
+    {
+
     }
     /* Switch system clock as MRC. */
     PWC_IrqClkBackup();

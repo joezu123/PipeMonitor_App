@@ -84,7 +84,7 @@ void ExtInt07_Callback(void)
         }
         #endif
         
-        if(pst_MagSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status == 0)
+        if((pst_MagSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status == 0) || (pst_MagSystemPara->DeviceRunPara.cTimer4StartFlag == 0))
         //&& (pst_MagSystemPara->DeviceRunPara.eCurPowerType == Power_ON))
         {
             guc_NFC_Card_Flag = 0;
@@ -108,6 +108,10 @@ void ExtInt07_Callback(void)
             {
                 drv_mcu_Timer4_Start();
             }
+        }
+        if(pst_MagSystemPara->DeviceRunPara.eCurPowerType == Power_OFF)
+        {
+            pst_MagSystemPara->DeviceRunPara.cPowerOffFlag = 1;
         }
     }
     

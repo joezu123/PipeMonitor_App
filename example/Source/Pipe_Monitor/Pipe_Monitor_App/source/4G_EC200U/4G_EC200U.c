@@ -513,6 +513,10 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     if(pst_EC200USystemPara->DeviceRunPara.cBarTouchFlag == 3)
     {
         ulTime = pst_EC200USystemPara->DeviceRunPara.ulBarTouchEventUploadTime;
+        if(ulTime < 1762136855)
+        {
+            ulTime = (long)now-(pst_EC200USystemPara->DevicePara.nDeviceUploadCnt * 60); //记录上传数据开始时间
+        }
     }
     else
     {

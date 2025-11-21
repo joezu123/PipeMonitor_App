@@ -74,6 +74,7 @@ static void OcoIrqCallback(void)
     static char cMeasSensorEventFinishFlag = 0;	//测量传感器事件完成标志位:1->完成，0->未完成
 	static char cBTEventFinishFlag = 0;	//蓝牙事件完成标志位:1->完成，0->未完成
 	static char cBTWaitConnectEventFinishFlag = 0;	//蓝牙等待连接事件完成标志位:1->完成，0->未完成
+    static char cShowConnectFlag = 0;	//显示连接界面标志位:1->显示，0->不显示
 	static unsigned char ucBarLostCnt = 0;
     static unsigned char uc4GInitWaitFlag = 0;  //开机4G初始化
     static unsigned short usLongPowerWaitFlag = 0;   //长供电模式等待标志
@@ -141,11 +142,16 @@ static void OcoIrqCallback(void)
                 cBarEventFinishFlag = 1;
 				pst_TimerSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status = 0;
                 pst_TimerSystemPara->DeviceRunPara.eCurPowerType = Power_OFF;
-                func_Enter_LowPower_Stop_Mode();
+                drv_mcu_ChangeUSART3_Source(MODULE_BD);
+                pst_TimerSystemPara->DeviceRunPara.cPowerOffFlag = 0;
+                pst_TimerSystemPara->DeviceRunPara.cPowerOffCnt = 0;
+                pst_TimerSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_RUN;
+                //func_Enter_LowPower_Stop_Mode();
             }
         }
         else	//关机状态下
         {
+            
             if(pst_TimerSystemPara->DeviceRunPara.ucOLEDInitFlag == 0)
             {
                 func_OLED_PowerUp_Init();
@@ -161,7 +167,8 @@ static void OcoIrqCallback(void)
 	else	//磁棒断开接触状态
 	{
 		//判断之前磁棒是否为接触状态：磁棒唤醒事件
-        if(((pst_TimerSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status == 1) || (pst_TimerSystemPara->DeviceRunPara.c4GInitFlag == 0)) && (pst_TimerSystemPara->DeviceRunPara.eCurPowerType == Power_ON))
+        if((((pst_TimerSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status == 1) || (pst_TimerSystemPara->DeviceRunPara.c4GInitFlag == 0)) && (pst_TimerSystemPara->DeviceRunPara.eCurPowerType == Power_ON)
+            ) && (pst_TimerSystemPara->DeviceRunPara.cShowConnectFlag != 1))
         {
             pst_TimerSystemPara->DeviceRunPara.cBarTouchCnt = 0;
             ucBarLostCnt++;
@@ -409,6 +416,7 @@ static void OcoIrqCallback(void)
         }
         else
         {
+            uc4GInitWaitFlag = 0;
             pst_TimerSystemPara->DeviceRunPara.c4GInitWaitCnt++;
         }
     }
@@ -427,6 +435,7 @@ static void OcoIrqCallback(void)
         }
         else
         {
+            usLongPowerWaitFlag = 0;
             pst_TimerSystemPara->DeviceRunPara.usLongPowerModelWaitCnt++;
         }
     }
@@ -444,15 +453,43 @@ static void OcoIrqCallback(void)
             pst_TimerSystemPara->DeviceRunPara.c4GInitFailedFlag = 0;
             c4GPowerOffFlag = 1;
         }
+        else
+        {
+            c4GPowerOffFlag = 0;
+        }
     }
     else
     {
         c4GPowerOffFlag = 1;
     }
+
+    if(pst_TimerSystemPara->DeviceRunPara.cShowConnectFlag == 1)
+    {
+        pst_TimerSystemPara->DeviceRunPara.cShowConnectCnt++;
+        if(pst_TimerSystemPara->DeviceRunPara.cShowConnectCnt >= 10)
+        {
+            pst_TimerSystemPara->DeviceRunPara.cShowConnectCnt = 0;
+            pst_TimerSystemPara->DeviceRunPara.cShowConnectFlag = 2;
+            cShowConnectFlag = 1;
+            if(pst_TimerSystemPara->DeviceRunPara.ucOLEDInitFlag == 1)
+            {
+                pst_TimerSystemPara->DeviceRunPara.ucOLEDInitFlag = 0;
+                func_OLED_PowerDown_DeInit(); //关闭OLED电源
+            }
+        }
+        else
+        {   
+            cShowConnectFlag = 0;
+        }
+    }
+    else
+    {
+        cShowConnectFlag = 1;
+    }
 	//当前引起定时器产生的事件均已处理完后，关闭定时器，退出诊断模式
     if((cBarEventFinishFlag == 1) && (cServerEventFinishFlag == 1) && (cMeasSensorEventFinishFlag == 1) 
 		&& (pst_TimerSystemPara->DeviceRunPara.cConnectServerFlag == 0) && (cBTEventFinishFlag == 1)
-		&& (cBTWaitConnectEventFinishFlag == 1) && (uc4GInitWaitFlag == 1) && (usLongPowerWaitFlag == 1) && (c4GPowerOffFlag == 1))
+		&& (cBTWaitConnectEventFinishFlag == 1) && (uc4GInitWaitFlag == 1) && (usLongPowerWaitFlag == 1) && (c4GPowerOffFlag == 1) && (cShowConnectFlag == 1))
     {
         ucBarLostCnt = 0;
         drv_mcu_Timer4_Stop();

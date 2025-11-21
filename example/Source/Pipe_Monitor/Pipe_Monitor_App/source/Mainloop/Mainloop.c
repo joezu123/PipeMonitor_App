@@ -86,6 +86,16 @@ void func_Enter_LowPower_Stop_Mode(void)
 {
     uint32_t u32tmp1, u32tmp2;
 
+	if(pst_MainloopSystemPara->DeviceRunPara.eCurPowerType == Power_OFF)
+	{
+		
+		func_BD_PownDown_Deinit();
+		func_Meas_Sensor_PowerDown_DeInit();
+		func_EC200U_4G_PownDown_Deinit();   //关闭4G电源
+		pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag = 1;
+		pst_MainloopSystemPara->DeviceRunPara.cTimer4StartFlag = 0;
+		drv_mcu_Timer4_Stop();
+	}
 	//guc_SystemTestFlag = 0;
 	pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_SLEEP;
     guc_SystemPowerInitFlag = 0;
@@ -595,18 +605,19 @@ void func_NFC_Check_Dispose(void)
 			}
 			else
 			{
+				if(pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag == 0)
+				{
+					pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag = 1;
+				}
 				pst_MainloopSystemPara->DeviceRunPara.cEveryNFCDisposeFlag = 1;
 				func_BD_PowerUp_Init();
 				drv_mcu_ChangeUSART3_Source(MODULE_BD);
 				//drv_LC86L_BD_Init();
 			}
 			
-			if(pst_MainloopSystemPara->DevicePara.cDeviceIdenFlag == 1)  //设备认证通过后，才需要进行磁棒唤醒采集发送数据操作
+			//if(pst_MainloopSystemPara->DevicePara.cDeviceIdenFlag == 1)  //设备认证通过后，才需要进行磁棒唤醒采集发送数据操作
 			{
-				if(pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag == 0)
-				{
-					pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag = 1;
-				}
+				
 			}
 		}
 	}
@@ -732,16 +743,37 @@ void func_Get_Device_Sensors_Value(void)
 	}
 	if(nDifValue >= 10)
 	{
+		pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_DIAG;
 		pst_MainloopSystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt++;
 		if(pst_MainloopSystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt >= 3)
 		{
 			pst_MainloopSystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt = 0;
 			pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A = nValue;
 			pst_MainloopSystemPara->DeviceRunPara.cBDRestartFlag = 1;	//姿态传感器数据变化过大，重新进行北斗定位
+			if(pst_MainloopSystemPara->DeviceRunPara.cShowConnectFlag == 0)
+			{
+				pst_MainloopSystemPara->DeviceRunPara.cShowConnectFlag = 1;
+				pst_MainloopSystemPara->DeviceRunPara.cShowConnectCnt = 0;
+				if(pst_MainloopSystemPara->DeviceRunPara.ucOLEDInitFlag == 0)
+            	{
+					func_OLED_PowerUp_Init();
+					pst_MainloopSystemPara->DeviceRunPara.ucOLEDInitFlag = 1;
+				}
+				func_display_ConnectPhone_Menu();
+				if(pst_MainloopSystemPara->DeviceRunPara.cTimer4StartFlag == 0)
+				{
+					drv_mcu_Timer4_Start();
+				}
+			}
 		}
 	}
 	else
 	{
+		if(pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode != DEVICE_RUN_STATE_DIAG)
+		{
+			pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_RUN;
+		}
+			
 		pst_MainloopSystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt = 0;
 		pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A = nValue;
 	}
@@ -1025,6 +1057,7 @@ void func_BD_Data_Dispose(void)
 		pst_MainloopSystemPara->DeviceRunPara.cBDRestartFlag = 0;
 		pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag = 0;
 		pst_MainloopSystemPara->DeviceRunPara.cBD_GetValueCnt = 0;
+		pst_MainloopSystemPara->DeviceRunPara.cDeviceStatusUploadFlag = 1;
 	}
 	if(pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag == 0)
 	{
@@ -1036,7 +1069,6 @@ void func_BD_Data_Dispose(void)
 				func_BD_PowerUp_Init();
 				drv_mcu_ChangeUSART3_Source(MODULE_BD);
 			}
-			
 		}
 		//pst_MainloopSystemPara->UsartData.ucUsartxRecvDataFlag[MODULE_BD] = 1;
 		//memcpy(pst_MainloopSystemPara->UsartData.ucUsartxRecvDataArr[MODULE_BD], cData, sizeof(cData));
@@ -1410,7 +1442,20 @@ void func_System_Mainloop_Dispose(void)
 			}
 		}
 	}
-	
+	if(pst_MainloopSystemPara->DeviceRunPara.eCurPowerType == Power_OFF)
+	{
+		if(pst_MainloopSystemPara->DeviceRunPara.cPowerOffCnt >= 2)	//当设备磁控触发关机，但时间未到，无实际关机时，等待2分钟后重新进入休眠模式
+		{
+			pst_MainloopSystemPara->DeviceRunPara.cPowerOffCnt = 0;
+			pst_MainloopSystemPara->DeviceRunPara.cPowerOffFlag = 0;
+			pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_RUN;
+			drv_mcu_ChangeUSART3_Source(MODULE_BD);
+		}
+		func_BD_PownDown_Deinit();
+		func_Meas_Sensor_PowerDown_DeInit();
+		func_EC200U_4G_PownDown_Deinit();   //关闭4G电源
+		
+	}
 	#ifdef TIMER1_DISPOSE
 	//判断当前1s定时器是否开启
 	if(pst_MainloopSystemPara->DeviceRunPara.cTimer4StartFlag == 1)

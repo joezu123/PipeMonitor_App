@@ -552,6 +552,10 @@ typedef struct _SysDeviceRunPara
 	char c4GInitFailedCnt;	//4G初始化失败计数值
 	char c4GInitFailedFlag;	//4G初始化失败标志位
 	char c4GPowerOffCnt;	//4G模块断电标志位
+	char cPowerOffFlag;
+	char cPowerOffCnt;
+	char cShowConnectFlag;	//显示联系电话界面标志位
+	char cShowConnectCnt;	//显示联系电话界面计数值
 	//char cModbusNULLCnt;	//Modbus通讯NULL计数值
 	//char cModbusNULLCnt111;
 	char cBlackLightFlag;		//是否为黑光图像站设备 	

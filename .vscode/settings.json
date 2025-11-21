@@ -59,6 +59,7 @@
         "hc32f460_ots.h": "c",
         "hc32f460_timer4_emb.h": "c",
         "hc32f460_aes.h": "c",
-        "hc32f460_emb.h": "c"
+        "hc32f460_emb.h": "c",
+        "fm175xx.h": "c"
     }
 }

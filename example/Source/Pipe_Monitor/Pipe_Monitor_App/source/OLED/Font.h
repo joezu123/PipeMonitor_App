@@ -41,7 +41,7 @@ extern "C"
 extern const signed char g_sSKLogo[1024];
 extern const signed char g_sSKLogo_New[1024];
 extern const signed char g_sint8_Font_16x10_12864[72][20];
-extern const signed char g_sint8_Font_16x12_12864[75][24] ;
+extern const signed char g_sint8_Font_16x12_12864[80][24] ;
 extern const signed char g_sint8_Font_6x12_AsciiDot[102][12];
 /*******************************************************************************
   Global function prototypes (definition in C source)
