@@ -141,6 +141,8 @@ typedef enum _MeasSensorType
 	Meas_HX_Flowmeter,					//恒星-截污流量计
 	Meas_HX_WaterQuality_COD,				//恒星-水质COD传感器	
 	Meas_HX_Radar_Ultrasonic_Flow,	//恒星-雷达超声波流量计
+	Meas_HX_Integrated_Conductivity,	//恒星-一体式电导率
+	Meas_HX_Radar_Level,				//恒星-雷达液位计
 	//Meas_WaterLevel_Radar,				//雷达液位计
 	//Meas_WaterLevel_Pressure,			//压力液位计
 	Meas_Flowmeter,					//流量计
@@ -333,13 +335,13 @@ typedef struct _SysDeviceSensorData
 }SysDeviceSensorsData;
 
 //博雅-一体式电导率数据结构体
-typedef struct _BY_IntegratedConductivityData
+typedef struct _IntegratedConductivityData
 {
 	float fConductivityValue;	//电导率值
 	float fTemperatureValue;	//温度值
 	float fSalinityValue;	//盐度值
 	float fTDSValue;		//总溶解固体值
-}esBY_IntegratedConductivityDataSt;	//8Bytes
+}esIntegratedConductivityDataSt;	//8Bytes
 
 //博雅-液位计数据结构体
 typedef struct _BY_LevelData
@@ -409,12 +411,14 @@ typedef struct _SysMeasSensorData
 	float fVolumeValue;		//瞬时流量 .单位m3/s
 	float fWaterQuality_DDValue;	//水质-电导率
 	float fWaterQuality_CODValue;	//水质-COD
-	esBY_IntegratedConductivityDataSt esBY_IntegratedConductivityData;	//博雅-一体式电导率数据
+	esIntegratedConductivityDataSt es_IntegratedConductivityData;	//一体式电导率数据
 	esBY_LevelDataSt esBY_LevelData;	//博雅-雷达液位计数据
 	esHZ_LevelDataSt esHZ_LevelData;	//航征-雷达液位计数据
 	esHZ_Radar_Ultrasonic_FlowDataSt esHZ_Radar_Ultrasonic_FlowData;	//航征-雷达超声波流量计数据
 	esHX_FlowmeterDataSt esHX_FlowmeterData;	//恒星-流量计数据
 	esHX_WaterQuality_CODDataSt esHX_WaterQuality_CODData;	//恒星-COD传感器数据
+	//esIntegratedConductivityDataSt esHX_
+	float fHXRadarWaterLevelValue;	//HX-雷达液位计
 }SysMeasSensorData;
 
 typedef enum _ShowViewType

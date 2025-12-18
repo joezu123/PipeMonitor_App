@@ -38,7 +38,7 @@ extern "C"
 
 #define HX_FLOWMETER_SENSOR_ADDR 0x1 //恒星-截污流量计设备地址
 #define HX_WATER_QUALITY_COD_SENSOR_ADDR 0x11 //恒星-水质COD传感器设备地址
-#define HX_RADAR_ULTRASONIC_FLOW_SENSOR_ADDR 0x12 //恒星-雷达超声波流量计设备地址
+#define HX_RADAR_ULTRASONIC_FLOW_SENSOR_ADDR 0x01 //恒星-雷达超声波流量计设备地址
 
 #define MB_DEVICE_ADDR 0xF0 //Modbus设备地址
 
@@ -228,11 +228,15 @@ extern void func_Meas_Sensor_Dispose(void);
 extern unsigned char func_BlackLight_Sensor_Dispose(void);
 
 
-extern unsigned char func_Get_Meas_BY_Integrated_Conductivity_Sensor_Value(en_usart_device_t ucDeviceType);
+extern unsigned char func_Get_Meas_BY_HX_Integrated_Conductivity_Sensor_Value(unsigned char ucDevType, en_usart_device_t ucDeviceType);
 
 extern eMBErrorCode eMBDMASendRevic( unsigned char *usRcvBuffer, unsigned char * pucSndBuffer, unsigned short rcvNum, unsigned short *SndNum);
 
+extern unsigned char func_Get_HX_Radar_Level_Addr(en_usart_device_t ucDeviceType);
+extern unsigned char func_Set_HX_Radar_Level_Addr(en_usart_device_t ucDeviceType);
+
 extern SystemPataSt *pst_MBSystemPara;
+extern unsigned char guc_HX_RadarLevel_Addr;
 #ifdef __cplusplus
 }
 #endif

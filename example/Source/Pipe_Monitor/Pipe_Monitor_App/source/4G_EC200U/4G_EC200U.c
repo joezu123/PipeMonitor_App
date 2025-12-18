@@ -179,12 +179,14 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
                 switch (pst_EC200USystemPara->DevicePara.eMeasSensor[l][i])
                 {
                 case Meas_BY_Integrated_Conductivity:  //  一体式电导率
+                case Meas_HX_Integrated_Conductivity:
                     sprintf((char *)&ucParaNameArr[j], "\"COND\",");
                     j = strlen((char *)&ucParaNameArr);
                     sprintf((char *)&ucParaNameArr[j], "\"COND_B\",");
                     break;
                 case Meas_BY_Radar_Level:
                 case Meas_HZ_Radar_Level:
+                case Meas_HX_Radar_Level:
                     sprintf((char *)&ucParaNameArr[j], "\"water_height\",");
                     j = strlen((char *)&ucParaNameArr);
                     sprintf((char *)&ucParaNameArr[j], "\"water_height_B\",");
@@ -513,14 +515,14 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     if(pst_EC200USystemPara->DeviceRunPara.cBarTouchFlag == 3)
     {
         ulTime = pst_EC200USystemPara->DeviceRunPara.ulBarTouchEventUploadTime;
-        if(ulTime < 1762136855)
+        if((ulTime < 1762136855) || (ulTime > (long)now))
         {
             ulTime = (long)now-(pst_EC200USystemPara->DevicePara.nDeviceUploadCnt * 60); //记录上传数据开始时间
         }
     }
     else
     {
-        if(pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime < 1762136855)
+        if((ulTime < 1762136855) || (ulTime > (long)now))
         {
             pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now-(pst_EC200USystemPara->DevicePara.nDeviceUploadCnt * 60); //记录上传数据开始时间
         }
@@ -558,6 +560,7 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
             {
             case Meas_BY_Radar_Level:
             case Meas_HZ_Radar_Level:
+            case Meas_HX_Radar_Level:
                 ucWaterLevel_Radar_Flag = 1;
                 ucMeasSensorExistFlag = 1;
                 memcpy(&ucTempValueArr[0], "\"water_height\":[", 16);
@@ -578,6 +581,7 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
                 //memcpy(&ucBaseDataValueArr[1], "\"COD_B\":[", 9);
                 break;
             case Meas_BY_Integrated_Conductivity:
+            case Meas_HX_Integrated_Conductivity:
                 ucWaterQuality_COND_Flag = 1;
                 ucMeasSensorExistFlag = 1;
                 memcpy(&ucTempValueArr[2], "\"COND\":[", 8);

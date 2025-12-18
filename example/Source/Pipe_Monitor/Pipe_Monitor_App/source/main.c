@@ -496,7 +496,7 @@ int32_t main(void)
     {
         ucMonitorFlag = 1;
     }
-    #if 1
+    #if 0
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 1;
@@ -509,10 +509,23 @@ int32_t main(void)
     pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HZ_Radar_Ultrasonic_Flow;
 
     //pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_BlackLight;
+    #else
+    //pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
+   // pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 3;
+    
+    //pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Pressure_Level;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_HX_Integrated_Conductivity;
+    //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_HX_Radar_Level;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HX_Radar_Ultrasonic_Flow;
     #endif
     pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 10;
     pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 5;     
     pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 5;
+
+    
 
     //pst_MainSystemPara->DeviceRunPara.nDeviceCurSampleCount = 7;
     //pst_MainSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount = 7;
@@ -701,7 +714,34 @@ int32_t main(void)
             }
         }
     }
-    
+    #if 1
+    for(i=0; i<pst_MainSystemPara->DevicePara.cMeasSensorCount[1]; i++)
+    {
+        if(pst_MainSystemPara->DevicePara.eMeasSensor[1][i] == Meas_HX_Radar_Level)
+        {
+            BATTERY_PWRCHK_OPEN();
+            func_Meas_Sensor_PowerOn_Init();
+            //Ddl_Delay1ms(5000);
+            //func_WatchDog_Refresh();
+            Ddl_Delay1ms(5000);
+            func_WatchDog_Refresh();
+            drv_mcu_ChangeUSART4_Source(MODULE_MEAS_SENSOR2, 9600);
+            for(j=0; j<3; j++)
+            {
+                u8Result = func_Get_HX_Radar_Level_Addr(MODULE_MEAS_SENSOR2);
+                if(u8Result != 0)
+                {
+                    if(u8Result != 2)
+                    {
+                        u8Result = func_Set_HX_Radar_Level_Addr(MODULE_MEAS_SENSOR2);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    func_Meas_Sensor_PowerDown_DeInit();
+        #endif
     //测试外接传感器通讯
     #if 0
     BATTERY_PWRCHK_OPEN();

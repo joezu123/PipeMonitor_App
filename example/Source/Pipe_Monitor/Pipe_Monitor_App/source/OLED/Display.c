@@ -721,6 +721,11 @@ void func_WaterLevel_View_Show(unsigned char ucLevelType,unsigned char ucYPosi)
 					fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarWaterLevelValue;
 					break;
 				}
+				else if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Radar_Level))
+				{
+					fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.fHXRadarWaterLevelValue;
+					break;
+				}
 			}
 			else
 			{
@@ -814,7 +819,7 @@ void func_COND_View_Show(unsigned char ucYPosi)
 		{
 			if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity))
 			{
-				fCOND = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esBY_IntegratedConductivityData.fConductivityValue;
+				fCOND = pst_OLEDSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fConductivityValue;
 				break;
 			}
 		}
@@ -924,6 +929,7 @@ void func_Measure_Data_View_Show(unsigned char ucCnt)
 				{
 					if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Radar_Level)
 					|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Radar_Level)
+					|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Radar_Level)
 					)
 					{
 						func_WaterLevel_View_Show(0,ucYPosi);
@@ -940,7 +946,8 @@ void func_Measure_Data_View_Show(unsigned char ucCnt)
 					{
 						func_Flow_View_Show(ucYPosi);
 					}
-					else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity)
+					else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity
+						|| pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Integrated_Conductivity)
 					{
 						func_COND_View_Show(ucYPosi);
 					}
@@ -1010,6 +1017,11 @@ void func_Measure_WaterLevel_View_Show(unsigned char ucCnt)
 			else if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Radar_Level))
 			{
 				fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarWaterLevelValue;
+				break;
+			}
+			else if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Radar_Level))
+			{
+				fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.fHXRadarWaterLevelValue;
 				break;
 			}
 			else if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Pressure_Level))
@@ -1103,7 +1115,7 @@ void func_Measure_Water_Quality_View_Show(unsigned char ucCnt)
 		{
 			if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity))
 			{
-				fCOND = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esBY_IntegratedConductivityData.fConductivityValue;
+				fCOND = pst_OLEDSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fConductivityValue;
 				break;
 			}
 		}

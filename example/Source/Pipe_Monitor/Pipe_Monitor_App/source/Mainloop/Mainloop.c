@@ -939,9 +939,15 @@ void func_Save_Device_MeasRecord_Dispose()
 						ucRadarLevelExistFlag = 1;
 						gSt_DevMeasRecordData.fWaterLevel_Radar = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarWaterLevelValue;
 					}
-					else if(pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity)
+					else if(pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Radar_Level)
 					{
-						gSt_DevMeasRecordData.fWaterQuality_COND = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esBY_IntegratedConductivityData.fConductivityValue;
+						ucRadarLevelExistFlag = 1;
+						gSt_DevMeasRecordData.fWaterLevel_Radar = pst_MainloopSystemPara->DeviceRunPara.esMeasData.fHXRadarWaterLevelValue;
+					}
+					else if(pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity
+						|| pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Integrated_Conductivity)
+					{
+						gSt_DevMeasRecordData.fWaterQuality_COND = pst_MainloopSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fConductivityValue;
 					}
 					else if(pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_WaterQuality_COD)
 					{
@@ -1454,7 +1460,7 @@ void func_System_Mainloop_Dispose(void)
 		func_BD_PownDown_Deinit();
 		func_Meas_Sensor_PowerDown_DeInit();
 		func_EC200U_4G_PownDown_Deinit();   //关闭4G电源
-		
+	
 	}
 	#ifdef TIMER1_DISPOSE
 	//判断当前1s定时器是否开启
