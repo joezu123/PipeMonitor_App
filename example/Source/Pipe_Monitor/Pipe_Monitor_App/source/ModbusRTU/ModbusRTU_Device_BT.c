@@ -582,6 +582,13 @@ eMBErrorCode Unit_RW_Device_LongPower_Model_func( unsigned char * pucRegBuffer, 
     return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_LONGPOWER_MODEL);
 }
 
+//设备外接压力传感器标定数据
+eMBErrorCode Unit_RW_Device_PressWaterLevel_Calibration_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    float fVlaue = pst_MBSystemPara->DevicePara.fPressureSensorCalibration;
+    return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_PRESSURE_SENSOR_CALIBRATION);
+}
+
 //设备恢复出厂设置
 eMBErrorCode Unit_W_Device_Factory_Reset_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
 {
@@ -735,10 +742,11 @@ static const MB_Data_Reg_Unit_S Modbus_Data_Reg_Unit[MD_MAX_REG_UNIT] =
     {MB_RW_DEVICE_DEBUG_MODEL,MB_RW_DEVICE_INSTALL_HEIGHT - MB_RW_DEVICE_DEBUG_MODEL,Unit_RW_Device_Debug_Model_func},
     {MB_RW_DEVICE_INSTALL_HEIGHT,MB_RW_DEVICE_SENSOR_BAUDRATE - MB_RW_DEVICE_INSTALL_HEIGHT,Unit_RW_Device_Install_Height_func},
     {MB_RW_DEVICE_SENSOR_BAUDRATE,MB_RW_DEVICE_LONGPOWER_MODEL - MB_RW_DEVICE_SENSOR_BAUDRATE,Unit_RW_Device_Sensor_Baud_func},
-    {MB_RW_DEVICE_LONGPOWER_MODEL,MB_W_DEVICE_FACTORY_RESET_CMD - MB_RW_DEVICE_LONGPOWER_MODEL,Unit_RW_Device_LongPower_Model_func},
+    {MB_RW_DEVICE_LONGPOWER_MODEL,MB_RW_PRESSURE_SENSOR_CALIBRATION - MB_RW_DEVICE_LONGPOWER_MODEL,Unit_RW_Device_LongPower_Model_func},
+    {MB_RW_PRESSURE_SENSOR_CALIBRATION,2,Unit_RW_Device_PressWaterLevel_Calibration_func},
+    
     {MB_W_DEVICE_FACTORY_RESET_CMD,1,Unit_W_Device_Factory_Reset_func},
     
-
     {MB_R_DEVICE_RADAR_LEVEL_SENSOR_VALUE,MB_R_DEVICE_PRESSURE_LEVEL_SENSOR_VALUE - MB_R_DEVICE_RADAR_LEVEL_SENSOR_VALUE,Unit_R_DeviceRadarLevel_func},
     {MB_R_DEVICE_PRESSURE_LEVEL_SENSOR_VALUE,MB_R_DEVICE_FLOWERMETER_SENSOR_VALUE - MB_R_DEVICE_PRESSURE_LEVEL_SENSOR_VALUE,Unit_R_DevicePressLevel_func},
     {MB_R_DEVICE_FLOWERMETER_SENSOR_VALUE,MB_R_DEVICE_INTEGRATED_CONDUCTIVITY_SENSOR_VALUE - MB_R_DEVICE_FLOWERMETER_SENSOR_VALUE,Unit_R_DeviceWaterVolume_s_func},

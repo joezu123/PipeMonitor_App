@@ -457,6 +457,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 	unsigned short usTmpData = 0;
 	int nTmpData = 0;
 	float *fTmpData;
+	unsigned char i,j;
 
 	switch (eCMD)
 	{
@@ -516,6 +517,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 			strcpy(&pst_W25Q128SystemPara->DevicePara.cDevicePDDate[0],(char*)cDataArr);
 			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDevicePDDate[0],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cDevicePDDate[0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),9);
 		}
+		break;
 	case DEV_SAMPLE_GAP:
 		nTmpData = *((int *)cDataArr);  
 		if ((nTmpData < 1) || (nTmpData > 600))
@@ -624,7 +626,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN1_SENSOR1_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -636,7 +638,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN1_SENSOR2_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -648,7 +650,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN1_SENSOR3_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -660,7 +662,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN1_SENSOR4_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -672,7 +674,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN1_SENSOR5_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -684,7 +686,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN1_SENSOR6_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -696,7 +698,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN1_SENSOR7_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -708,7 +710,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN1_SENSOR8_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -720,7 +722,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN1_SENSOR9_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -732,7 +734,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN1_SENSOR10_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -744,7 +746,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN2_SENSOR1_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -756,7 +758,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN2_SENSOR2_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -768,7 +770,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN2_SENSOR3_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -780,7 +782,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN2_SENSOR4_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -792,7 +794,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN2_SENSOR5_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -804,7 +806,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN2_SENSOR6_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -816,7 +818,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN2_SENSOR7_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -828,7 +830,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN2_SENSOR8_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -840,7 +842,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN2_SENSOR9_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -852,7 +854,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_CHN2_SENSOR10_TYPE:
 		ucTmpData = *cDataArr;     
-		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_BY_Integrated_Conductivity))
+		if ((ucTmpData > Meas_Max-1) || (ucTmpData < Meas_NULL))
 		{
 			ucResult = 0;
 		}
@@ -914,7 +916,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		}
 		break;
 	case DEV_IP_PORT1:
-	usTmpData = *((unsigned short *)cDataArr);
+		usTmpData = *((unsigned short *)cDataArr);
 		if(usTmpData > 60000)
 		{
 			ucResult = 0;
@@ -994,11 +996,42 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 			//W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDebugModel,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cDebugModel-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
 		}
 		break;
+	case DEV_PRESSURE_SENSOR_CALIBRATION:
+		fTmpData = ((float*)cDataArr);
+		if(((double)*fTmpData < -10.0) || (((double)*fTmpData > 10.0)))
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.fPressureSensorCalibration = *fTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fPressureSensorCalibration,SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fPressureSensorCalibration-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
+			#pragma diag_warning=Pa039
+		}
+		
+		break;
 	case DEV_FACTORY_RESET:
 		func_Device_Parameter_Factory_Reset();
 		break;
 	default:
 		break;
+	}
+
+	if((eCMD >= DEV_CHN1_SENSOR1_TYPE) && (eCMD <= DEV_CHN2_SENSOR10_TYPE))
+	{
+		//判断当前设备是否为HX压力液位计
+		for(j=0; j<2; j++)
+		{
+			for(i=0; i<pst_W25Q128SystemPara->DevicePara.cMeasSensorCount[j]; i++)
+			{
+				if(pst_W25Q128SystemPara->DevicePara.eMeasSensor[j][i] == Meas_HX_Pressure_Level)
+				{
+					pst_W25Q128SystemPara->DeviceRunPara.cHXPressureLevelFlag = 1;
+					break;
+				}
+			}
+		}
 	}
 	return ucResult;
 }

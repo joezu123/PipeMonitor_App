@@ -674,6 +674,94 @@ unsigned char func_Get_Meas_BY_HX_Integrated_Conductivity_Sensor_Value(unsigned 
 	return ucResult;
 }
 
+//获取航征电导率设备数据
+unsigned char func_Get_Meas_HZ_Integrated_Conductivity_Sensor_Value(en_usart_device_t ucDeviceType)
+{
+    unsigned char ucSendBuf[10] = {0};
+	float *pfMeasValue = NULL;
+	unsigned short usCrc = 0xFFFF;
+	unsigned char i = 0;
+    unsigned char j = 0;
+	char *pcRecvData = NULL;
+    char cFloat[4] = {0}; //接收数据缓冲区
+    unsigned char ucResult = 1;
+    unsigned short usCMD = 0;
+	unsigned short usRegNum = 0;
+    unsigned short usValue = 0;
+    unsigned short usLittle = 1;
+    usCMD = 0x0000; //获取电导率值
+    usRegNum = 4;
+    ucSendBuf[i++] = HZ_INTEGRATED_CONDUCTIVITY_SENSOR_ADDR;
+    ucSendBuf[i++] = 0x03;
+    ucSendBuf[i++] = usCMD >> 8;    //高字节
+    ucSendBuf[i++] = usCMD & 0xFF; //低字节
+    ucSendBuf[i++] = usRegNum >> 8;
+    ucSendBuf[i++] = usRegNum;
+    usCrc = func_Get_MBCRC16(ucSendBuf,i);
+    ucSendBuf[i++] = usCrc & 0xFF;
+    ucSendBuf[i++] = usCrc >> 8;
+
+    ucResult = func_Rts_Control_And_SendData(ucDeviceType,ucSendBuf,i, 50);
+    if(ucResult == 0)
+    {
+        pcRecvData = (char *)drv_Wait_RecvData_And_CrcCheck(Type_Short , usRegNum);
+        if(pcRecvData != NULL)
+        {
+            //电导率值
+            usValue = pcRecvData[0] << 8 | pcRecvData[1];
+            usLittle = pcRecvData[2] << 8 | pcRecvData[3];
+            if(usLittle == 0)
+            {
+                pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fConductivityValue = (float)(usValue);
+            }
+            else
+            {
+                pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fConductivityValue = (float)((double)usValue / ((double)usLittle * 10.0));
+            }
+            //温度值
+            usValue = pcRecvData[4] << 8 | pcRecvData[5];
+            usLittle = pcRecvData[6] << 8 | pcRecvData[7];
+            if(usLittle == 0)
+            {
+                pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fTemperatureValue = (float)(usValue);
+            }
+            else
+            {
+                pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fTemperatureValue = (float)((double)usValue / ((double)usLittle * 10.0));
+            }
+            //TDS值
+            usValue = pcRecvData[8] << 8 | pcRecvData[9];
+            usLittle = pcRecvData[10] << 8 | pcRecvData[11];
+            if(usLittle == 0)
+            {
+                pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fTDSValue = (float)(usValue);
+            }
+            else
+            {
+                pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fTDSValue = (float)((double)usValue / ((double)usLittle * 10.0));
+            }
+        }
+        else
+        {
+            pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fConductivityValue = 0.0;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fTemperatureValue = 0.0;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fSalinityValue = 0.0;
+            pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fTDSValue = 0.0;
+            ucResult = 1;
+            return ucResult;
+        }
+    }
+    else
+    {
+        pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fConductivityValue = 0.0;
+        pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fTemperatureValue = 0.0;
+        pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fSalinityValue = 0.0;
+        pst_MBSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fTDSValue = 0.0;
+        return 1;
+    }
+	return ucResult;
+}
+
 //获取流量计数据
 float func_Get_Meas_Flowermeter_Sensor_Value(en_usart_device_t ucDeviceType)
 {
@@ -795,7 +883,7 @@ unsigned char func_Get_Meas_BY_HX_Radar_Level_Sensor_Value(unsigned char ucDevTy
 
 //获取压力液位传感器设备测量数值
 //返回值：0->发送成功; 1->发送失败(超时未接收到设备返回数据)
-unsigned char func_Get_Meas_BY_Pressure_Level_Sensor_Value(en_usart_device_t ucDeviceType)
+unsigned char func_Get_Meas_Pressure_Level_Sensor_Value(en_usart_device_t ucDeviceType, unsigned char ucDevType)
 {
     unsigned char ucSendBuf[10] = {0};
     float *fMeasValue = NULL;
@@ -805,9 +893,17 @@ unsigned char func_Get_Meas_BY_Pressure_Level_Sensor_Value(en_usart_device_t ucD
     unsigned short usValue = 0;
     unsigned char ucResult = 1;
 
-    fMeasValue = &pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fPressureWaterLevelValue;
+    if(ucDevType == 3)  //BY压力液位设备
+    {
+        fMeasValue = &pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fPressureWaterLevelValue;
+        ucSendBuf[i++] = BY_PRESSURE_WATER_LEVEL_SENSOR_ADDR;
+    }
+    else    //HZ压力液位设备
+    {
+        fMeasValue = &pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fPressWaterLevelValue;
+        ucSendBuf[i++] = HZ_PRESSURE_WATER_LEVEL_SENSOR_ADDR;
+    }
 
-    ucSendBuf[i++] = BY_PRESSURE_WATER_LEVEL_SENSOR_ADDR;
 	ucSendBuf[i++] = 0x03;
 	ucSendBuf[i++] = 0x00;
 	ucSendBuf[i++] = 0x00;
@@ -824,7 +920,15 @@ unsigned char func_Get_Meas_BY_Pressure_Level_Sensor_Value(en_usart_device_t ucD
         if(pcRecvData != NULL)
         {
             usValue = *((unsigned short*)pcRecvData);
-            *fMeasValue = (float)(((double)usValue - 1007) / 100.0) ; //压力传感器返回值为0.1MPa，转换为水位需要减去1.007m
+            if(ucDevType == 3)  //BY压力液位设备
+            {
+                *fMeasValue = (float)(((double)usValue - 1007) / 100.0) ; //压力传感器返回值为0.1MPa，转换为水位需要减去1.007m
+            }
+            else
+            {
+                *fMeasValue = (float)((double)usValue * 10.0 / 2000.0); //HZ压力液位设备返回值为0-2000，10.0对应10M量程
+            } 
+            *fMeasValue += pst_MBSystemPara->DevicePara.fPressureSensorCalibration; //压力液位设备测量值需要加上补偿数据
             ucResult = 0;
         }
         else
@@ -1988,12 +2092,18 @@ void func_Meas_Sensor_Dispose(void)
                     case Meas_HX_Integrated_Conductivity:
                         ucRes = func_Get_Meas_BY_HX_Integrated_Conductivity_Sensor_Value(st_MeasSensorPara[l][i].eMeasSensor, enType);
                         break;
+                    case Meas_HZ_Integrated_Conductivity:
+                        ucRes = func_Get_Meas_HZ_Integrated_Conductivity_Sensor_Value(enType);
+                        break;
                     case Meas_BY_Radar_Level:
                     case Meas_HX_Radar_Level:
                         ucRes = func_Get_Meas_BY_HX_Radar_Level_Sensor_Value(st_MeasSensorPara[l][i].eMeasSensor,enType);
                         break;
                     case Meas_BY_Pressure_Level:
-                        ucRes = func_Get_Meas_BY_Pressure_Level_Sensor_Value(enType);
+                        ucRes = func_Get_Meas_Pressure_Level_Sensor_Value(enType,Meas_BY_Pressure_Level);
+                        break;
+                    case Meas_HZ_Pressure_Level:
+                        ucRes = func_Get_Meas_Pressure_Level_Sensor_Value(enType,Meas_HZ_Pressure_Level);
                         break;
                     case Meas_HZ_Radar_Level:
                         ucRes = func_Get_Meas_HZ_Radar_Level_Sensor_Value(enType);

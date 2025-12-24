@@ -43,6 +43,7 @@
 #include "drv_LKT4202.h"
 #include "RXNTTL518.h"
 #include "drv_OTS_Temperature.h"
+#include "Lora_TP1109.h"
 //#include "ModbusRTU.h"
 
 /*******************************************************************************
@@ -108,7 +109,11 @@ void func_Enter_LowPower_Stop_Mode(void)
 	{
 		func_BT05_PowerDown_DeInit(); //关闭蓝牙模块电源
 	}
-	
+	//关闭HX压力传感器电源
+	if(pst_MainloopSystemPara->DeviceRunPara.cHXPressureLevelFlag == 1)
+	{
+		drv_Lora_TP1109_PowerOff();
+	}
     func_ADC_DeInit();
     PWRSNR_PIN_CLOSE();	//关闭传感器电源
     PWRLORA_PIN_CLOSE();	//关闭LoRa模块电源
@@ -282,6 +287,11 @@ void func_Meas_Sensor_PowerOn_Init(void)
 		#ifdef HW_VERSION_V1_1
 		SENSOR_PWRRS2_PIN_OPEN();	//打开传感器电源
 		#endif
+	}
+	//开启HX压力传感器电源
+	if(pst_MainloopSystemPara->DeviceRunPara.cHXPressureLevelFlag == 1)
+	{
+		drv_Lora_TP1109_PowerOn();
 	}
 }
 
@@ -778,15 +788,18 @@ void func_Get_Device_Sensors_Value(void)
 		pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A = nValue;
 	}
 	
-	//读取水浸传感器状态
-	drv_Get_Water_Immersion_Sensor_Status(&pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status, &pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fWater_Immersion_Level);
-	if(pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status == 0)
+	if(pst_MainloopSystemPara->DeviceRunPara.cHXPressureLevelFlag == 0)
 	{
-		pst_MainloopSystemPara->DeviceRunPara.usDevStatus &= 0xFFF7;
-	}
-	else
-	{
-		pst_MainloopSystemPara->DeviceRunPara.usDevStatus |= 0x0008;
+		//读取水浸传感器状态
+		drv_Get_Water_Immersion_Sensor_Status(&pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status, &pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fWater_Immersion_Level);
+		if(pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status == 0)
+		{
+			pst_MainloopSystemPara->DeviceRunPara.usDevStatus &= 0xFFF7;
+		}
+		else
+		{
+			pst_MainloopSystemPara->DeviceRunPara.usDevStatus |= 0x0008;
+		}
 	}
 
 	//读取当前电池电量
@@ -836,6 +849,11 @@ void func_Get_Device_Sensors_Value(void)
 		{
 			//ucMeasValue[ucMeasPosi++] = pst_MainloopSystemPara->DeviceRunPara.cMeasDelayCnt;
 			func_Meas_Sensor_Dispose();
+			if(pst_MainloopSystemPara->DeviceRunPara.cHXPressureLevelFlag == 1)
+			{
+				drv_Get_HX_Pressure_Level_Value(&pst_MainloopSystemPara->DeviceRunPara.esMeasData.fHXPressureWaterLevelValue);
+				pst_MainloopSystemPara->DeviceRunPara.esMeasData.fHXPressureWaterLevelValue += pst_MainloopSystemPara->DevicePara.fPressureSensorCalibration;
+			}
 		}
 		else
 		{
@@ -929,6 +947,16 @@ void func_Save_Device_MeasRecord_Dispose()
 						ucPressLevelExistFlag = 1;
 						gSt_DevMeasRecordData.fWaterLevel_Pres = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fPressureWaterLevelValue;
 					}
+					else if(pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Pressure_Level)
+					{
+						gSt_DevMeasRecordData.fWaterLevel_Pres = pst_MainloopSystemPara->DeviceRunPara.esMeasData.fHXPressureWaterLevelValue;
+						ucPressLevelExistFlag = 1;
+					}
+					else if(pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Pressure_Level)
+					{
+						ucPressLevelExistFlag = 1;
+						gSt_DevMeasRecordData.fWaterLevel_Pres = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fPressWaterLevelValue;
+					}
 					else if(pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Radar_Level)
 					{
 						ucRadarLevelExistFlag = 1;
@@ -944,8 +972,9 @@ void func_Save_Device_MeasRecord_Dispose()
 						ucRadarLevelExistFlag = 1;
 						gSt_DevMeasRecordData.fWaterLevel_Radar = pst_MainloopSystemPara->DeviceRunPara.esMeasData.fHXRadarWaterLevelValue;
 					}
-					else if(pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity
-						|| pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Integrated_Conductivity)
+					else if((pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity)
+						|| (pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Integrated_Conductivity)
+						|| (pst_MainloopSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Integrated_Conductivity))
 					{
 						gSt_DevMeasRecordData.fWaterQuality_COND = pst_MainloopSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fConductivityValue;
 					}
@@ -953,40 +982,42 @@ void func_Save_Device_MeasRecord_Dispose()
 					{
 						gSt_DevMeasRecordData.fWaterQuality_COD = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHX_WaterQuality_CODData.fCODValue;
 					}
-					#ifdef WATERLEVEL_RADAR_PRESS
-					//当前同时存在雷达测高及压力测高时，进行数据判断，当两者测量值相差超过0.3m时，以压力测高值为准
-					if((ucPressLevelExistFlag == 1) && (ucRadarLevelExistFlag == 1))
-					{
-						fDifValue = gSt_DevMeasRecordData.fWaterLevel_Radar - gSt_DevMeasRecordData.fWaterLevel_Pres;
-						if((fabs((double)fDifValue) >= 0.3) && ((double)gSt_DevMeasRecordData.fWaterLevel_Pres > 0.3))
-						{
-							gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Pres;
-						}
-						else if(((double)gSt_DevMeasRecordData.fWaterLevel_Radar < 0.01) && ((double)gSt_DevMeasRecordData.fWaterLevel_Pres > 0.01))
-						{
-							gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Pres;
-						}
-						else
-						{
-							gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Radar;
-						}
-					}
-					else
-					{
-						if(ucPressLevelExistFlag == 1)
-						{
-							gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Pres;
-						}
-						else
-						{
-							gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Radar;
-						}
-					}
-					#endif
+					
 					pst_MainloopSystemPara->DeviceRunPara.esMeasData.fVolumeValue = gSt_DevMeasRecordData.fWaterVolume;
 					ucRecordFlag = 1;
 				}
 			}
+			
+			#ifdef WATERLEVEL_RADAR_PRESS
+			//当前同时存在雷达测高及压力测高时，进行数据判断，当两者测量值相差超过0.3m时，以压力测高值为准
+			if((ucPressLevelExistFlag == 1) && (ucRadarLevelExistFlag == 1))
+			{
+				fDifValue = gSt_DevMeasRecordData.fWaterLevel_Radar - gSt_DevMeasRecordData.fWaterLevel_Pres;
+				if((fabs((double)fDifValue) >= 0.3) && ((double)gSt_DevMeasRecordData.fWaterLevel_Pres > 0.3))
+				{
+					gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Pres;
+				}
+				else if(((double)gSt_DevMeasRecordData.fWaterLevel_Radar < 0.01) && ((double)gSt_DevMeasRecordData.fWaterLevel_Pres > 0.01))
+				{
+					gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Pres;
+				}
+				else
+				{
+					gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Radar;
+				}
+			}
+			else
+			{
+				if(ucPressLevelExistFlag == 1)
+				{
+					gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Pres;
+				}
+				else
+				{
+					gSt_DevMeasRecordData.fWaterLevel = gSt_DevMeasRecordData.fWaterLevel_Radar;
+				}
+			}
+			#endif
 		}
 	}
 	else

@@ -180,6 +180,7 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
                 {
                 case Meas_BY_Integrated_Conductivity:  //  一体式电导率
                 case Meas_HX_Integrated_Conductivity:
+                case Meas_HZ_Integrated_Conductivity:
                     sprintf((char *)&ucParaNameArr[j], "\"COND\",");
                     j = strlen((char *)&ucParaNameArr);
                     sprintf((char *)&ucParaNameArr[j], "\"COND_B\",");
@@ -582,6 +583,7 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
                 break;
             case Meas_BY_Integrated_Conductivity:
             case Meas_HX_Integrated_Conductivity:
+            case Meas_HZ_Integrated_Conductivity:
                 ucWaterQuality_COND_Flag = 1;
                 ucMeasSensorExistFlag = 1;
                 memcpy(&ucTempValueArr[2], "\"COND\":[", 8);

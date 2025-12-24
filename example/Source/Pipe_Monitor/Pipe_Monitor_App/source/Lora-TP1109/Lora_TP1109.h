@@ -64,6 +64,8 @@ extern "C"
  ******************************************************************************/
 extern void drv_Lora_TP1109_Init(void);
 extern void drv_Lora_TP1109_PowerOn(void);
+
+extern void drv_Lora_TP1109_PowerOff(void);
 extern void drv_Lora_TP1109_Reset(void);
 extern void func_Lora_TP1109_AT_Command(char *cCmd, char *cResp, uint16_t usRespLen, uint16_t usTimeout);
 #ifdef __cplusplus

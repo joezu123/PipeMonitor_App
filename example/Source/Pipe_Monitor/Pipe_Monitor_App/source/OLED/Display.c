@@ -729,9 +729,19 @@ void func_WaterLevel_View_Show(unsigned char ucLevelType,unsigned char ucYPosi)
 			}
 			else
 			{
-				if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Pressure_Level))
+				if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Pressure_Level)
 				{
 					fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fPressureWaterLevelValue;
+					break;
+				}
+				else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Pressure_Level)
+				{
+					fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.fHXPressureWaterLevelValue;
+					break;
+				}
+				else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Pressure_Level)
+				{
+					fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fPressWaterLevelValue;
 					break;
 				}
 			}
@@ -817,7 +827,9 @@ void func_COND_View_Show(unsigned char ucYPosi)
 	{
 		for(i=0; i<pst_OLEDSystemPara->DevicePara.cMeasSensorCount[l]; i++)
 		{
-			if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity))
+			if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity)
+			||(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Integrated_Conductivity)
+			||(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Integrated_Conductivity))
 			{
 				fCOND = pst_OLEDSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fConductivityValue;
 				break;
@@ -934,7 +946,9 @@ void func_Measure_Data_View_Show(unsigned char ucCnt)
 					{
 						func_WaterLevel_View_Show(0,ucYPosi);
 					}
-					else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Pressure_Level)
+					else if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Pressure_Level)
+					|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Pressure_Level)
+					|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Pressure_Level))
 					{
 						func_WaterLevel_View_Show(1,ucYPosi);
 					}
@@ -946,8 +960,9 @@ void func_Measure_Data_View_Show(unsigned char ucCnt)
 					{
 						func_Flow_View_Show(ucYPosi);
 					}
-					else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity
-						|| pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Integrated_Conductivity)
+					else if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity)
+						|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Integrated_Conductivity)
+						|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Integrated_Conductivity))
 					{
 						func_COND_View_Show(ucYPosi);
 					}
@@ -1014,24 +1029,33 @@ void func_Measure_WaterLevel_View_Show(unsigned char ucCnt)
 				fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fRadarWaterLevelValue;
 				break;
 			}
-			else if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Radar_Level))
+			else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Radar_Level)
 			{
 				fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarWaterLevelValue;
 				break;
 			}
-			else if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Radar_Level))
+			else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Radar_Level)
 			{
 				fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.fHXRadarWaterLevelValue;
 				break;
 			}
-			else if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Pressure_Level))
+			else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Pressure_Level)
 			{
 				fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fPressureWaterLevelValue;
 				break;
 			}
+			else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Pressure_Level)
+			{
+				fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.fHXPressureWaterLevelValue;
+				break;
+			}
+			else if(pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Pressure_Level)
+			{
+				fLevel = pst_OLEDSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fPressWaterLevelValue;
+				break;
+			}
 		}
 	}
-	
 
 	func_sprintf_metricsystem(&sTestArr[0],fLevel,3,7);
 	for(i=0; i<20; i++)
@@ -1113,7 +1137,9 @@ void func_Measure_Water_Quality_View_Show(unsigned char ucCnt)
 	{
 		for(i=0; i<pst_OLEDSystemPara->DevicePara.cMeasSensorCount[l]; i++)
 		{
-			if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity))
+			if((pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_BY_Integrated_Conductivity)
+			|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HZ_Integrated_Conductivity)
+			|| (pst_OLEDSystemPara->DevicePara.eMeasSensor[l][i] == Meas_HX_Integrated_Conductivity))
 			{
 				fCOND = pst_OLEDSystemPara->DeviceRunPara.esMeasData.es_IntegratedConductivityData.fConductivityValue;
 				break;
@@ -1219,11 +1245,22 @@ void func_GPSData_View_Show(unsigned char ucCnt)
 	func_DateTime_Battery_Status_View_Show();
 	if(pst_OLEDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude < 1)
 	{
-		//未定位
-		sTestArr[0] = 0x001C;
-		sTestArr[1] = 0x0036;
-		sTestArr[2] = 0x0025;
-		sTestArr[3] = 0xFFFF;
+		//定位中
+		if(pst_OLEDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag == 0)
+		{
+			sTestArr[0] = 0x0036;
+			sTestArr[1] = 0x0025;
+			sTestArr[2] = 0x002E;
+			sTestArr[3] = 0xFFFF;	
+		}
+		else	//定位失败
+		{
+			sTestArr[0] = 0x0036;
+			sTestArr[1] = 0x0025;
+			sTestArr[2] = 0x0049;
+			sTestArr[3] = 0x004A;
+			sTestArr[4] = 0xFFFF;	
+		}
 		func_display_string(0,17,&sTestArr[0]);	
 	}
 	else

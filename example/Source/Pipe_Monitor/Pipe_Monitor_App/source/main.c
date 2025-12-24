@@ -513,19 +513,18 @@ int32_t main(void)
     //pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
    // pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 1;
-    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 3;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 4;
     
     //pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Pressure_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_HX_Integrated_Conductivity;
     //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_HX_Radar_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HX_Radar_Ultrasonic_Flow;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][3] = Meas_HX_Pressure_Level;
     #endif
     pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 10;
     pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 5;     
     pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 5;
-
-    
 
     //pst_MainSystemPara->DeviceRunPara.nDeviceCurSampleCount = 7;
     //pst_MainSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount = 7;
@@ -605,7 +604,10 @@ int32_t main(void)
 
     //读取当前电池电量
     pst_MainSystemPara->DeviceRunPara.esDeviceRunState.fBattleVoltage = drv_Get_Battery_Level_Value(&pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent);
-    drv_Get_Water_Immersion_Sensor_Status(&pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status, &pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.fWater_Immersion_Level);
+    if(pst_MainSystemPara->DeviceRunPara.cHXPressureLevelFlag == 0)
+    {
+        drv_Get_Water_Immersion_Sensor_Status(&pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status, &pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.fWater_Immersion_Level);
+    }
     //磁控外部中断初始化
     drv_Magnetic_Bar_Init();
     
@@ -714,6 +716,20 @@ int32_t main(void)
             }
         }
     }
+
+    //判断当前设备是否为HX压力液位计
+    for(j=0; j<2; j++)
+    {
+        for(i=0; i<pst_MainSystemPara->DevicePara.cMeasSensorCount[j]; i++)
+        {
+            if(pst_MainSystemPara->DevicePara.eMeasSensor[j][i] == Meas_HX_Pressure_Level)
+            {
+                pst_MainSystemPara->DeviceRunPara.cHXPressureLevelFlag = 1;
+                break;
+            }
+        }
+    }
+
     #if 1
     for(i=0; i<pst_MainSystemPara->DevicePara.cMeasSensorCount[1]; i++)
     {

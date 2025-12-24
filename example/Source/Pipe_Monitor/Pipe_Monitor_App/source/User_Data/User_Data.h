@@ -138,11 +138,14 @@ typedef enum _MeasSensorType
 	Meas_HZ_Radar_Ultrasonic_Flow,		//航征-雷达超声波流量计
 	Meas_HZ_Ultrasonic_Flow,			//航征-超声波流量计
 	Meas_HZ_Radar_Level,				//航征-雷达液位计
+	Meas_HZ_Pressure_Level,				//航征-压力液位计
+	Meas_HZ_Integrated_Conductivity,	//航征-一体式电导率,			
 	Meas_HX_Flowmeter,					//恒星-截污流量计
 	Meas_HX_WaterQuality_COD,				//恒星-水质COD传感器	
 	Meas_HX_Radar_Ultrasonic_Flow,	//恒星-雷达超声波流量计
 	Meas_HX_Integrated_Conductivity,	//恒星-一体式电导率
 	Meas_HX_Radar_Level,				//恒星-雷达液位计
+	Meas_HX_Pressure_Level,				//恒星-压力液位计
 	//Meas_WaterLevel_Radar,				//雷达液位计
 	//Meas_WaterLevel_Pressure,			//压力液位计
 	Meas_Flowmeter,					//流量计
@@ -204,6 +207,7 @@ typedef enum _SavePara
 	DEV_LONGPOWER_MODEL,	//设备长供电模式
 	DEV_FACTORY_RESET,	//设备恢复出厂设置
 	DEV_4G_CONNECT_STATUS,	//4G连接状态
+	DEV_PRESSURE_SENSOR_CALIBRATION, //压力传感器校准系数
 	DEV_END_PARA
 }en_SaveParaCMD;
 
@@ -244,7 +248,8 @@ typedef struct _SysDevicePara
 	unsigned short usServerPort[2];	//设备连接物联网平台端口，共2组
 	char cMonitorMode;		//设备监测模式; 0->正常模式; 1->调试模式:便携式采集
 	char cSensorBaudRate;	//设备485波特率; 0->9600; 1->2400; 2->4800; 3->19200; 4->38400; 5->115200
-	char cBackUpArr[50];	//备用数据数组，长度50字节
+	float fPressureSensorCalibration;	//压力传感器校准系数，单位m
+	char cBackUpArr[46];	//备用数据数组，长度50字节
 	short sEEP_Version;			//存储版本号
 }SysDeviceParaSt;	//325Bytes
 #pragma pack()
@@ -359,6 +364,7 @@ typedef struct _HZ_LevelData
 	float fRadarRoll_Angle;	//航征-雷达液位计横滚角值
 	float fRadarVertical_Angle;	//航征-雷达液位计垂直角值
 	float fRadarInstallHeight;	//航征-雷达液位计安装高度
+	float fPressWaterLevelValue;	//压力液位值
 }esHZ_LevelDataSt;	//12Bytes
 
 //航征-雷达超声波流量计数据结构体
@@ -419,6 +425,7 @@ typedef struct _SysMeasSensorData
 	esHX_WaterQuality_CODDataSt esHX_WaterQuality_CODData;	//恒星-COD传感器数据
 	//esIntegratedConductivityDataSt esHX_
 	float fHXRadarWaterLevelValue;	//HX-雷达液位计
+	float fHXPressureWaterLevelValue;	//HX-压力液位计
 }SysMeasSensorData;
 
 typedef enum _ShowViewType
@@ -560,6 +567,7 @@ typedef struct _SysDeviceRunPara
 	char cPowerOffCnt;
 	char cShowConnectFlag;	//显示联系电话界面标志位
 	char cShowConnectCnt;	//显示联系电话界面计数值
+	char cHXPressureLevelFlag;	//恒星压力液位计标志位
 	//char cModbusNULLCnt;	//Modbus通讯NULL计数值
 	//char cModbusNULLCnt111;
 	char cBlackLightFlag;		//是否为黑光图像站设备 	

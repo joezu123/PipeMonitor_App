@@ -115,6 +115,7 @@ SysDeviceParaSt gs_DeviceDefaultPara =
 	{7243,7183},				//unsigned short usServerPort[2];	//设备连接物联网平台端口，共2组
 	{0},						//char cMonitorMode;	//备用
 	{0},						// char cSensorBaudRate;	//设备485波特率; 0->9600; 1->2400; 2->4800; 3->19200; 4->38400; 5->115200
+	{0.0},						//float fPressureSensorCalibration;	//压力传感器校准系数，单位m
 	{0},						//char cBackUpArr[50];	//备用数据数组，长度50字节
 	{EEP_VERSION}				//short sEEP_Version;			//存储版本号
 };

@@ -985,6 +985,18 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					//pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_LONGPOWER_MODEL, (unsigned char*)&cParaValue);
 				}
+				else if (strcmp(pItem, "\"DevPressCali\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					fParaValue = atof(pItem);
+					#pragma diag_suppress=Pa039
+					ucRes = func_Save_Device_Parameter(DEV_PRESSURE_SENSOR_CALIBRATION, (unsigned char*)&fParaValue);
+					#pragma diag_warning=Pa039
+				}
 				else if (strcmp(pItem, "\"DevFactoryResetEnable\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
@@ -1160,6 +1172,9 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, char* cmsgIdArr)
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备长供电模式
 	sprintf((char *)ucTempArr+usDataLen, "\"DevLongPowerEnable\":%d", pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
+	usDataLen = strlen((char *)ucTempArr);
+	//拼接设备压力液位计补偿值
+	sprintf((char *)ucTempArr+usDataLen, "\"DevPressCali\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fPressureSensorCalibration);
 	usDataLen = strlen((char *)ucTempArr);
 	
 	//拼接结束符

@@ -134,6 +134,11 @@ void drv_Lora_TP1109_PowerOn(void)
 	PWRNUB_GPIO_OPEN();	//打开传感器电源
 }
 
+void drv_Lora_TP1109_PowerOff(void)
+{
+	PWRNUB_GPIO_CLOSE();	//关闭传感器电源
+}
+
 void drv_Lora_TP1109_Reset(void)
 {
 	NUBRST_GPIO_CLOSE();

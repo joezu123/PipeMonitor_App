@@ -58,7 +58,7 @@ extern uint8_t drv_Water_Immersion_Sensor_Init();
 extern uint8_t drv_Battery_Level_Init();
 extern uint8_t drv_Get_Water_Immersion_Sensor_Status(char* cDevStatus, float * fValue);
 extern float drv_Get_Battery_Level_Value(float* fValue);
-
+extern void drv_Get_HX_Pressure_Level_Value(float* fValue);
 extern void func_ADC_DeInit(void);
 
 #ifdef __cplusplus
