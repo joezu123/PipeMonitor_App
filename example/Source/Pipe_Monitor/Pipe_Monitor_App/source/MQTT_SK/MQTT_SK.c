@@ -459,7 +459,7 @@ void MQTT_Send_SetConfig_Result(unsigned char ucRes, char* cmsgIdArr)
 	uint8_t ucSendBuf[1500] = {0};
 	usSendDataLen = func_Get_SetConfigResult_CMD(ucSendBuf,ucRes,cmsgIdArr);
 	memset(ucSendBuf, 0, 1500);
-	sprintf((char *)ucSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0100/0004/setConfig/%s\",%d\r\n",pst_MQTTSystemPara->DevicePara.cDeviceID, usSendDataLen);
+	sprintf((char *)ucSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/setConfig/%s\",%d\r\n",pst_MQTTSystemPara->DevicePara.cDeviceID, usSendDataLen);
 	//sprintf((char *)ucSendBuf, "AT+QMTPUBEX=0,0,0,0,\"$sys/iVOw212I78/ZCJ2025042801/thing/property/post\",%d\r\n",usSendDataLen);
 	usSendDataLen = strlen((char *)ucSendBuf);
 	drv_mcu_USART_SendData(MODULE_4G_NB, (uint8_t*)ucSendBuf, usSendDataLen);
@@ -534,7 +534,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 			pItem = strtok(czItem[j], ":");
 			if (pItem != NULL)
 			{
-				if(strcmp(pItem,"\"DevID\"") == 0)
+				if(strcmp(pItem,"\"ID\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -547,7 +547,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					ucRes = func_Save_Device_Parameter(DEV_ID, (unsigned char*)&cParaArrValue);
 					//g_rRun_info.ucDownFlg = atoi(pItem);
 				}
-				else if (strcmp(pItem, "\"DevSampGap\"") == 0)
+				else if (strcmp(pItem, "\"SampGap\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -561,7 +561,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					#pragma diag_warning=Pa039
 					//memcpy(g_rRun_info.uczName, pItem, strlen(pItem) > 21?21:strlen(pItem));
 				}
-				else if (strcmp(pItem, "\"DevSaveGap\"") == 0)
+				else if (strcmp(pItem, "\"SaveGap\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -575,7 +575,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					#pragma diag_warning=Pa039
 					//memcpy(g_rRun_info.uczWifiName, pItem, 10);
 				}
-				else if (strcmp(pItem, "\"DevUploadGap\"") == 0)
+				else if (strcmp(pItem, "\"UploadGap\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -589,29 +589,39 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					#pragma diag_warning=Pa039
 					//memcpy(g_rRun_info.uczWifiPwd, pItem, 10);
 				}
-				else if (strcmp(pItem, "\"Dev485Enable1\"") == 0)
+				else if (strcmp(pItem, "\"485Enable1\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[0] = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_SENSOR_ENABLE_1, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"Dev485Enable2\"") == 0)
+				else if (strcmp(pItem, "\"485Enable2\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
 					cParaValue = atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[1] = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_SENSOR_ENABLE_2, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorCnt1\"") == 0)
+				else if (strcmp(pItem, "\"SensorCnt1\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -622,7 +632,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					//pst_MQTTSystemPara->DevicePara.cMeasSensorCount[0] = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_SENSOR_CNT_1, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorCnt2\"") == 0)
+				else if (strcmp(pItem, "\"SensorCnt2\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -633,227 +643,327 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					//pst_MQTTSystemPara->DevicePara.cMeasSensorCount[1] = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_SENSOR_CNT_2, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType1[0]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType1_0\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][0] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR1_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType1[1]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType1_1\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][1] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR2_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType1[2]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType1_2\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][2] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR3_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType1[3]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType1_3\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][3] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR4_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType1[4]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType1_4\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][4] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR5_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType1[5]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType1_5\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][5] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR6_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType1[6]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType1_6\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][6] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR7_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType1[7]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType1_7\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][7] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR8_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType1[8]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType1_8\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][8] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR9_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType1[9]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType1_9\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][9] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN1_SENSOR10_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType2[0]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType2_0\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][0] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR1_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType2[1]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType2_1\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][1] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR2_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType2[2]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType2_2\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][2] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR3_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType2[3]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType2_3\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][3] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR4_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType2[4]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType2_4\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][4] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR5_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType2[5]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType2_5\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][5] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR6_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType2[6]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType2_6\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][6] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR7_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType2[7]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType2_7\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][7] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR8_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType2[8]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType2_8\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][8] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR9_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevSensorType2[9]\"") == 0)
+				else if (strcmp(pItem, "\"SensorType2_9\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
 					cParaValue = (EMeasSensorType)atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][9] = (EMeasSensorType)atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_CHN2_SENSOR10_TYPE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevTotalFlow\"") == 0)
+				else if (strcmp(pItem, "\"TotalFlow\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -866,7 +976,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					ucRes = func_Save_Device_Parameter(DEV_TOTAL_VOLUME, (unsigned char*)&fParaValue);
 					#pragma diag_warning=Pa039
 				}
-				else if (strcmp(pItem, "\"DevReset\"") == 0)
+				else if (strcmp(pItem, "\"Reset\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -876,7 +986,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					//pst_MQTTSystemPara->DevicePara.fTotal_Volume = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_SOFTRESET, (unsigned char*)&pst_MQTTSystemPara->DevicePara.ucUploadStatusGap);
 				}
-				else if (strcmp(pItem, "\"DevUploadStatusGap\"") == 0)
+				else if (strcmp(pItem, "\"UploadStatusGap\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -887,7 +997,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					//pst_MQTTSystemPara->DevicePara.ucUploadStatusGap = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_STATUS_UPLOAD_GAP, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevServerIP1\"") == 0)
+				else if (strcmp(pItem, "\"ServerIP1\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -900,7 +1010,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					memcpy(cTempArrValue, &cParaArrValue[1], strlen(cParaArrValue)-2);
 					ucRes = func_Save_Device_Parameter(DEV_IP_ADDRESS1, (unsigned char*)&cTempArrValue);
 				}
-				else if (strcmp(pItem, "\"DevServerIP2\"") == 0)
+				else if (strcmp(pItem, "\"ServerIP2\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -913,7 +1023,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					memcpy(cTempArrValue, &cParaArrValue[1], strlen(cParaArrValue)-2);
 					ucRes = func_Save_Device_Parameter(DEV_IP_ADDRESS2, (unsigned char*)&cTempArrValue);
 				}
-				else if (strcmp(pItem, "\"DevServerPort1\"") == 0)
+				else if (strcmp(pItem, "\"ServerPort1\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -926,7 +1036,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					ucRes = func_Save_Device_Parameter(DEV_IP_PORT1, (unsigned char*)&nParaValue);
 					#pragma diag_warning=Pa039
 				}
-				else if (strcmp(pItem, "\"DevServerPort2\"") == 0)
+				else if (strcmp(pItem, "\"ServerPort2\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -939,11 +1049,16 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					ucRes = func_Save_Device_Parameter(DEV_IP_PORT2, (unsigned char*)&nParaValue);
 					#pragma diag_warning=Pa039
 				}
-				else if (strcmp(pItem, "\"DevDebugEnable\"") == 0)
+				else if (strcmp(pItem, "\"DebugEnable\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = atoi(pItem);
@@ -963,29 +1078,39 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					ucRes = func_Save_Device_Parameter(DEV_INSTALL_HEIGHT, (unsigned char*)&fParaValue);
 					#pragma diag_warning=Pa039
 				}
-				else if (strcmp(pItem, "\"DevSensorBaud\"") == 0)
+				else if (strcmp(pItem, "\"SensorBaud\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
 						pItem[strlen(pItem)-1] = '\0';
 					}
 					cParaValue = atoi(pItem);
 					//pst_MQTTSystemPara->DevicePara.cSensorBaudRate = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_SENSOR_BAUDRATE, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevLongPowerEnable\"") == 0)
+				else if (strcmp(pItem, "\"LongPowerEnable\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
 					{
 						pItem[strlen(pItem)-1] = '\0';
 					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
 					cParaValue = atoi(pItem);
 					//pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_LONGPOWER_MODEL, (unsigned char*)&cParaValue);
 				}
-				else if (strcmp(pItem, "\"DevPressCali\"") == 0)
+				else if (strcmp(pItem, "\"PressCali\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -997,7 +1122,7 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					ucRes = func_Save_Device_Parameter(DEV_PRESSURE_SENSOR_CALIBRATION, (unsigned char*)&fParaValue);
 					#pragma diag_warning=Pa039
 				}
-				else if (strcmp(pItem, "\"DevFactoryResetEnable\"") == 0)
+				else if (strcmp(pItem, "\"FactoryResetEnable\"") == 0)
 				{
 					pItem = strtok(NULL, ":");
 					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
@@ -1006,6 +1131,458 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					}
 					//pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_FACTORY_RESET, (unsigned char*)&pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
+				}
+				else if (strcmp(pItem, "\"InstallHeight\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					fParaValue = atof(pItem);
+					#pragma diag_suppress=Pa039
+					ucRes = func_Save_Device_Parameter(DEV_PIPE_INSTALL_HEIGHT, (unsigned char*)&fParaValue);
+					#pragma diag_warning=Pa039
+				}
+				else if (strcmp(pItem, "\"LevelAlarmCnts\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					cParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_LEVELALARMCNTS, (unsigned char*)&cParaValue);
+				}
+				else if (strcmp(pItem, "\"LevelAlarmLev1\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_LEVELALARMLEV1, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"LevelAlarmLev2\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_LEVELALARMLEV2, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"LevelAlarmLev3\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_LEVELALARMLEV3, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"LevelAlarmLev4\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_LEVELALARMLEV4, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"LevelAlarmLev5\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_LEVELALARMLEV5, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"LevelAlarmPer1\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					fParaValue = atof(pItem);
+					
+					#pragma diag_suppress=Pa039
+					ucRes = func_Save_Device_Parameter(DEV_LEVELALARMPER1, (unsigned char*)&fParaValue);
+					#pragma diag_warning=Pa039
+				}
+				else if (strcmp(pItem, "\"LevelAlarmPer2\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					fParaValue = atof(pItem);
+					//fParaValue = fParaValue / 100;
+					#pragma diag_suppress=Pa039
+					ucRes = func_Save_Device_Parameter(DEV_LEVELALARMPER2, (unsigned char*)&fParaValue);
+					#pragma diag_warning=Pa039
+				}
+				else if (strcmp(pItem, "\"LevelAlarmPer3\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					fParaValue = atof(pItem);
+					//fParaValue = fParaValue / 100;
+					#pragma diag_suppress=Pa039
+					ucRes = func_Save_Device_Parameter(DEV_LEVELALARMPER3, (unsigned char*)&fParaValue);
+					#pragma diag_warning=Pa039
+				}
+				else if (strcmp(pItem, "\"LevelAlarmPer4\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					fParaValue = atof(pItem);
+					//fParaValue = fParaValue / 100;
+					#pragma diag_suppress=Pa039
+					ucRes = func_Save_Device_Parameter(DEV_LEVELALARMPER4, (unsigned char*)&fParaValue);
+					#pragma diag_warning=Pa039
+				}
+				else if (strcmp(pItem, "\"LevelAlarmPer5\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					fParaValue = atof(pItem);
+					//fParaValue = fParaValue / 100;
+					#pragma diag_suppress=Pa039
+					ucRes = func_Save_Device_Parameter(DEV_LEVELALARMPER5, (unsigned char*)&fParaValue);
+					#pragma diag_warning=Pa039
+				}
+				else if (strcmp(pItem, "\"Weather\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					cParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_WEATHER, (unsigned char*)&cParaValue);
+				}
+				else if (strcmp(pItem, "\"Scenario\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					cParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_SCENARIO, (unsigned char*)&cParaValue);
+				}
+				else if (strcmp(pItem, "\"CONDAlarmCnts\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CONALARMCNTS, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"CONDAlarmLev1\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CONDALARMLEV1, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"CONDAlarmLev2\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CONDALARMLEV2, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"CONDAlarmLev3\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CONDALARMLEV3, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"CONDAlarmLev4\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CONDALARMLEV4, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"CONDAlarmLev5\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CONDALARMLEV5, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"CONDAlarmVal1\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CONDALARMVAL1, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"CONDAlarmVal2\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CONDALARMVAL2, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"CONDAlarmVal3\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CONDALARMVAL3, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"CONDAlarmVal4\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CONDALARMVAL4, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"CONDAlarmVal5\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_CONDALARMVAL5, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"AlarmSamp1\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_ALARMSAMP1, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"AlarmSamp2\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_ALARMSAMP2, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"AlarmSamp3\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_ALARMSAMP3, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"AlarmSamp4\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_ALARMSAMP4, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"AlarmSamp5\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_ALARMSAMP5, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"AlarmUpload1\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_ALARMUPLOAD1, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"AlarmUpload2\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_ALARMUPLOAD2, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"AlarmUpload3\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_ALARMUPLOAD3, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"AlarmUpload4\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_ALARMUPLOAD4, (unsigned char*)&nParaValue);
+				}
+				else if (strcmp(pItem, "\"AlarmUpload5\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					nParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_ALARMUPLOAD5, (unsigned char*)&nParaValue);
 				}
 			}
 		}
@@ -1051,130 +1628,193 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, char* cmsgIdArr)
 
     usDataLen = strlen((char *)ucTempArr);
 	//拼接设备ID参数
-	sprintf((char *)ucTempArr+usDataLen, "\"DevID\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDeviceID);
+	sprintf((char *)ucTempArr+usDataLen, "\"ID\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDeviceID);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备IMSI号
-	sprintf((char *)ucTempArr+usDataLen, "\"DevIMSI\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDeviceIMSI);
+	sprintf((char *)ucTempArr+usDataLen, "\"IMSI\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDeviceIMSI);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备IMEI号
-	sprintf((char *)ucTempArr+usDataLen, "\"DevIMEI\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDeviceIMEI);
+	sprintf((char *)ucTempArr+usDataLen, "\"IMEI\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDeviceIMEI);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备硬件版本号
-	sprintf((char *)ucTempArr+usDataLen, "\"DevHWVer\":%d,", (pst_MQTTSystemPara->DevicePara.cDeviceHWVersion[0]-0x30)*100+
+	sprintf((char *)ucTempArr+usDataLen, "\"HWVer\":%d,", (pst_MQTTSystemPara->DevicePara.cDeviceHWVersion[0]-0x30)*100+
 													(pst_MQTTSystemPara->DevicePara.cDeviceHWVersion[2]-0x30)*10+
 													(pst_MQTTSystemPara->DevicePara.cDeviceHWVersion[4]-0x30));
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备软件版本号
-	sprintf((char *)ucTempArr+usDataLen, "\"DevSWVer\":%d,", (pst_MQTTSystemPara->DevicePara.cDeviceSWVersion[0]-0x30)*100+
+	sprintf((char *)ucTempArr+usDataLen, "\"SWVer\":%d,", (pst_MQTTSystemPara->DevicePara.cDeviceSWVersion[0]-0x30)*100+
 													(pst_MQTTSystemPara->DevicePara.cDeviceSWVersion[2]-0x30)*10+
 													(pst_MQTTSystemPara->DevicePara.cDeviceSWVersion[4]-0x30));
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备生产日期
-	sprintf((char *)ucTempArr+usDataLen, "\"DevPD\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDevicePDDate);
+	sprintf((char *)ucTempArr+usDataLen, "\"PD\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDevicePDDate);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备采样间隔
-	sprintf((char *)ucTempArr+usDataLen, "\"DevSampGap\":%d,", pst_MQTTSystemPara->DevicePara.nDeviceSampleGapCnt*60);
+	sprintf((char *)ucTempArr+usDataLen, "\"SampGap\":%d,", pst_MQTTSystemPara->DevicePara.nDeviceSampleGapCnt*60);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备记录间隔
-	sprintf((char *)ucTempArr+usDataLen, "\"DevSaveGap\":%d,", pst_MQTTSystemPara->DevicePara.nDeviceSaveRecordCnt*60);
+	sprintf((char *)ucTempArr+usDataLen, "\"SaveGap\":%d,", pst_MQTTSystemPara->DevicePara.nDeviceSaveRecordCnt*60);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备上传间隔
-	sprintf((char *)ucTempArr+usDataLen, "\"DevUploadGap\":%d,", pst_MQTTSystemPara->DevicePara.nDeviceUploadCnt*60);
+	sprintf((char *)ucTempArr+usDataLen, "\"UploadGap\":%d,", pst_MQTTSystemPara->DevicePara.nDeviceUploadCnt*60);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接485通道1使能标志
-	sprintf((char *)ucTempArr+usDataLen, "\"Dev485Enable1\":%d,", pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[0]);
+	sprintf((char *)ucTempArr+usDataLen, "\"485Enable1\":%d,", pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[0]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接485通道2使能标志
-	sprintf((char *)ucTempArr+usDataLen, "\"Dev485Enable2\":%d,", pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[1]);
+	sprintf((char *)ucTempArr+usDataLen, "\"485Enable2\":%d,", pst_MQTTSystemPara->DevicePara.cMeasSensorEnableFlag[1]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接485通道1传感器数量
-	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorCnt1\":%d,", pst_MQTTSystemPara->DevicePara.cMeasSensorCount[0]);
+	sprintf((char *)ucTempArr+usDataLen, "\"SensorCnt1\":%d,", pst_MQTTSystemPara->DevicePara.cMeasSensorCount[0]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接485通道2传感器数量
-	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorCnt2\":%d,", pst_MQTTSystemPara->DevicePara.cMeasSensorCount[1]);
+	sprintf((char *)ucTempArr+usDataLen, "\"SensorCnt2\":%d,", pst_MQTTSystemPara->DevicePara.cMeasSensorCount[1]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接485通道1传感器类型
-	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorType1\":[%d,%d,%d,%d,%d,%d,%d,%d,%d,%d],",
+	sprintf((char *)ucTempArr+usDataLen, "\"SensorType1\":[%d,%d,%d,%d,%d],",
 		pst_MQTTSystemPara->DevicePara.eMeasSensor[0][0],
 		pst_MQTTSystemPara->DevicePara.eMeasSensor[0][1],
 		pst_MQTTSystemPara->DevicePara.eMeasSensor[0][2],
 		pst_MQTTSystemPara->DevicePara.eMeasSensor[0][3],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[0][4],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[0][5],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[0][6],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[0][7],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[0][8],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[0][9]);
+		pst_MQTTSystemPara->DevicePara.eMeasSensor[0][4]);
+		//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][5],
+		//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][6],
+		//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][7],
+		//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][8],
+		//pst_MQTTSystemPara->DevicePara.eMeasSensor[0][9]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接485通道2传感器类型	
-	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorType2\":[%d,%d,%d,%d,%d,%d,%d,%d,%d,%d],",
+	sprintf((char *)ucTempArr+usDataLen, "\"SensorType2\":[%d,%d,%d,%d,%d],",
 		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][0],
 		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][1],
 		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][2],
 		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][3],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][4],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][5],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][6],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][7],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][8],
-		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][9]);
+		pst_MQTTSystemPara->DevicePara.eMeasSensor[1][4]);
+		//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][5],
+		//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][6],
+		//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][7],
+		//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][8],
+		//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][9]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备总流量
-	sprintf((char *)ucTempArr+usDataLen, "\"DevTotalFlow\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fTotal_Volume);
+	sprintf((char *)ucTempArr+usDataLen, "\"TotalFlow\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fTotal_Volume);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接状态信息：纬度
-	sprintf((char *)ucTempArr+usDataLen, "\"DevLat\":%.6f,", (double)pst_MQTTSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat);
+	sprintf((char *)ucTempArr+usDataLen, "\"Lat\":%.6f,", (double)pst_MQTTSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat);
 	usDataLen = strlen((char *)ucTempArr);																					
 	//拼接状态信息：经度
-	sprintf((char *)ucTempArr+usDataLen, "\"DevLng\":%.6f,", (double)pst_MQTTSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lng);
+	sprintf((char *)ucTempArr+usDataLen, "\"Lng\":%.6f,", (double)pst_MQTTSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lng);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接状态信息：电量百分比
-	sprintf((char *)ucTempArr+usDataLen, "\"DevBatteryPer\":%f,", (double)pst_MQTTSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent);
+	sprintf((char *)ucTempArr+usDataLen, "\"BatteryPer\":%f,", (double)pst_MQTTSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备状态信息：水浸标志
-	sprintf((char *)ucTempArr+usDataLen, "\"DevWaterImmi\":%d,", pst_MQTTSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status);
+	sprintf((char *)ucTempArr+usDataLen, "\"WaterImmi\":%d,", pst_MQTTSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备状态信息：姿态数据
-	sprintf((char *)ucTempArr+usDataLen, "\"DevAttitude\":%d,", pst_MQTTSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A);
+	sprintf((char *)ucTempArr+usDataLen, "\"Attitude\":%d,", pst_MQTTSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备状态信息：光照标志
-	sprintf((char *)ucTempArr+usDataLen, "\"DevLight\":%d,", pst_MQTTSystemPara->DeviceRunPara.esDeviceSensorsData.cPhotosensitive_XYC_ALS_Status);
+	sprintf((char *)ucTempArr+usDataLen, "\"Light\":%d,", pst_MQTTSystemPara->DeviceRunPara.esDeviceSensorsData.cPhotosensitive_XYC_ALS_Status);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备状态信息：报警状态
-	sprintf((char *)ucTempArr+usDataLen, "\"DevAlarmStatus\":%d,", pst_MQTTSystemPara->DeviceRunPara.usDevStatus);
+	sprintf((char *)ucTempArr+usDataLen, "\"AlarmStatus\":%d,", pst_MQTTSystemPara->DeviceRunPara.usDevStatus);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备测量信息
-	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorValue\":[%.3f,%.3f,%.3f,%.3f,%.3f,%.3f],",(double)gSt_DevMeasRecordData.fWaterLevel_Radar,(double)gSt_DevMeasRecordData.fWaterLevel_Pres,(double)gSt_DevMeasRecordData.fWaterQuality_COND,(double)gSt_DevMeasRecordData.fWaterVolume,(double)gSt_DevMeasRecordData.fWaterSpeed,(double)gSt_DevMeasRecordData.fWaterVolume_Total);
+	sprintf((char *)ucTempArr+usDataLen, "\"SensorValue\":[%.3f,%.3f,%.3f,%.3f,%.3f,%.3f],",(double)gSt_DevMeasRecordData.fWaterLevel_Radar,(double)gSt_DevMeasRecordData.fWaterLevel_Pres,(double)gSt_DevMeasRecordData.fWaterQuality_COND,(double)gSt_DevMeasRecordData.fWaterVolume,(double)gSt_DevMeasRecordData.fWaterSpeed,(double)gSt_DevMeasRecordData.fWaterVolume_Total);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备状态报文上报间隔
-	sprintf((char *)ucTempArr+usDataLen, "\"DevUploadStatusGap\":%d,", pst_MQTTSystemPara->DevicePara.ucUploadStatusGap);
+	sprintf((char *)ucTempArr+usDataLen, "\"UploadStatusGap\":%d,", pst_MQTTSystemPara->DevicePara.ucUploadStatusGap);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备服务器IP1
-	sprintf((char *)ucTempArr+usDataLen, "\"DevServerIP1\":\"%s\",", pst_MQTTSystemPara->DevicePara.cServerIP[0]);
+	sprintf((char *)ucTempArr+usDataLen, "\"ServerIP1\":\"%s\",", pst_MQTTSystemPara->DevicePara.cServerIP[0]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备服务器IP2
-	sprintf((char *)ucTempArr+usDataLen, "\"DevServerIP2\":\"%s\",", pst_MQTTSystemPara->DevicePara.cServerIP[1]);
+	sprintf((char *)ucTempArr+usDataLen, "\"ServerIP2\":\"%s\",", pst_MQTTSystemPara->DevicePara.cServerIP[1]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备服务器端口1
-	sprintf((char *)ucTempArr+usDataLen, "\"DevServerPort1\":%d,", pst_MQTTSystemPara->DevicePara.usServerPort[0]);
+	sprintf((char *)ucTempArr+usDataLen, "\"ServerPort1\":%d,", pst_MQTTSystemPara->DevicePara.usServerPort[0]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备服务器端口2
-	sprintf((char *)ucTempArr+usDataLen, "\"DevServerPort2\":%d,", pst_MQTTSystemPara->DevicePara.usServerPort[1]);
+	sprintf((char *)ucTempArr+usDataLen, "\"ServerPort2\":%d,", pst_MQTTSystemPara->DevicePara.usServerPort[1]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备调试模式
-	sprintf((char *)ucTempArr+usDataLen, "\"DevDebugEnable\":%d,", pst_MQTTSystemPara->DeviceRunPara.cDebugModel);
+	sprintf((char *)ucTempArr+usDataLen, "\"DebugEnable\":%d,", pst_MQTTSystemPara->DeviceRunPara.cDebugModel);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备安装高度
 	sprintf((char *)ucTempArr+usDataLen, "\"DevInstallHeight\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fInit_Height);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备传感器波特率
-	sprintf((char *)ucTempArr+usDataLen, "\"DevSensorBaud\":%d,", pst_MQTTSystemPara->DevicePara.cSensorBaudRate);
+	sprintf((char *)ucTempArr+usDataLen, "\"SensorBaud\":%d,", pst_MQTTSystemPara->DevicePara.cSensorBaudRate);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备长供电模式
-	sprintf((char *)ucTempArr+usDataLen, "\"DevLongPowerEnable\":%d", pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
+	sprintf((char *)ucTempArr+usDataLen, "\"LongPowerEnable\":%d,", pst_MQTTSystemPara->DeviceRunPara.cLongPowerModel);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备压力液位计补偿值
-	sprintf((char *)ucTempArr+usDataLen, "\"DevPressCali\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fPressureSensorCalibration);
+	sprintf((char *)ucTempArr+usDataLen, "\"PressCali\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fPressureSensorCalibration);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"InstallHeight\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fInstall_Height);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"LevelAlarmCnts\":%d,", pst_MQTTSystemPara->DevicePara.cLevelAlarmCnts);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"LevelAlarmLev\":[%d,%d,%d],",
+		pst_MQTTSystemPara->DevicePara.cLevelAlarmLev[0],
+		pst_MQTTSystemPara->DevicePara.cLevelAlarmLev[1],
+		pst_MQTTSystemPara->DevicePara.cLevelAlarmLev[2]);
+		//pst_MQTTSystemPara->DevicePara.cLevelAlarmLev[3],
+		//pst_MQTTSystemPara->DevicePara.cLevelAlarmLev[4]);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"LevelAlarmPer\":[%.3f,%.3f,%.3f],",
+		pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[0],
+		pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[1],
+		pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[2]);
+		//pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[3],
+		//pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[4]);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"Weather\":%d,", pst_MQTTSystemPara->DevicePara.cWeatherFlag);
+	usDataLen = strlen((char *)ucTempArr);
+	
+	sprintf((char *)ucTempArr+usDataLen, "\"Scenario\":%d,", pst_MQTTSystemPara->DevicePara.cScenario);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"CONDAlarmCnts\":%d,", pst_MQTTSystemPara->DevicePara.cCondAlarmCnts);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"CONDAlarmLev\":[%d,%d,%d],",
+		pst_MQTTSystemPara->DevicePara.cCONDAlarmLev[0],
+		pst_MQTTSystemPara->DevicePara.cCONDAlarmLev[1],
+		pst_MQTTSystemPara->DevicePara.cCONDAlarmLev[2]);
+		//pst_MQTTSystemPara->DevicePara.cCONDAlarmLev[3],
+		//pst_MQTTSystemPara->DevicePara.cCONDAlarmLev[4]);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"CONDAlarmVal\":[%d,%d,%d],",
+		pst_MQTTSystemPara->DevicePara.usCONDAlarmValue[0],
+		pst_MQTTSystemPara->DevicePara.usCONDAlarmValue[1],
+		pst_MQTTSystemPara->DevicePara.usCONDAlarmValue[2]);
+		//pst_MQTTSystemPara->DevicePara.usCONDAlarmValue[3],
+		//pst_MQTTSystemPara->DevicePara.usCONDAlarmValue[4]);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"AlarmSamp\":[%d,%d,%d],",
+		pst_MQTTSystemPara->DevicePara.usAlarmSamp[0],
+		pst_MQTTSystemPara->DevicePara.usAlarmSamp[1],
+		pst_MQTTSystemPara->DevicePara.usAlarmSamp[2]);
+		//pst_MQTTSystemPara->DevicePara.usAlarmSamp[3],
+		//pst_MQTTSystemPara->DevicePara.usAlarmSamp[4]);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"AlarmUpload\":[%d,%d,%d]",
+		pst_MQTTSystemPara->DevicePara.usAlarmUpload[0],
+		pst_MQTTSystemPara->DevicePara.usAlarmUpload[1],
+		pst_MQTTSystemPara->DevicePara.usAlarmUpload[2]);
+		//pst_MQTTSystemPara->DevicePara.usAlarmUpload[3],
+		//pst_MQTTSystemPara->DevicePara.usAlarmUpload[4]);
 	usDataLen = strlen((char *)ucTempArr);
 	
 	//拼接结束符
@@ -1203,7 +1843,7 @@ uint8_t MQTT_SK_Get_Config(unsigned short usBasePosi)
 	}
 	usSendDataLen = func_Get_GetConfigResult_CMD(ucSendBuf,cmsgIdArr);
 	memset(ucSendBuf, 0, 1500);
-	sprintf((char *)ucSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0100/0004/getConfig/%s\",%d\r\n",pst_MQTTSystemPara->DevicePara.cDeviceID, usSendDataLen);
+	sprintf((char *)ucSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/getConfig/%s\",%d\r\n",pst_MQTTSystemPara->DevicePara.cDeviceID, usSendDataLen);
 	//sprintf((char *)ucSendBuf, "AT+QMTPUBEX=0,0,0,0,\"$sys/iVOw212I78/ZCJ2025042801/thing/property/post\",%d\r\n",usSendDataLen);
 	usSendDataLen = strlen((char *)ucSendBuf);
 	drv_mcu_USART_SendData(MODULE_4G_NB, (uint8_t*)ucSendBuf, usSendDataLen);
@@ -1349,7 +1989,7 @@ uint8_t MQTT_SK_Get_Data(void)
 	//发送AT指令
 	//drv_mcu_USART_SendData(MODULE_4G_NB, (uint8_t *)cSendBuf, usDataLen);
 	//usSendDataLen = func_Get_DevStatusCMD_Data(ucSendBuf);
-	sprintf((char *)cSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0100/0004/getData/%s\",%d\r\n",pst_MQTTSystemPara->DevicePara.cDeviceID,usDataLen);
+	sprintf((char *)cSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/getData/%s\",%d\r\n",pst_MQTTSystemPara->DevicePara.cDeviceID,usDataLen);
 	usDataLen = strlen((char *)cSendBuf);
 	//pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Upload;
 	drv_mcu_USART_SendData(MODULE_4G_NB, (uint8_t*)cSendBuf, usDataLen);

@@ -208,6 +208,43 @@ typedef enum _SavePara
 	DEV_FACTORY_RESET,	//设备恢复出厂设置
 	DEV_4G_CONNECT_STATUS,	//4G连接状态
 	DEV_PRESSURE_SENSOR_CALIBRATION, //压力传感器校准系数
+	DEV_PIPE_INSTALL_HEIGHT,	//设备安装井深
+	DEV_LEVELALARMCNTS,	//设备液位预警组数
+	DEV_LEVELALARMLEV1,	//设备液位预警层级
+	DEV_LEVELALARMLEV2,	//设备液位预警层级
+	DEV_LEVELALARMLEV3,	//设备液位预警层级
+	DEV_LEVELALARMLEV4,	//设备液位预警层级
+	DEV_LEVELALARMLEV5,	//设备液位预警层级
+	DEV_LEVELALARMPER1,	//设备液位预警百分比
+	DEV_LEVELALARMPER2,	//设备液位预警百分比
+	DEV_LEVELALARMPER3,	//设备液位预警百分比
+	DEV_LEVELALARMPER4,	//设备液位预警百分比
+	DEV_LEVELALARMPER5,	//设备液位预警百分比
+	
+	DEV_WEATHER,			//雨旱天，预案开关
+	DEV_SCENARIO,			//设备场景：排口；污水管网
+	DEV_CONALARMCNTS,	//设备电导率预警规则组数
+	DEV_CONDALARMLEV1,		//电导率预警层级:1-5级
+	DEV_CONDALARMLEV2,		//电导率预警层级:1-5级
+	DEV_CONDALARMLEV3,		//电导率预警层级:1-5级
+	DEV_CONDALARMLEV4,		//电导率预警层级:1-5级
+	DEV_CONDALARMLEV5,		//电导率预警层级:1-5级
+	DEV_CONDALARMVAL1,		//电导率预警数值
+	DEV_CONDALARMVAL2,		//电导率预警数值
+	DEV_CONDALARMVAL3,		//电导率预警数值
+	DEV_CONDALARMVAL4,		//电导率预警数值
+	DEV_CONDALARMVAL5,		//电导率预警数值
+
+	DEV_ALARMSAMP1,	//设备预警采集频率
+	DEV_ALARMSAMP2,	//设备预警采集频率
+	DEV_ALARMSAMP3,	//设备预警采集频率
+	DEV_ALARMSAMP4,	//设备预警采集频率
+	DEV_ALARMSAMP5,	//设备预警采集频率
+	DEV_ALARMUPLOAD1,	//设备预警上传频率
+	DEV_ALARMUPLOAD2,	//设备预警上传频率
+	DEV_ALARMUPLOAD3,	//设备预警上传频率
+	DEV_ALARMUPLOAD4,	//设备预警上传频率
+	DEV_ALARMUPLOAD5,	//设备预警上传频率
 	DEV_END_PARA
 }en_SaveParaCMD;
 
@@ -249,7 +286,21 @@ typedef struct _SysDevicePara
 	char cMonitorMode;		//设备监测模式; 0->正常模式; 1->调试模式:便携式采集
 	char cSensorBaudRate;	//设备485波特率; 0->9600; 1->2400; 2->4800; 3->19200; 4->38400; 5->115200
 	float fPressureSensorCalibration;	//压力传感器校准系数，单位m
-	char cBackUpArr[46];	//备用数据数组，长度50字节
+	float fInstall_Height;	//设备安装井深，单位m
+	char cLevelAlarmCnts;	//设备液位预警规则组数，最大5
+	char cLevelAlarmLev[5];	//设备液位预警层架，1-5级
+	float fLevelAlarmPer[5];	//设备液位预警百分比，如70%，90%
+	
+	char cWeatherFlag;	//雨旱天，预案开关：0->未启用；1->旱天； 2->雨天
+	char cScenario;		//设备场景: 0->排口； 1->污水管网
+	char cCondAlarmCnts;	//设备电导率预警规则组数，最大5
+	char cCONDAlarmLev[5];	//电导率预警层级
+	unsigned short usCONDAlarmValue[5];	//电导率预警数值
+
+	unsigned short usAlarmSamp[5];	//设备预警采样频率
+	unsigned short usAlarmUpload[5];	//设备预警上传频率
+
+	char cBackUpArr[146];	//备用数据数组，长度50字节
 	short sEEP_Version;			//存储版本号
 }SysDeviceParaSt;	//325Bytes
 #pragma pack()
@@ -506,7 +557,7 @@ typedef struct _SysDeviceRunPara
 	unsigned short usBTRecValue;
 	SysMeasSensorData esMeasData;	//实时外挂测量传感器数据
 	unsigned short usDevStatus;	//设备状态字: 0->正常; 0x01->4G初始化异常; 0x02->NFC初始化异常; 0x04->姿态传感器异常;0x08->水浸传感器异常; 
-								//0x10->光照传感器异常; 0x20->MODBUS通信异常; 0x40->BT异常
+								//0x10->光照传感器异常; 0x20->MODBUS通信异常; 0x40->BT异常; 
 	eShowViewType eShowView;	//当前要显示的界面类型
 	ePowerType eCurPowerType;	//当前设备开关机状态
 	char cBarTouchCnt;			//磁棒接触时间计数，单位s

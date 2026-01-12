@@ -522,9 +522,9 @@ int32_t main(void)
     pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HX_Radar_Ultrasonic_Flow;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][3] = Meas_HX_Pressure_Level;
     #endif
-    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 10;
-    pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 5;     
-    pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 5;
+    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 2;
+    pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 2;     
+    pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 2;
 
     //pst_MainSystemPara->DeviceRunPara.nDeviceCurSampleCount = 7;
     //pst_MainSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount = 7;

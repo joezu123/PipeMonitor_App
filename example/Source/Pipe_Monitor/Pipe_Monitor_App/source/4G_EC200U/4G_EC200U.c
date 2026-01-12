@@ -1548,8 +1548,13 @@ uint16_t func_Get_DevStatusCMD_Data(uint8_t *ucDataArr)
     memcpy(&ucTempValueArr[3], "\"lng\":[", 7);
     memcpy(&ucTempValueArr[4], "\"lat\":[", 7);
     memcpy(&ucTempValueArr[5], "\"status\":[", 10);
+    if(pst_EC200USystemPara->DeviceRunPara.ulUploadStatusLostCnt < 1)
+    {
+        pst_EC200USystemPara->DeviceRunPara.ulUploadStatusLostCnt = 1;
+    }
     for(nPosi=0; nPosi<pst_EC200USystemPara->DeviceRunPara.ulUploadStatusLostCnt; nPosi++)
     {
+        //pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].usDevStatus = 0x0103;
         sprintf((char *)&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "%s\",\"", pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].cDevStartDateTime);
         sprintf((char *)&ucTempValueArr[1][strlen((char *)ucTempValueArr[1])], "%d,", pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].nDevStartDays);
         sprintf((char *)&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])], "%.3lf,", (double)pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].fBattleVoltage);

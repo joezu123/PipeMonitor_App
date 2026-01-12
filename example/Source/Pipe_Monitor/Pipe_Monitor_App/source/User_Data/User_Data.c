@@ -55,7 +55,7 @@ en_4G_Module_Init_State gE_4G_Module_Init_CMD = Module_START_WAIT_CMD;
 SysDeviceParaSt gs_DeviceDefaultPara = 
 {
 	//char cDeviceID[16];	//设备ID:MQ+4位厂商代码+4位客户端类型+6位自定义字符串
-	{'M','Q','0','0','0','0','0','0','0','4','0','0','0','0','0','2',0},			
+	{'M','Q','0','0','0','0','0','0','0','4','0','0','0','0','0','1',0},			
 	{0},						//char cDeviceIdenFlag;	//设备是否经过NFC认证标志位	0->未验证
 	{0},						//char cDeviceRegisterFlag;	//设备是否在服务器通讯上注册标志位	0->未注册
 	{0,0,0},					//char cDeviceIMSI[15];	//设备IMSI号；是一个用于在全球范围内唯一地识别移动用户的标识符。IMSI存储在手机的SIM卡中，用于在蜂窝网络中进行用户身份验证和位置管理。
@@ -116,7 +116,19 @@ SysDeviceParaSt gs_DeviceDefaultPara =
 	{0},						//char cMonitorMode;	//备用
 	{0},						// char cSensorBaudRate;	//设备485波特率; 0->9600; 1->2400; 2->4800; 3->19200; 4->38400; 5->115200
 	{0.0},						//float fPressureSensorCalibration;	//压力传感器校准系数，单位m
-	{0},						//char cBackUpArr[50];	//备用数据数组，长度50字节
+	{10.0},						//float fInstall_Height;	//设备安装井深，单位m
+	{0},						//char cLevelAlarmCnts;	//设备液位预警规则组数，最大5
+	{0,0,0,0,0},				//char cLevelAlarmLev[5];	//设备液位预警层架，1-5级
+	{0.0,0.0,0.0,0.0,0.0},	//float fLevelAlarmPer[5];	//设备液位预警百分比，如70%，90%
+	{0},						//char cWeatherFlag;	//雨旱天，预案开关：0->未启用；1->旱天； 2->雨天
+	{0},						//char cScenario;		//设备场景: 0->排口； 1->污水管网
+	{0},						//char cCondAlarmCnts;	//设备电导率预警规则组数，最大5
+	{0,0,0,0,0},				//char cCONDAlarmLev[5];	//电导率预警层级
+	{0,0,0,0,0},				//unsigned short usCONDAlarmValue[5];	//电导率预警数值
+	{0,0,0,0,0},				//unsigned short usAlarmSamp[5];	//设备预警采样频率	
+	{0,0,0,0,0},				//unsigned short usAlarmUpload[5];	//设备预警上传频率
+	
+	{0},						//char cBackUpArr[146];	//备用数据数组，长度50字节	
 	{EEP_VERSION}				//short sEEP_Version;			//存储版本号
 };
 //unsigned short gus_BarCnt = 0;

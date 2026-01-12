@@ -178,6 +178,42 @@ typedef enum
 #define MB_W_DEVICE_PARA_PD_DATE          			(MB_DEVICE_PARA_BASE + 0x0100) //生产日期寄存器地址
 #define MB_W_DEVICE_RESET_CMD             			(MB_DEVICE_PARA_BASE + 0x0105) //设备复位命令寄存器地址
 
+#define MB_RW_DEVICE_INSTALL_HEIGHT_ADDR     		(MB_DEVICE_PARA_BASE + 0x0200) //设备安装井深寄存器地址
+#define MB_RW_DEVICE_LEVELALARM_CNTS_ADDR   		(MB_DEVICE_PARA_BASE + 0x0202) //设备液位预警规则组数寄存器地址
+#define MB_RW_DEVICE_LEVELALARM_LEV_1_ADDR 		(MB_DEVICE_PARA_BASE + 0x0203) //设备液位预警层级寄存器地址
+#define MB_RW_DEVICE_LEVELALARM_LEV_2_ADDR 		(MB_DEVICE_PARA_BASE + 0x0204) //设备液位预警层级寄存器地址
+#define MB_RW_DEVICE_LEVELALARM_LEV_3_ADDR 		(MB_DEVICE_PARA_BASE + 0x0205) //设备液位预警层级寄存器地址
+#define MB_RW_DEVICE_LEVELALARM_LEV_4_ADDR 		(MB_DEVICE_PARA_BASE + 0x0206) //设备液位预警层级寄存器地址
+#define MB_RW_DEVICE_LEVELALARM_LEV_5_ADDR 		(MB_DEVICE_PARA_BASE + 0x0207) //设备液位预警层级寄存器地址
+#define MB_RW_DEVICE_LEVELALARM_PERENTS_1_ADDR 		(MB_DEVICE_PARA_BASE + 0x0208) //设备液位预警值百分比寄存器地址
+#define MB_RW_DEVICE_LEVELALARM_PERENTS_2_ADDR 		(MB_DEVICE_PARA_BASE + 0x020A) //设备液位预警值百分比寄存器地址
+#define MB_RW_DEVICE_LEVELALARM_PERENTS_3_ADDR 		(MB_DEVICE_PARA_BASE + 0x020C) //设备液位预警值百分比寄存器地址
+#define MB_RW_DEVICE_LEVELALARM_PERENTS_4_ADDR 		(MB_DEVICE_PARA_BASE + 0x020E) //设备液位预警值百分比寄存器地址
+#define MB_RW_DEVICE_LEVELALARM_PERENTS_5_ADDR 		(MB_DEVICE_PARA_BASE + 0x0210) //设备液位预警值百分比寄存器地址
+#define MB_RW_DEVICE_WEATHER_ADDR             		(MB_DEVICE_PARA_BASE + 0x0212) //设备雨旱天预案寄存器地址
+#define MB_RW_DEVICE_SCENARIO_ADDR             		(MB_DEVICE_PARA_BASE + 0x0213) //设备场景寄存器地址
+#define MB_RW_DEVICE_CONDALARM_CNTS_ADDR         		(MB_DEVICE_PARA_BASE + 0x0214) //设备电导率预警规则组数寄存器地址
+#define MB_RW_DEVICE_CONDALARM_LEV_1_ADDR         (MB_DEVICE_PARA_BASE + 0x0215)  //设备电导率预警层级1-5
+#define MB_RW_DEVICE_CONDALARM_LEV_2_ADDR         (MB_DEVICE_PARA_BASE + 0x0216)  //设备电导率预警层级1-5
+#define MB_RW_DEVICE_CONDALARM_LEV_3_ADDR         (MB_DEVICE_PARA_BASE + 0x0217)  //设备电导率预警层级1-5
+#define MB_RW_DEVICE_CONDALARM_LEV_4_ADDR         (MB_DEVICE_PARA_BASE + 0x0218)  //设备电导率预警层级1-5
+#define MB_RW_DEVICE_CONDALARM_LEV_5_ADDR         (MB_DEVICE_PARA_BASE + 0x0219)  //设备电导率预警层级1-5
+#define MB_RW_DEVICE_CONDALARM_VAL_1_ADDR         (MB_DEVICE_PARA_BASE + 0x021A)  //设备电导率预警数值1-5
+#define MB_RW_DEVICE_CONDALARM_VAL_2_ADDR         (MB_DEVICE_PARA_BASE + 0x021B)  //设备电导率预警数值1-5
+#define MB_RW_DEVICE_CONDALARM_VAL_3_ADDR         (MB_DEVICE_PARA_BASE + 0x021C)  //设备电导率预警数值1-5
+#define MB_RW_DEVICE_CONDALARM_VAL_4_ADDR         (MB_DEVICE_PARA_BASE + 0x021D)  //设备电导率预警数值1-5
+#define MB_RW_DEVICE_CONDALARM_VAL_5_ADDR         (MB_DEVICE_PARA_BASE + 0x021E)  //设备电导率预警数值1-5
+#define MB_RW_DEVICE_ALARM_SAMP_1_ADDR            (MB_DEVICE_PARA_BASE + 0X021F)  //设备预警采集频率
+#define MB_RW_DEVICE_ALARM_SAMP_2_ADDR            (MB_DEVICE_PARA_BASE + 0X0220)  //设备预警采集频率
+#define MB_RW_DEVICE_ALARM_SAMP_3_ADDR            (MB_DEVICE_PARA_BASE + 0X0221)  //设备预警采集频率
+#define MB_RW_DEVICE_ALARM_SAMP_4_ADDR            (MB_DEVICE_PARA_BASE + 0X0222)  //设备预警采集频率
+#define MB_RW_DEVICE_ALARM_SAMP_5_ADDR            (MB_DEVICE_PARA_BASE + 0X0223)  //设备预警采集频率
+#define MB_RW_DEVICE_ALARM_UPLOAD_1_ADDR          (MB_DEVICE_PARA_BASE + 0X0224)  //设备预警上传频率
+#define MB_RW_DEVICE_ALARM_UPLOAD_2_ADDR          (MB_DEVICE_PARA_BASE + 0X0225)  //设备预警上传频率
+#define MB_RW_DEVICE_ALARM_UPLOAD_3_ADDR          (MB_DEVICE_PARA_BASE + 0X0226)  //设备预警上传频率
+#define MB_RW_DEVICE_ALARM_UPLOAD_4_ADDR          (MB_DEVICE_PARA_BASE + 0X0227)  //设备预警上传频率
+#define MB_RW_DEVICE_ALARM_UPLOAD_5_ADDR          (MB_DEVICE_PARA_BASE + 0X0228)  //设备预警上传频率
+
 /*******************************************************************************
  * Global type definitions ('typedef')
  ******************************************************************************/

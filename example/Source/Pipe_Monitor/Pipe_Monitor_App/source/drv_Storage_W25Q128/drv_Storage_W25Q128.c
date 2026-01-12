@@ -1009,7 +1009,473 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fPressureSensorCalibration,SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fPressureSensorCalibration-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
 			#pragma diag_warning=Pa039
 		}
-		
+		break;
+	case DEV_PIPE_INSTALL_HEIGHT:
+		fTmpData = ((float*)cDataArr);
+		if(((double)*fTmpData < 0.0) || (((double)*fTmpData > 30.0)))
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.fInstall_Height = *fTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fInstall_Height,SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fInstall_Height-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_LEVELALARMCNTS:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cLevelAlarmCnts = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cLevelAlarmCnts,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cLevelAlarmCnts-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_LEVELALARMPER1:
+		fTmpData = ((float*)cDataArr);
+		*fTmpData = *fTmpData / 100;
+		if(((double)*fTmpData < 0.0) || (((double)*fTmpData > 1.0)))
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[0] = *fTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[0],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_LEVELALARMPER2:
+		fTmpData = ((float*)cDataArr);
+		*fTmpData = *fTmpData / 100;
+		if(((double)*fTmpData < 0.0) || (((double)*fTmpData > 1.0)))
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[1] = *fTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[1],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[1]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_LEVELALARMPER3:
+		fTmpData = ((float*)cDataArr);
+		*fTmpData = *fTmpData / 100;
+		if(((double)*fTmpData < 0.0) || (((double)*fTmpData > 1.0)))
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[2] = *fTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[2],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[2]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_LEVELALARMPER4:
+		fTmpData = ((float*)cDataArr);
+		*fTmpData = *fTmpData / 100;
+		if(((double)*fTmpData < 0.0) || (((double)*fTmpData > 1.0)))
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[3] = *fTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[3],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[3]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_LEVELALARMPER5:
+		fTmpData = ((float*)cDataArr);
+		*fTmpData = *fTmpData / 100;
+		if(((double)*fTmpData < 0.0) || (((double)*fTmpData > 1.0)))
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[4] = *fTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[4],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fLevelAlarmPer[4]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_LEVELALARMLEV1:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[0] = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[0],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_LEVELALARMLEV2:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[1] = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[1],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[1]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_LEVELALARMLEV3:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[2] = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[2],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[2]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_LEVELALARMLEV4:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[3] = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[3],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[3]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_LEVELALARMLEV5:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[4] = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[4],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cLevelAlarmLev[4]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_ALARMSAMP1:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 600))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usAlarmSamp[0] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usAlarmSamp[0],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usAlarmSamp[0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_ALARMSAMP2:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 600))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usAlarmSamp[1] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usAlarmSamp[1],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usAlarmSamp[1]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_ALARMSAMP3:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 600))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usAlarmSamp[2] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usAlarmSamp[2],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usAlarmSamp[2]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_ALARMSAMP4:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 600))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usAlarmSamp[3] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usAlarmSamp[3],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usAlarmSamp[3]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_ALARMSAMP5:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 600))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usAlarmSamp[4] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usAlarmSamp[4],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usAlarmSamp[4]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_ALARMUPLOAD1:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 600))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usAlarmUpload[0] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usAlarmUpload[0],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usAlarmUpload[0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_ALARMUPLOAD2:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 600))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usAlarmUpload[1] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usAlarmUpload[1],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usAlarmUpload[1]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_ALARMUPLOAD3:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 600))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usAlarmUpload[2] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usAlarmUpload[2],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usAlarmUpload[2]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_ALARMUPLOAD4:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 600))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usAlarmUpload[3] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usAlarmUpload[3],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usAlarmUpload[3]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_ALARMUPLOAD5:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 600))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usAlarmUpload[4] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usAlarmUpload[4],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usAlarmUpload[4]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_WEATHER:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 2)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cWeatherFlag = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cWeatherFlag,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cWeatherFlag-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_SCENARIO:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 1)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cScenario = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cScenario,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cScenario-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_CONALARMCNTS:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cCondAlarmCnts = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cCondAlarmCnts,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cCondAlarmCnts-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_CONDALARMLEV1:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[0] = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[0],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_CONDALARMLEV2:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[1] = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[1],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[1]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_CONDALARMLEV3:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[2] = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[2],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[2]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_CONDALARMLEV4:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[3] = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[3],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[3]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_CONDALARMLEV5:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 5)
+		{
+			ucResult = 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[4] = ucTmpData;
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[4],SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cCONDAlarmLev[4]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+		}
+		break;
+	case DEV_CONDALARMVAL1:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 65000))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[0] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[0],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_CONDALARMVAL2:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 65000))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[1] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[1],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[1]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_CONDALARMVAL3:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 65000))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[2] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[2],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[2]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_CONDALARMVAL4:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 65000))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[3] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[3],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[3]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
+		break;
+	case DEV_CONDALARMVAL5:
+		usTmpData = *((unsigned short *)cDataArr);  
+		if ((usTmpData < 1) || (usTmpData > 65000))
+		{ 
+			return(0);
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[4] = usTmpData;
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[4],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.usCONDAlarmValue[4]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(int));
+			#pragma diag_warning=Pa039
+		}
 		break;
 	case DEV_FACTORY_RESET:
 		func_Device_Parameter_Factory_Reset();
