@@ -56,7 +56,18 @@ uint8_t drv_mcu_SPI_Init(void)
 
     /* configuration structure initialization */
     MEM_ZERO_STRUCT(stcSpiInit);
-
+    
+    #ifdef NEW_W25Q128_DRIVER
+    stc_port_init_t stcPortInit;
+    MEM_ZERO_STRUCT(stcPortInit);
+    stcPortInit.enPinMode = Pin_Mode_Out;
+    stcPortInit.enExInt = Disable;
+    PORT_Init(SPI_W25Q128_SCK_PORT, SPI_W25Q128_SCK_PIN, &stcPortInit);
+    PORT_Init(SPI_W25Q128_NSS_PORT, SPI_W25Q128_NSS_PIN, &stcPortInit);
+    PORT_Init(SPI_W25Q128_MOSI_PORT, SPI_W25Q128_MOSI_PIN, &stcPortInit);
+    stcPortInit.enPinMode = Pin_Mode_In;
+    PORT_Init(SPI_W25Q128_MISO_PORT, SPI_W25Q128_MISO_PIN, &stcPortInit);
+    #else
     /* Configuration peripheral clock */
     #ifdef SPI_HART
     PWC_Fcg1PeriphClockCmd(SPI_W25Q128_UNIT_CLOCK, Enable);
@@ -111,6 +122,8 @@ uint8_t drv_mcu_SPI_Init(void)
 	SPI_Init(SPI_LORA_RA02_UNIT, &stcSpiInit);
     SPI_Cmd(SPI_LORA_RA02_UNIT, Enable);
     #endif
+    #endif
+
     #endif
 	return 0;
 }

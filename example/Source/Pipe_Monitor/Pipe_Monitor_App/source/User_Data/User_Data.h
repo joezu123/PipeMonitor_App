@@ -59,7 +59,7 @@ extern "C"
 //extern unsigned char guc_NFC_USART3_RecvData[5][10];	//NFC USART3接收数据缓存
 //extern unsigned char guc_NFC_GetDataCnt;
 //extern unsigned char guc_NFC_GetData[5][10];	//NFC USART3接收数据缓存
-
+#define NEW_W25Q128_DRIVER 1	//新W25Q128驱动	使用模拟SPI，采用数据区+备份区+CRC校验模式
 /*******************************************************************************
  * Global type definitions ('typedef')
  ******************************************************************************/
@@ -623,6 +623,7 @@ typedef struct _SysDeviceRunPara
 	//char cModbusNULLCnt111;
 	char cBlackLightFlag;		//是否为黑光图像站设备 	
 	BlackLightDataSt st_BlackLightData;	//黑光图像站数据结构体
+	char cSaveParaFlag;		//保存参数标志位; 0->不保存; 1->保存
 	//char c4GTimerCnt;
 }SysDeviceRunParaSt;
 

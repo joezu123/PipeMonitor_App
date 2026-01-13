@@ -382,6 +382,8 @@ int32_t main(void)
     static uint8_t ucMonitorFlag = 0;
     //DevMeasRecordDataSt st_TempValue;
     static unsigned char ucRetryCnt = 0;
+    //DevMeasRecordDataSt st_TempValue1[10];
+    int nRet = 0;
     /* Initialize Clock */
     drv_mcu_Clock_Init();
     // ucValueArr[10] = {0};
@@ -409,8 +411,27 @@ int32_t main(void)
     func_WatchDog_Refresh();
     //SPI初始化
     drv_mcu_SPI_Init(); 
+    #ifdef NEW_W25Q128_DRIVER
+    nRet = System_PowerOn_Storage_Init();
+    //for(i=0; i<5; i++)
+    //{
+    //    func_Get_Device_MeasData_Record(i, &st_TempValue1[i]);
+    //}
+    //Data_DoubleArea_Write(&pst_MainSystemPara->DevicePara, sizeof(SysDeviceParaSt));
+    //RecordData_Read(1, &gSt_DevMeasRecordData);
+    //gSt_DevMeasRecordData.fWaterLevel = 1.234;
+    //gSt_DevMeasRecordData.fWaterLevel_Pres = 2.345;
+    //gSt_DevMeasRecordData.fWaterQuality_COND = 300.2;
+    //gSt_DevMeasRecordData.fWaterVolume = 10.2;
+    //gSt_DevMeasRecordData.fWaterVolume_Total = 1117.5;
+    //gSt_DevMeasRecordData.nAttitude_SC7A = 20;
+    //RecordData_Write(1, &gSt_DevMeasRecordData);
+    //memset(&gSt_DevMeasRecordData, 0, sizeof(DevMeasRecordDataSt));
+    //RecordData_Read(1, &gSt_DevMeasRecordData);
+    #else
     drv_Storage_W25Q128_Init();
     func_Device_Parameter_Init();
+    #endif
     //OLED初始化
     drv_OLED_Init();
     //u8Result = 6;
@@ -522,7 +543,7 @@ int32_t main(void)
     pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HX_Radar_Ultrasonic_Flow;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][3] = Meas_HX_Pressure_Level;
     #endif
-    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 2;
+    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 4;
     pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 2;     
     pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 2;
 

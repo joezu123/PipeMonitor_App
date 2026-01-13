@@ -1040,7 +1040,7 @@ void func_Save_Device_MeasRecord_Dispose()
 				ucRecordFlag = 0;
 				func_Save_Device_MeasData();
 				pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt++;
-				if(pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt >= ((16777216/SYSTEM_RECORD_SIZE) - 1))
+				if(pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt >= (MAX_RECORD_COUNT - 1))
 				{
 					pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt = 0;
 				}
@@ -1478,6 +1478,11 @@ void func_System_Mainloop_Dispose(void)
 				
 			}
 		}
+	}
+	if(pst_MainloopSystemPara->DeviceRunPara.cSaveParaFlag == 1)
+	{
+		Data_DoubleArea_Write(&pst_MainloopSystemPara->DevicePara.cDeviceID[0], sizeof(SysDeviceParaSt));
+		pst_MainloopSystemPara->DeviceRunPara.cSaveParaFlag = 0;
 	}
 	if(pst_MainloopSystemPara->DeviceRunPara.eCurPowerType == Power_OFF)
 	{
