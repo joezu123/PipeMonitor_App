@@ -56,8 +56,15 @@ uint8_t drv_mcu_SPI_Init(void)
 
     /* configuration structure initialization */
     MEM_ZERO_STRUCT(stcSpiInit);
-    
+   
     #ifdef NEW_W25Q128_DRIVER
+
+    PWC_Fcg1PeriphClockCmd(SPI_W25Q128_UNIT_CLOCK, Disable);
+    PORT_SetFunc(SPI_W25Q128_SCK_PORT, SPI_W25Q128_SCK_PIN, Func_Gpio, Enable);
+    PORT_SetFunc(SPI_W25Q128_NSS_PORT, SPI_W25Q128_NSS_PIN, Func_Gpio, Disable);
+    PORT_SetFunc(SPI_W25Q128_MOSI_PORT, SPI_W25Q128_MOSI_PIN, Func_Gpio, Enable);
+    PORT_SetFunc(SPI_W25Q128_MISO_PORT, SPI_W25Q128_MISO_PIN, Func_Gpio, Enable);
+
     stc_port_init_t stcPortInit;
     MEM_ZERO_STRUCT(stcPortInit);
     stcPortInit.enPinMode = Pin_Mode_Out;
@@ -67,6 +74,12 @@ uint8_t drv_mcu_SPI_Init(void)
     PORT_Init(SPI_W25Q128_MOSI_PORT, SPI_W25Q128_MOSI_PIN, &stcPortInit);
     stcPortInit.enPinMode = Pin_Mode_In;
     PORT_Init(SPI_W25Q128_MISO_PORT, SPI_W25Q128_MISO_PIN, &stcPortInit);
+
+    // 3. 初始化引脚电平
+    SPI_W25Q128_NSS_HIGH();  // 初始取消片选
+    SPI_W25_SCK_L;   // SCK空闲低电平（CPOL=0）
+    SPI_W25_SI_L;  // MOSI初始低电平
+    
     #else
     /* Configuration peripheral clock */
     #ifdef SPI_HART

@@ -26,7 +26,7 @@
 #define MB_FUNC_HANDLERS_MAX                    ( 16 )
 #define REG_INPUT_START 0x1000
 #define REG_INPUT_NREGS 0xD000
-#define MD_MAX_REG_UNIT 105
+#define MD_MAX_REG_UNIT 130
 /*******************************************************************************
  * Global variable definitions (declared in header file with 'extern')
  ******************************************************************************/
@@ -765,7 +765,7 @@ eMBErrorCode Unit_RW_Device_LevelAlarmPer_5_func( unsigned char * pucRegBuffer, 
     return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_LEVELALARMPER5);
 }
 
-//设备雨旱天，预案开关
+//设备雨旱天
 eMBErrorCode Unit_RW_Device_Weather_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
 {
     char cVlaue = (char)pst_MBSystemPara->DevicePara.cWeatherFlag;
@@ -823,32 +823,37 @@ eMBErrorCode Unit_RW_Device_CONDAlarmLevel_5_func( unsigned char * pucRegBuffer,
 //设备电导率预警数值
 eMBErrorCode Unit_RW_Device_CONDAlarmValue_1_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
 {
-    float fVlaue = pst_MBSystemPara->DevicePara.usCONDAlarmValue[0];
-    return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_CONDALARMVAL1);
+    unsigned short usValue;
+    usValue = (unsigned short)pst_MBSystemPara->DevicePara.usCONDAlarmValue[0];
+    return Short_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, usValue,DEV_CONDALARMVAL1);
 }
 
 eMBErrorCode Unit_RW_Device_CONDAlarmValue_2_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
 {
-    float fVlaue = pst_MBSystemPara->DevicePara.usCONDAlarmValue[1];
-    return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_CONDALARMVAL2);
+    unsigned short usValue;
+    usValue = (unsigned short)pst_MBSystemPara->DevicePara.usCONDAlarmValue[1];
+    return Short_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, usValue,DEV_CONDALARMVAL2);
 }
 
 eMBErrorCode Unit_RW_Device_CONDAlarmValue_3_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
 {
-    float fVlaue = pst_MBSystemPara->DevicePara.usCONDAlarmValue[2];
-    return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_CONDALARMVAL3);
+    unsigned short usValue;
+    usValue = (unsigned short)pst_MBSystemPara->DevicePara.usCONDAlarmValue[2];
+    return Short_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, usValue,DEV_CONDALARMVAL3);
 }
 
 eMBErrorCode Unit_RW_Device_CONDAlarmValue_4_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
 {
-    float fVlaue = pst_MBSystemPara->DevicePara.usCONDAlarmValue[3];
-    return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_CONDALARMVAL4);
+    unsigned short usValue;
+    usValue = (unsigned short)pst_MBSystemPara->DevicePara.usCONDAlarmValue[3];
+    return Short_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, usValue,DEV_CONDALARMVAL4);
 }
 
 eMBErrorCode Unit_RW_Device_CONDAlarmValue_5_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
 {
-    float fVlaue = pst_MBSystemPara->DevicePara.usCONDAlarmValue[4];
-    return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_CONDALARMVAL5);
+    unsigned short usValue;
+    usValue = (unsigned short)pst_MBSystemPara->DevicePara.usCONDAlarmValue[4];
+    return Short_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, usValue,DEV_CONDALARMVAL5);
 }
 
 eMBErrorCode Unit_RW_Device_AlarmSampGap_1_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
@@ -909,6 +914,48 @@ eMBErrorCode Unit_RW_Device_AlarmUploadGap_5_func( unsigned char * pucRegBuffer,
 {
    	unsigned short sVlaue = pst_MBSystemPara->DevicePara.usAlarmUpload[4];
     return Short_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, sVlaue, DEV_ALARMUPLOAD5);
+}
+
+//设备预案开关
+eMBErrorCode Unit_RW_Device_PlanEnable_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    char cVlaue = (char)pst_MBSystemPara->DevicePara.cPlanEnableFlag;
+    return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_PLAN_ENABLE);
+}
+
+//设备预警开关
+eMBErrorCode Unit_RW_Device_AlarmEnable_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    char cVlaue = (char)pst_MBSystemPara->DevicePara.cAlarmEnableFlag;
+    return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_ALARM_ENABLE);
+}
+
+//设备流量预警开关
+eMBErrorCode Unit_RW_Device_FlowAlarmEnable_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    char cVlaue = (char)pst_MBSystemPara->DevicePara.cFlowAlarmEnableFlag;
+    return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_FLOW_ALARM_ENABLE);
+}
+
+//设备流量预警组数
+eMBErrorCode Unit_RW_Device_FlowAlarmCnts_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    char cVlaue = (char)pst_MBSystemPara->DevicePara.cFlowAlarmCnts;
+    return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_FLOW_ALARM_CNTS);
+}
+
+//设备流量预警阈值1
+eMBErrorCode Unit_RW_Device_FlowAlarmValue_1_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    float fValue = pst_MBSystemPara->DevicePara.fFlowAlarmValue[0];
+    return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fValue,DEV_FLOW_ALARM_VAL1);
+}
+
+//设备流量预警阈值2
+eMBErrorCode Unit_RW_Device_FlowAlarmValue_2_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    float fValue = pst_MBSystemPara->DevicePara.fFlowAlarmValue[1];
+    return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fValue,DEV_FLOW_ALARM_VAL2);
 }
 
 /*参数单元表,寄存器地址对应参数占用的寄存器数，读写操作，预留空间调用Unit_RW_Null_func函数*/
@@ -1018,8 +1065,14 @@ static const MB_Data_Reg_Unit_S Modbus_Data_Reg_Unit[MD_MAX_REG_UNIT] =
     {MB_RW_DEVICE_ALARM_UPLOAD_2_ADDR,MB_RW_DEVICE_ALARM_UPLOAD_3_ADDR - MB_RW_DEVICE_ALARM_UPLOAD_2_ADDR, Unit_RW_Device_AlarmUploadGap_2_func},
     {MB_RW_DEVICE_ALARM_UPLOAD_3_ADDR,MB_RW_DEVICE_ALARM_UPLOAD_4_ADDR - MB_RW_DEVICE_ALARM_UPLOAD_3_ADDR, Unit_RW_Device_AlarmUploadGap_3_func},
     {MB_RW_DEVICE_ALARM_UPLOAD_4_ADDR,MB_RW_DEVICE_ALARM_UPLOAD_5_ADDR - MB_RW_DEVICE_ALARM_UPLOAD_4_ADDR, Unit_RW_Device_AlarmUploadGap_4_func},
-    {MB_RW_DEVICE_ALARM_UPLOAD_5_ADDR,1, Unit_RW_Device_AlarmUploadGap_5_func},
-
+    {MB_RW_DEVICE_ALARM_UPLOAD_5_ADDR,MB_RW_DEVICE_PLANENABLE_ADDR - MB_RW_DEVICE_ALARM_UPLOAD_5_ADDR, Unit_RW_Device_AlarmUploadGap_5_func},
+    {MB_RW_DEVICE_PLANENABLE_ADDR,MB_RW_DEVICE_ALARMENABLE_ADDR- MB_RW_DEVICE_PLANENABLE_ADDR,Unit_RW_Device_PlanEnable_func},
+    {MB_RW_DEVICE_ALARMENABLE_ADDR,MB_RW_DEVICE_FLOW_ALARMENABLE_ADDR - MB_RW_DEVICE_ALARMENABLE_ADDR, Unit_RW_Device_AlarmEnable_func},
+    {MB_RW_DEVICE_FLOW_ALARMENABLE_ADDR,MB_RW_DEVICE_FLOW_ALARM_CNTS_ADDR - MB_RW_DEVICE_FLOW_ALARMENABLE_ADDR, Unit_RW_Device_FlowAlarmEnable_func},
+    {MB_RW_DEVICE_FLOW_ALARM_CNTS_ADDR,MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR - MB_RW_DEVICE_FLOW_ALARM_CNTS_ADDR, Unit_RW_Device_FlowAlarmCnts_func},
+    {MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR,MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR - MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR, Unit_RW_Device_FlowAlarmValue_1_func},
+    {MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR,2, Unit_RW_Device_FlowAlarmValue_2_func},
+    //{MB_RW_DEVICE_MAX_ADDR,1,NULL} //结束标志
 };
 
 /*******************************************************************************

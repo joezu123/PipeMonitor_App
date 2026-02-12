@@ -59,7 +59,7 @@ extern "C"
 //extern unsigned char guc_NFC_USART3_RecvData[5][10];	//NFC USART3接收数据缓存
 //extern unsigned char guc_NFC_GetDataCnt;
 //extern unsigned char guc_NFC_GetData[5][10];	//NFC USART3接收数据缓存
-#define NEW_W25Q128_DRIVER 1	//新W25Q128驱动	使用模拟SPI，采用数据区+备份区+CRC校验模式
+//#define NEW_W25Q128_DRIVER 1	//新W25Q128驱动	使用模拟SPI，采用数据区+备份区+CRC校验模式
 /*******************************************************************************
  * Global type definitions ('typedef')
  ******************************************************************************/
@@ -221,7 +221,7 @@ typedef enum _SavePara
 	DEV_LEVELALARMPER4,	//设备液位预警百分比
 	DEV_LEVELALARMPER5,	//设备液位预警百分比
 	
-	DEV_WEATHER,			//雨旱天，预案开关
+	DEV_WEATHER,			//雨旱天
 	DEV_SCENARIO,			//设备场景：排口；污水管网
 	DEV_CONALARMCNTS,	//设备电导率预警规则组数
 	DEV_CONDALARMLEV1,		//电导率预警层级:1-5级
@@ -245,6 +245,12 @@ typedef enum _SavePara
 	DEV_ALARMUPLOAD3,	//设备预警上传频率
 	DEV_ALARMUPLOAD4,	//设备预警上传频率
 	DEV_ALARMUPLOAD5,	//设备预警上传频率
+	DEV_PLAN_ENABLE,	//预案功能开关
+	DEV_ALARM_ENABLE,	//设备预警功能开关
+	DEV_FLOW_ALARM_ENABLE,	//设备流量预警功能开关
+	DEV_FLOW_ALARM_CNTS,	//设备流量预警规则组数
+	DEV_FLOW_ALARM_VAL1,	//流量预警层级
+	DEV_FLOW_ALARM_VAL2,	//流量预警层级
 	DEV_END_PARA
 }en_SaveParaCMD;
 
@@ -291,7 +297,7 @@ typedef struct _SysDevicePara
 	char cLevelAlarmLev[5];	//设备液位预警层架，1-5级
 	float fLevelAlarmPer[5];	//设备液位预警百分比，如70%，90%
 	
-	char cWeatherFlag;	//雨旱天，预案开关：0->未启用；1->旱天； 2->雨天
+	char cWeatherFlag;	//雨旱天，预案开关：0->旱天； 1->雨天
 	char cScenario;		//设备场景: 0->排口； 1->污水管网
 	char cCondAlarmCnts;	//设备电导率预警规则组数，最大5
 	char cCONDAlarmLev[5];	//电导率预警层级
@@ -299,8 +305,12 @@ typedef struct _SysDevicePara
 
 	unsigned short usAlarmSamp[5];	//设备预警采样频率
 	unsigned short usAlarmUpload[5];	//设备预警上传频率
-
-	char cBackUpArr[146];	//备用数据数组，长度50字节
+	char cPlanEnableFlag;	//预案功能开关：0->未启用；1->启用
+	char cAlarmEnableFlag;	//设备预警功能开关：0->未启用；1->启用
+	char cFlowAlarmEnableFlag;	//设备流量预警功能开关：0->未启用；1->启用
+	char cFlowAlarmCnts;	//设备流量预警规则组数，最大2
+	float fFlowAlarmValue[2];	//流量预警层级
+	char cBackUpArr[134];	//备用数据数组，长度50字节
 	short sEEP_Version;			//存储版本号
 }SysDeviceParaSt;	//325Bytes
 #pragma pack()
@@ -624,6 +634,8 @@ typedef struct _SysDeviceRunPara
 	char cBlackLightFlag;		//是否为黑光图像站设备 	
 	BlackLightDataSt st_BlackLightData;	//黑光图像站数据结构体
 	char cSaveParaFlag;		//保存参数标志位; 0->不保存; 1->保存
+	char cUploadTimeFlag;	//上传时间标志位
+	char cSampleTimeFlag;	//采样时间标志位
 	//char c4GTimerCnt;
 }SysDeviceRunParaSt;
 
@@ -719,23 +731,23 @@ typedef enum _4G_Module_Init_State
 	Module_DCE_RST_STAGE2,
 	Module_DCE_RST_STAGE3,
 	//Module_DCE_RST_STAGE4,
-	Module_TEST_AT_CMD,	//测试AT指令
+	//Module_TEST_AT_CMD,	//测试AT指令
 	Module_TEST_ATE0_CMD,	//关闭回显
-	Module_QUERY_SIM_CARD_STATE_CMD,	//查询SIM卡状态
+	//Module_QUERY_SIM_CARD_STATE_CMD,	//查询SIM卡状态
 	Module_QUERY_SIGNAL_STRENGTH_CMD,	//查询信号强度
 	//Module_QICSGP_CMD,	//设置PDP上下文参数; APN等
 	//Module_QIACT_CMD,	//激活PDP上下文; APN等
 	//Module_PDP_TEST_CMD,
-	Module_QUERY_PS_DOMAIN_REG_STATE_CMD,	//查询PS域注册状态
+	//Module_QUERY_PS_DOMAIN_REG_STATE_CMD,	//查询PS域注册状态
 	Module_ACTIVATE_NETWORK_CMD,			//激活网络
-	Module_QUERY_NETWORK_ACTIVATE_STATE_CMD,	//查询网络激活状态
+	//Module_QUERY_NETWORK_ACTIVATE_STATE_CMD,	//查询网络激活状态
 	
-	Module_QUERY_IMSI_CMD,	//查询IMSI号
-	Module_QUERY_IMEI_CMD,	//查询IMEI号
+	//Module_QUERY_IMSI_CMD,	//查询IMSI号
+	//Module_QUERY_IMEI_CMD,	//查询IMEI号
 	Module_QUERY_LOCAL_DATE_TIME_CMD,	//查询本地日期时间
 	Module_SET_DATA_FORMAT_CMD,	//设置数据格式
-	Module_SET_MQTT_KEEPALIVE_TIME_CMD,	//设置MQTT心跳时间
-	Module_SET_MQTT_VERSION_CMD,	//设置MQTT协议版本; 4->3.1.1； 3->3.1
+	//Module_SET_MQTT_KEEPALIVE_TIME_CMD,	//设置MQTT心跳时间
+	//Module_SET_MQTT_VERSION_CMD,	//设置MQTT协议版本; 4->3.1.1； 3->3.1
 	//Module_Check_MQTT_OPEN_CMD1,	//检查MQTT是否打开
 	Module_OPEN_MQTT_INTERFACE_CMD,	//打开物联网云端口
 	//Module_Check_MQTT_OPEN_CMD2,	//检查MQTT是否打开
@@ -747,18 +759,18 @@ typedef enum _4G_Module_Init_State
 	//Module_CHECKPUBEX_CMD,	//检查MQTT订阅状态
 	#ifdef CONNECT_MQTT
 	Module_SUBSCRIBE_TOPIC_REGISTER_CMD,	//订阅主题注册
-	Module_SUBSCRIBE_TOPIC_DATAUPLOAD_CMD,	//订阅主题数据上传
-	Module_SUBSCRIBE_TOPIC_STATUS_CMD,	//订阅主题状态上报
+	//Module_SUBSCRIBE_TOPIC_DATAUPLOAD_CMD,	//订阅主题数据上传
+	//Module_SUBSCRIBE_TOPIC_STATUS_CMD,	//订阅主题状态上报
 	//Module_SUBSCRIBE_TOPIC_ALARMDATA_CMD,	//订阅主题报警数据上报
-	Module_SUBSCRIBE_TOPIC_SETCONFIG_CMD,	//订阅主题参数配置
-	Module_SUBSCRIBE_TOPIC_GETCONFIG_CMD,	//订阅主题参数获取
+	//Module_SUBSCRIBE_TOPIC_SETCONFIG_CMD,	//订阅主题参数配置
+	//Module_SUBSCRIBE_TOPIC_GETCONFIG_CMD,	//订阅主题参数获取
 	//Module_SUBSCRIBE_TOPIC_GETDATA_CMD,		//订阅主题获取数据
 	//Module_SUBSCRIBE_DATAPT_CMD,	//订阅主题数据透传
 
 	Module_PUBLISH_TOPIC_REGISTER_CMD,	//发布主题注册
-	Module_PUBLISH_TOPIC_DATAUPLOAD_CMD,	//发布主题数据上传
+	Module_PUBLISH_TOPIC_DATAUPLOAD_CMD,	//发布监测项主题数据上传
 	//Module_PUBLISH_TOPIC_DATABASEUPLOAD_CMD,	//发布监测项原始数据上传
-	Module_PUBLISH_TOPIC_SATATUSUPLOAD_CMD,	//发布主题状态上报
+	Module_PUBLISH_TOPIC_SATATUSUPLOAD_CMD,	//发布监测项状态上报
 	Module_PUBLISH_TOPIC_STATUS_CMD,	//发布主题状态上报
 	Module_PUBLISH_TOPIC_ALARMDATA_CMD,	//发布主题报警数据上报
 	Module_PUBLISH_TOPIC_SETCONFIG_CMD,	//发布主题参数配置
@@ -791,6 +803,7 @@ extern unsigned short gus_SystemTestArr[10];
 extern unsigned char ucMeasPosi;
 extern unsigned char ucMeasValue[10];
 extern en_4G_Module_Init_State gE_4G_Module_Init_CMD;
+extern DevMeasRecordDataSt gt_MeasData;
 //extern unsigned short gus_BarCnt;
 //extern unsigned short gus_BarCnt1;
 /*******************************************************************************

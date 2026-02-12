@@ -34,7 +34,8 @@
  ******************************************************************************/
 static SystemPataSt *pst_BTSystemPara;
 char g_Ble_SSID[20] = "SK_";              //蓝牙ssid前缀
-static char g_AT_SSID_CMD[35] = "AT+BLENAME=";     //蓝牙ssid配置AT指令
+static char g_AT_SSID_CMD[35] = "AT+NAME=";     //蓝牙ssid配置AT指令
+static char g_AT_SSID1_CMD[35] = "AT+BLENAME="; 
 static char g_AT_RESET_CMD[30] = "AT+RST";        //蓝牙软件复位配置AT指令   
 static char g_AT_CMD[4] = "AT";             //蓝牙AT指令
 static char g_ATE_CMD[6] = "ATE0";           //蓝牙AT指令
@@ -125,10 +126,16 @@ void drv_BT05_InitATCMD(void)
 		g_Ble_SSID[i+1] = pst_BTSystemPara->DevicePara.cDeviceID[i-2];
 	}
 	g_Ble_SSID[19] = 0;
-	
+	memset(g_AT_SSID_CMD,0,35);
+	memcpy(g_AT_SSID_CMD,"AT+NAME=",8);
+	memset(g_AT_SSID1_CMD,0,35);
+	memcpy(g_AT_SSID1_CMD,"AT+BLENAME=",11);
+
 	strcat( g_AT_SSID_CMD, g_Ble_SSID );//"SK_3241ab"
-	drv_BT05_SendATCMD((uint8_t *) g_AT_SSID_CMD ,30);
-	//Ddl_Delay1ms(500);
+	drv_BT05_SendATCMD((uint8_t *) g_AT_SSID_CMD ,27);
+	Ddl_Delay1ms(500);
+	strcat( g_AT_SSID1_CMD, g_Ble_SSID );//"SK_3241ab"
+	drv_BT05_SendATCMD((uint8_t *) g_AT_SSID1_CMD ,30);
 	//memset(pst_BTSystemPara->UsartData.ucUsartxRecvDataArr[1], 0, USART_DATA_LEN_MAX);
 	//drv_BT05_SendATCMD((uint8_t *)g_AT_GETUUID,14);
 	//Ddl_Delay1ms(500);
@@ -204,10 +211,15 @@ void func_BT05_PowerUp_Init(void)
 		g_Ble_SSID[i+1] = pst_BTSystemPara->DevicePara.cDeviceID[i-2];
 	}
 	g_Ble_SSID[19] = 0;
-	
+	memset(g_AT_SSID_CMD,0,35);
+	memcpy(g_AT_SSID_CMD,"AT+NAME=",8);
 	strcat( g_AT_SSID_CMD, g_Ble_SSID );//"SK_3241ab"
-	drv_BT05_SendATCMD((uint8_t *) g_AT_SSID_CMD ,30);
-	//Ddl_Delay1ms(500);
+	drv_BT05_SendATCMD((uint8_t *) g_AT_SSID_CMD ,27);
+	Ddl_Delay1ms(500);
+	memset(g_AT_SSID1_CMD,0,35);
+	memcpy(g_AT_SSID1_CMD,"AT+BLENAME=",11);
+	strcat( g_AT_SSID1_CMD, g_Ble_SSID );//"SK_3241ab"
+	drv_BT05_SendATCMD((uint8_t *) g_AT_SSID1_CMD ,30);
 }
 
 void func_BT05_PowerDown_DeInit(void)
@@ -231,7 +243,8 @@ void func_BT_Dispose(void)
 
 	if(pst_BTSystemPara->UsartData.ucUsartxRecvDataFlag[MODULE_BT] == 1)  //蓝牙模块收到数据
 	{
-		if(strstr(pst_BTSystemPara->UsartData.ucUsartxRecvDataArr[1],"BLE_CONNECT") != NULL)
+		//if(strstr(pst_BTSystemPara->UsartData.ucUsartxRecvDataArr[1],"BLE_CONNECT") != NULL)
+		if(strstr(pst_BTSystemPara->UsartData.ucUsartxRecvDataArr[1],"CON") != NULL)
 		{
 			pst_BTSystemPara->DeviceRunPara.cDeviceBTConnectFlag = 1;
 			pst_BTSystemPara->DeviceRunPara.usDeviceBTWaitCnt = 0;
@@ -241,7 +254,8 @@ void func_BT_Dispose(void)
 				//drv_mcu_Timer4_Start();
 			}
 		}
-		else if(strstr(pst_BTSystemPara->UsartData.ucUsartxRecvDataArr[1],"BLE_DISCONNECT") != NULL)
+		//else if(strstr(pst_BTSystemPara->UsartData.ucUsartxRecvDataArr[1],"BLE_DISCONNECT") != NULL)
+		else if(strstr(pst_BTSystemPara->UsartData.ucUsartxRecvDataArr[1],"DISC") != NULL)
 		{
 			pst_BTSystemPara->DeviceRunPara.cDeviceBTConnectFlag = 0;
 		}

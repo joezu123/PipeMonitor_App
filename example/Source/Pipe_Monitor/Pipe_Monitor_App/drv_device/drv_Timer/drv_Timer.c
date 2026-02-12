@@ -192,7 +192,7 @@ static void OcoIrqCallback(void)
                             {
                                 func_Not_Certified_View_Show();
                             }
-                            else	//设备经过NFC验证，显示需要激活
+                            else	//设备经过NFC验证，显示需要激活~
                             {
                                 if(pst_TimerSystemPara->DeviceRunPara.cEveryNFCDisposeFlag == 0)
                                 {

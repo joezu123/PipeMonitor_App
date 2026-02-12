@@ -429,6 +429,23 @@ int drv_mcu_Get_RTC_Time(char *cCurDateTime)
 	}
 	return 0;
 }
+
+int drv_mcu_Get_RTC_Minute(void)
+{
+    stc_rtc_date_time_t stcCurrDateTime;
+
+    /* configure structure initialization */
+    MEM_ZERO_STRUCT(stcCurrDateTime);
+
+	if (RTC_GetDateTime(RtcDataFormatDec, &stcCurrDateTime) != Ok)
+	{
+		return 100;
+	}
+	else
+	{
+		return stcCurrDateTime.u8Minute;
+	}
+}
 /******************************************************************************
  * 
  * EOF (not truncated)

@@ -384,6 +384,7 @@ int32_t main(void)
     static unsigned char ucRetryCnt = 0;
     //DevMeasRecordDataSt st_TempValue1[10];
     int nRet = 0;
+    int nMin = 0;
     /* Initialize Clock */
     drv_mcu_Clock_Init();
     // ucValueArr[10] = {0};
@@ -412,7 +413,11 @@ int32_t main(void)
     //SPI初始化
     drv_mcu_SPI_Init(); 
     #ifdef NEW_W25Q128_DRIVER
+    Ddl_Delay1ms(100);
+    // 3. 检测W25Q128是否正常响应
+    g_flash_ready = W25Q128_Check_Exist();
     nRet = System_PowerOn_Storage_Init();
+    
     //for(i=0; i<5; i++)
     //{
     //    func_Get_Device_MeasData_Record(i, &st_TempValue1[i]);
@@ -436,6 +441,7 @@ int32_t main(void)
     drv_OLED_Init();
     //u8Result = 6;
     func_display_PowerOn_Menu();
+
     //OLED_Test(0);
     func_WatchDog_Refresh();
     #if 0
@@ -517,35 +523,33 @@ int32_t main(void)
     {
         ucMonitorFlag = 1;
     }
-    #if 0
+    #if 1
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 1;
-    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 3;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 2;
     
     pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Pressure_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_BY_Integrated_Conductivity;
     //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
-    pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HZ_Radar_Ultrasonic_Flow;
+    //pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HZ_Radar_Ultrasonic_Flow;
 
     //pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_BlackLight;
     #else
-    //pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 0;
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
-   // pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 1;
-    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 4;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 0;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 1;
     
-    //pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_Pressure_Level;
-    pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_HX_Integrated_Conductivity;
-    //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_BY_Radar_Level;
+    //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_HX_Integrated_Conductivity;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_HX_Radar_Level;
-    pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HX_Radar_Ultrasonic_Flow;
-    pst_MainSystemPara->DevicePara.eMeasSensor[1][3] = Meas_HX_Pressure_Level;
+    //pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_HX_Radar_Ultrasonic_Flow;
+    //pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HX_Pressure_Level;
     #endif
-    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 4;
-    pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 2;     
-    pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 2;
+    //pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 4;
+    //pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 2;     
+    //pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 2;
 
     //pst_MainSystemPara->DeviceRunPara.nDeviceCurSampleCount = 7;
     //pst_MainSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount = 7;
@@ -752,9 +756,9 @@ int32_t main(void)
     }
 
     #if 1
-    for(i=0; i<pst_MainSystemPara->DevicePara.cMeasSensorCount[1]; i++)
+    for(i=0; i<pst_MainSystemPara->DevicePara.cMeasSensorCount[0]; i++)
     {
-        if(pst_MainSystemPara->DevicePara.eMeasSensor[1][i] == Meas_HX_Radar_Level)
+        if(pst_MainSystemPara->DevicePara.eMeasSensor[0][i] == Meas_HX_Radar_Level)
         {
             BATTERY_PWRCHK_OPEN();
             func_Meas_Sensor_PowerOn_Init();
@@ -762,15 +766,15 @@ int32_t main(void)
             //func_WatchDog_Refresh();
             Ddl_Delay1ms(5000);
             func_WatchDog_Refresh();
-            drv_mcu_ChangeUSART4_Source(MODULE_MEAS_SENSOR2, 9600);
+            drv_mcu_ChangeUSART4_Source(MODULE_MEAS_SENSOR1, 9600);
             for(j=0; j<3; j++)
             {
-                u8Result = func_Get_HX_Radar_Level_Addr(MODULE_MEAS_SENSOR2);
+                u8Result = func_Get_HX_Radar_Level_Addr(MODULE_MEAS_SENSOR1);
                 if(u8Result != 0)
                 {
                     if(u8Result != 2)
                     {
-                        u8Result = func_Set_HX_Radar_Level_Addr(MODULE_MEAS_SENSOR2);
+                        u8Result = func_Set_HX_Radar_Level_Addr(MODULE_MEAS_SENSOR1);
                     }
                     break;
                 }
@@ -793,20 +797,29 @@ int32_t main(void)
     //RegData_HL_Swap_func(cNewArr,cTestArr, 4,1,4);
     //float fValue = *(float*)cNewArr;
     //fValue = *(float*)cTestArr;
-    
+    if(pst_MainSystemPara->DeviceRunPara.cHXPressureLevelFlag == 1)
+    {
+        drv_Lora_TP1109_PowerOn();
+    }
     while(1)
     {
         //轮询喂狗
-        func_WatchDog_Refresh();
+        func_WatchDog_Refresh();        
         if(pst_MainSystemPara->DeviceRunPara.cBlackLightFlag == 0)
         {
             func_Meas_Sensor_Dispose();
+            if(pst_MainSystemPara->DeviceRunPara.cHXPressureLevelFlag == 1)
+			{
+                //drv_Lora_TP1109_PowerOn();
+				drv_Get_HX_Pressure_Level_Value(&pst_MainSystemPara->DeviceRunPara.esMeasData.fHXPressureWaterLevelValue);
+				pst_MainSystemPara->DeviceRunPara.esMeasData.fHXPressureWaterLevelValue += pst_MainSystemPara->DevicePara.fPressureSensorCalibration;
+			}
         }
         else
         {
             func_BlackLight_Sensor_Dispose();
         }
-        Ddl_Delay1ms(5000);
+        Ddl_Delay1ms(5000); 
     }
     #endif
 
@@ -859,6 +872,26 @@ int32_t main(void)
             pst_MainSystemPara->DeviceRunPara.cRTC_1MIN_ReflashFlag = 0;
             //轮询喂狗
             func_WatchDog_Refresh();
+            nMin = drv_mcu_Get_RTC_Minute();
+            if(nMin != 100)
+            {
+                if((nMin % pst_MainSystemPara->DevicePara.nDeviceUploadCnt) == 0)
+                {
+                    pst_MainSystemPara->DeviceRunPara.cUploadTimeFlag = 1;
+                }
+                else
+                {
+                    pst_MainSystemPara->DeviceRunPara.cUploadTimeFlag = 0;
+                }
+                if((nMin % pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt) == 0)
+                {
+                    pst_MainSystemPara->DeviceRunPara.cSampleTimeFlag = 1;
+                }
+                else
+                {
+                    pst_MainSystemPara->DeviceRunPara.cSampleTimeFlag = 0;
+                }
+            }
         }
 
         if(ucMonitorFlag == 0)
@@ -870,6 +903,7 @@ int32_t main(void)
         }
 
         if((pst_MainSystemPara->DevicePara.cDeviceIdenFlag == 1) && (pst_MainSystemPara->DeviceRunPara.c4GInitFlag == 0) && ((pst_MainSystemPara->DeviceRunPara.usDevStatus & 0x0001) == 0))
+        //if((pst_MainSystemPara->DevicePara.cDeviceIdenFlag == 1))
         {
             //if(pst_MainSystemPara->DevicePara.cMonitorMode == 1)
             {
@@ -935,6 +969,14 @@ int32_t main(void)
             }
             #endif
         }
+        //else
+        //{
+        //    if(pst_MainSystemPara->DevicePara.cDeviceRegisterFlag == 1)
+        //    {
+        //        func_Measure_Water_Quality_View_Show(0);
+        //        Ddl_Delay1ms(10000);
+        //    }
+        //}
 
         #ifdef NEW_MAINLOOP
         func_System_Mainloop_Dispose();

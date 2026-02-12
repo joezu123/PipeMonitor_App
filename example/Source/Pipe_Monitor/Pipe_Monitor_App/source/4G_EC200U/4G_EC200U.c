@@ -77,6 +77,9 @@ void EC200U_4G_Module_GPIO_Init(void)
     MEM_ZERO_STRUCT(stcGpioInit);
     stcGpioInit.enPinMode = Pin_Mode_Out;
     stcGpioInit.enPullUp = Enable;
+
+    PORT_SetFunc(USART1_RX_PORT, USART1_RX_PIN, Func_Gpio, Disable);
+    PORT_SetFunc(USART1_TX_PORT, USART1_TX_PIN, Func_Gpio, Disable);
     
     (void)PORT_Init(EC200U_4G_MODULE_RST_PORT, EC200U_4G_MODULE_RST_PIN, &stcGpioInit);
     #ifdef HW_VERSION_V1_1
@@ -491,6 +494,8 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     uint8_t i = 0;
     uint8_t l = 0;
     int nPosi = 0;
+    char cCheckCnt = 0;
+    char cn = 0;
     
     //memset(ucBaseDataValueArr[0],0,150);
     //memset(ucBaseDataValueArr[1],0,150);
@@ -619,6 +624,10 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
         for(nPosi=0; nPosi<ucRecordCnt; nPosi++)
         {
             func_Get_Device_MeasData_Record(pst_EC200USystemPara->DevicePara.nDeviceRecordCnt - ulRecordCnt + nPosi, &st_TempValue[nPosi]);
+            if((st_TempValue[nPosi].cWater_Immersion_Status == 0xFF) && (st_TempValue[nPosi].nAttitude_SC7A == 0xFFFF))
+            {
+                memcpy(&st_TempValue[nPosi].fWaterLevel, &gt_MeasData.fWaterLevel, sizeof(DevMeasRecordDataSt));
+            }
         }
         for(nPosi=0; nPosi<ucRecordCnt; nPosi++)
         {
@@ -670,6 +679,10 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
                 else
                 {
                     dRightValueSum = (double)st_TempValue[nPosi].fWaterLevel;
+                }
+                if((dRightValueSum < 0.001) || (dRightValueSum >= 100.0))
+                {
+                    dRightValueSum = 0.0;
                 }
                 sprintf((char *)&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "%.3lf,", dRightValueSum);
                 sprintf((char *)&ucTempValueArr[6][strlen((char *)ucTempValueArr[6])], "%.3lf,", (double)st_TempValue[nPosi].fWaterLevel);
@@ -730,6 +743,10 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
                 {
                     dRightValueSum = (double)st_TempValue[nPosi].fWaterQuality_COD;
                 }
+                if((dRightValueSum < 0.001) || (dRightValueSum >= 1000000.0))
+                {
+                    dRightValueSum = 0.0;
+                }
                 sprintf((char *)&ucTempValueArr[1][strlen((char *)ucTempValueArr[1])], "%.3lf,", dRightValueSum);
                 sprintf((char *)&ucTempValueArr[7][strlen((char *)ucTempValueArr[7])], "%.3lf,", (double)st_TempValue[nPosi].fWaterQuality_COD);
                 //sprintf((char *)&ucBaseDataValueArr[1][strlen((char *)ucBaseDataValueArr[1])], "%.3lf,", (double)st_TempValue[nPosi].fWaterQuality_COD);
@@ -782,6 +799,10 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
                 else
                 {
                     dRightValueSum = (double)st_TempValue[nPosi].fWaterQuality_COND;
+                }
+                if((dRightValueSum < 0.001) || (dRightValueSum >= 1000000.0))
+                {
+                    dRightValueSum = 0.0;
                 }
                 sprintf((char *)&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])], "%.3lf,", dRightValueSum);
                 sprintf((char *)&ucTempValueArr[8][strlen((char *)ucTempValueArr[8])], "%.3lf,", (double)st_TempValue[nPosi].fWaterQuality_COND);
@@ -836,6 +857,10 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
                 {
                     dRightValueSum = (double)st_TempValue[nPosi].fWaterVolume;
                 }
+                if((dRightValueSum < 0.001) || (dRightValueSum >= 10000000.0))
+                {
+                    dRightValueSum = 0.0;
+                }
                 sprintf((char *)&ucTempValueArr[3][strlen((char *)ucTempValueArr[3])], "%.3lf,", dRightValueSum);
                 sprintf((char *)&ucTempValueArr[9][strlen((char *)ucTempValueArr[9])], "%.3lf,", (double)st_TempValue[nPosi].fWaterVolume);
                 //sprintf((char *)&ucBaseDataValueArr[3][strlen((char *)ucBaseDataValueArr[3])], "%.3lf,", (double)st_TempValue[nPosi].fWaterVolume);
@@ -886,6 +911,10 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
                 else
                 {
                     dRightValueSum = (double)st_TempValue[nPosi].fWaterSpeed;
+                }
+                if((dRightValueSum < 0.001) || (dRightValueSum >= 10000000000000000.0))
+                {
+                    dRightValueSum = 0.0;
                 }
                 sprintf((char *)&ucTempValueArr[4][strlen((char *)ucTempValueArr[4])], "%.3lf,", dRightValueSum);
                 sprintf((char *)&ucTempValueArr[10][strlen((char *)ucTempValueArr[10])], "%.3lf,", (double)st_TempValue[nPosi].fWaterSpeed);
@@ -938,9 +967,38 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
                 {
                     dRightValueSum = (double)st_TempValue[nPosi].fWaterVolume_Total;
                 }
+                if((dRightValueSum < 0.001) || (dRightValueSum >= 10000000000000000000000.0))
+                {
+                    dRightValueSum = 0.0;
+                }
                 sprintf((char *)&ucTempValueArr[5][strlen((char *)ucTempValueArr[5])], "%.3lf,", dRightValueSum);
                 sprintf((char *)&ucTempValueArr[11][strlen((char *)ucTempValueArr[11])], "%.3lf,", (double)st_TempValue[nPosi].fWaterVolume_Total);
                 //sprintf((char *)&ucBaseDataValueArr[5][strlen((char *)ucBaseDataValueArr[5])], "%.3lf,", (double)st_TempValue[nPosi].fWaterVolume_Total);
+            }
+        }
+        if(ucRecordCnt > 0)
+        {
+            //ucTempValueArr[0][16] = 'n';
+            //ucTempValueArr[0][17] = 'a';
+            //ucTempValueArr[0][18] = 'n';    
+            //ucTempValueArr[2][8] = 'n';
+            //ucTempValueArr[2][9] = 'a';
+            //ucTempValueArr[2][10] = 'n';
+            for(cCheckCnt=0; cCheckCnt<12; cCheckCnt++)
+            {
+                if(strlen((char *)ucTempValueArr[cCheckCnt]) > 0)
+                {
+                    for(cn=0; cn<strlen((char *)ucTempValueArr[cCheckCnt]); cn++)
+                    {
+                        if((ucTempValueArr[cCheckCnt][cn] == 'n') && (ucTempValueArr[cCheckCnt][cn+1] == 'a') && (ucTempValueArr[cCheckCnt][cn+2] == 'n'))
+                        {
+                            //sprintf((char *)&ucTempValueArr[cCheckCnt][cn], "%.1lf,", 0.0);
+                            ucTempValueArr[cCheckCnt][cn] = '0';
+                            ucTempValueArr[cCheckCnt][cn+1] = '.';
+                            ucTempValueArr[cCheckCnt][cn+2] = '0';
+                        }
+                    }
+                }
             }
         }
     }
@@ -1324,6 +1382,7 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
     //uint8_t i = 0;
     uint8_t l = 0;
     int nPosi = 0;
+    char cCheckCnt,cn;
     //uint8_t ucRecordCnt = 0;
     //DevMeasRecordDataSt st_TempValue[10];
     //time(&now);
@@ -1400,6 +1459,8 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
             sprintf((char *)&ucBatteryArr[strlen((char *)ucBatteryArr)], "%.3lf,", (double)pst_EC200USystemPara->DeviceRunPara.esDeviceRunState.fBattleVoltage);
             sprintf((char *)&ucCSQArr[strlen((char *)ucCSQArr)], "%d,", pst_EC200USystemPara->DeviceRunPara.nSignalStrength);
         }
+        
+    
     }
     else
     {
@@ -1641,7 +1702,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
 
     do
     {
-        if((gE_4G_Module_Init_CMD >= Module_TEST_AT_CMD) || (gE_4G_Module_Init_CMD <= Module_DCE_RST_STAGE2))
+        if((gE_4G_Module_Init_CMD >= Module_TEST_ATE0_CMD) || (gE_4G_Module_Init_CMD <= Module_DCE_RST_STAGE2))
         {
             memset(ucSendBuf, 0, EC200U_BUF_SIZE);
             //memset(ucRecvBuf, 0, EC200U_BUF_SIZE);
@@ -1667,23 +1728,27 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         case Module_DCE_RST_STAGE3:
             sprintf((char *)ucRecvCheckData, "RDY");
             break;
+            #if 0
         case Module_TEST_AT_CMD: //测试AT指令
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_AT_Test;
             (void)strcpy((char *)ucSendBuf, "AT\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
+            #endif
         case Module_TEST_ATE0_CMD: //测试AT指令
             (void)strcpy((char *)ucSendBuf, "ATE0\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
+            #if 0
         case Module_QUERY_SIM_CARD_STATE_CMD: //查询SIM卡状态
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_SIM_Status;
             (void)strcpy((char *)ucSendBuf, "AT+CPIN?\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "+CPIN: READY");
             break;
+            #endif
         case Module_QUERY_SIGNAL_STRENGTH_CMD: //查询信号强度
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Signal_Strength;
             (void)strcpy((char *)ucSendBuf, "AT+CSQ\r\n");
@@ -1710,6 +1775,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         #endif
+        #if 0
         case Module_QUERY_PS_DOMAIN_REG_STATE_CMD://查询PS域注册状态：0：未注册，1/5：注册，2：正在搜索
             //(void)strcpy((char *)ucSendBuf, "AT+CREG?\r\n");    //CS域，只使用在2G网络上
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Register;
@@ -1717,12 +1783,14 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "+CGREG: 0,1");
             break;
+        #endif
         case Module_ACTIVATE_NETWORK_CMD: //激活网络
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Active_Network;
             (void)strcpy((char *)ucSendBuf, "AT+CGATT=1\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
+            #if 0
         case Module_QUERY_NETWORK_ACTIVATE_STATE_CMD: //查询网络激活状态
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Check_Network;
             (void)strcpy((char *)ucSendBuf, "AT+CGATT?\r\n");
@@ -1742,6 +1810,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
+            #endif
         case Module_QUERY_LOCAL_DATE_TIME_CMD: //查询本地日期时间
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_Get_DateTime;
             (void)strcpy((char *)ucSendBuf, "AT+QLTS=2\r\n");
@@ -1754,8 +1823,28 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_SET_Data_Format;
             (void)strcpy((char *)ucSendBuf, "AT+QMTCFG=\"recv/mode\",0,0,1\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
+
+            drv_mcu_USART_SendData(MODULE_4G_NB, ucSendBuf, usSendDataLen);
+            Ddl_Delay1ms(200);
+            pst_EC200USystemPara->UsartData.usUsartxRecvDataLen[MODULE_4G_NB] = 0;
+            memset(pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB], 0, USART_DATA_LEN_MAX);
+
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Set_KeepAlive_Time;
+            (void)strcpy((char *)ucSendBuf, "AT+QMTCFG=\"keepalive\",0,120\r\n");
+            usSendDataLen = strlen((char *)ucSendBuf);
+
+            drv_mcu_USART_SendData(MODULE_4G_NB, ucSendBuf, usSendDataLen);
+            Ddl_Delay1ms(200);
+            pst_EC200USystemPara->UsartData.usUsartxRecvDataLen[MODULE_4G_NB] = 0;
+            memset(pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB], 0, USART_DATA_LEN_MAX);
+
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Set_Version;
+            (void)strcpy((char *)ucSendBuf, "AT+QMTCFG=\"version\",0,4\r\n");
+            usSendDataLen = strlen((char *)ucSendBuf);
+
             sprintf((char *)ucRecvCheckData, "OK");
             break;
+            #if 0
         case Module_SET_MQTT_KEEPALIVE_TIME_CMD:    //心跳时间建议60s~300s.这里设置120s
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Set_KeepAlive_Time;
             (void)strcpy((char *)ucSendBuf, "AT+QMTCFG=\"keepalive\",0,120\r\n");
@@ -1768,6 +1857,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
             break;
+            #endif
             #if 0
         case Module_Check_MQTT_OPEN_CMD1: //检查MQTT是否打开
             (void)strcpy((char *)ucSendBuf, "AT+QMTOPEN?\r\n");
@@ -1810,6 +1900,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             sprintf((char *)ucRecvCheckData, "OK");
             break;
         #ifdef CONNECT_MQTT
+                #if 0
         case Module_SUBSCRIBE_TOPIC_REGISTER_CMD:   //订阅主题注册
             pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_Register;
             sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/000%d/devReg/%s\",2\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID);
@@ -1848,6 +1939,19 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             sprintf((char *)ucRecvCheckData, "OK");
             pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucCurPhotoDataCnt = 0;
             break;
+                #else
+        case Module_SUBSCRIBE_TOPIC_REGISTER_CMD:   //订阅主题注册
+            pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_MQTT_Subscribe_Topic_Register;
+            sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/000%d/devReg/%s\",2,\"data/down/0000/000%d/dataUpload/%s\",2,\"data/down/0000/000%d/devStatus/%s\",2,\"data/down/0000/000%d/setConfig/%s\",2,\"data/down/0000/000%d/getConfig/%s\",2\r\n",
+            nClientType,pst_EC200USystemPara->DevicePara.cDeviceID,
+            nClientType,pst_EC200USystemPara->DevicePara.cDeviceID,
+            nClientType,pst_EC200USystemPara->DevicePara.cDeviceID,
+            nClientType,pst_EC200USystemPara->DevicePara.cDeviceID,
+            nClientType,pst_EC200USystemPara->DevicePara.cDeviceID);
+            usSendDataLen = strlen((char *)ucSendBuf);
+            sprintf((char *)ucRecvCheckData, "OK");
+            break;
+                #endif
         #if 0
         case Module_SUBSCRIBE_TOPIC_GETDATA_CMD:    //订阅主题获取数据
             sprintf((char *)ucSendBuf, "AT+QMTSUB=0,2,\"data/down/0000/000%d/getData/%s\",2\r\n",nClientType,pst_EC200USystemPara->DevicePara.cDeviceID);
@@ -2014,7 +2118,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             return 4;
         }
 
-        if(gE_4G_Module_Init_CMD >= Module_TEST_AT_CMD)
+        if(gE_4G_Module_Init_CMD >= Module_TEST_ATE0_CMD)
         {
             //发送AT指令
             drv_mcu_USART_SendData(MODULE_4G_NB, ucSendBuf, usSendDataLen);
@@ -2072,17 +2176,17 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         //if (strstr((char *)pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB], (char *)ucRecvCheckData) != NULL) //接收到的数据中包含OK
         if(func_Array_Find_Str((char *)pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB],usRecvLen,(char *)ucRecvCheckData,strlen((char*)ucRecvCheckData), &usPosition) == 0) //接收到的数据中包含OK
         {
-            if(gE_4G_Module_Init_CMD == Module_QUERY_IMSI_CMD)
+            //if(gE_4G_Module_Init_CMD == Module_QUERY_IMSI_CMD)
+            //{
+            //    memset(&pst_EC200USystemPara->DevicePara.cDeviceIMSI[0], 0, 16);
+            //    memcpy(&pst_EC200USystemPara->DevicePara.cDeviceIMSI[0], &pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB][2], 15);
+            //}
+            //else if(gE_4G_Module_Init_CMD == Module_QUERY_IMEI_CMD)
             {
-                memset(&pst_EC200USystemPara->DevicePara.cDeviceIMSI[0], 0, 16);
-                memcpy(&pst_EC200USystemPara->DevicePara.cDeviceIMSI[0], &pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB][2], 15);
+            //    memset(&pst_EC200USystemPara->DevicePara.cDeviceIMEI[0], 0, 16);
+            //    memcpy(&pst_EC200USystemPara->DevicePara.cDeviceIMEI[0], &pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB][2], 15);
             }
-            else if(gE_4G_Module_Init_CMD == Module_QUERY_IMEI_CMD)
-            {
-                memset(&pst_EC200USystemPara->DevicePara.cDeviceIMEI[0], 0, 16);
-                memcpy(&pst_EC200USystemPara->DevicePara.cDeviceIMEI[0], &pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB][2], 15);
-            }
-            else if(gE_4G_Module_Init_CMD == Module_QUERY_LOCAL_DATE_TIME_CMD)
+            if(gE_4G_Module_Init_CMD == Module_QUERY_LOCAL_DATE_TIME_CMD)
             {
                 if(drv_mcu_Set_RTC_Time(&pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB][0]) == 1)
                 {
@@ -2110,7 +2214,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                 //gE_4G_Module_Init_CMD++;
             }
             #ifdef CONNECT_MQTT
-            if(gE_4G_Module_Init_CMD == Module_SUBSCRIBE_TOPIC_GETCONFIG_CMD)
+            if(gE_4G_Module_Init_CMD == Module_SUBSCRIBE_TOPIC_REGISTER_CMD)
             {
                 if(pst_EC200USystemPara->DevicePara.cDeviceRegisterFlag == 0)   //当前设备未注册
                 {
@@ -2168,7 +2272,6 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                         }
                     }
                 }
-                
             }
             else if(gE_4G_Module_Init_CMD == Module_PUBLISH_TOPIC_SATATUSUPLOAD_CMD)
             {
@@ -2266,20 +2369,20 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
         else
         {
             //考虑上述case 4的情况，如果查询到的不是1，那么需要继续查询是否为5，1表示注册本地网;5表示注册漫游网
-            if (gE_4G_Module_Init_CMD == Module_QUERY_PS_DOMAIN_REG_STATE_CMD)
+            //if (gE_4G_Module_Init_CMD == Module_QUERY_PS_DOMAIN_REG_STATE_CMD)
             {
                 //if (strstr((char *)pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB], "+CGREG: 0,5") == NULL)
-                if(func_Array_Find_Str((char *)pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB],pst_EC200USystemPara->UsartData.usUsartxRecvDataLen[0],"+CGREG:0,5",10, &usPosition) == 0)
+            //    if(func_Array_Find_Str((char *)pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB],pst_EC200USystemPara->UsartData.usUsartxRecvDataLen[0],"+CGREG:0,5",10, &usPosition) == 0)
                 {
-                    u8Temp = 0;
-                    return 2;
+            //        u8Temp = 0;
+            //        return 2;
                 }
-                else
+            //    else
                 {
-                    gE_4G_Module_Init_CMD++;
+            //        gE_4G_Module_Init_CMD++;
                 }
             }
-            else
+            //else
             {
                 //gE_4G_Module_Init_CMD++;
                 
@@ -2288,13 +2391,13 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                 {
                     ucRetryCnt = 0;
                     u8Temp = 0;
-                    if(gE_4G_Module_Init_CMD < Module_SUBSCRIBE_TOPIC_GETCONFIG_CMD)
+                    if(gE_4G_Module_Init_CMD < Module_SUBSCRIBE_TOPIC_REGISTER_CMD)
                     {
-                        if(gE_4G_Module_Init_CMD == Module_QUERY_SIM_CARD_STATE_CMD)
+                        //if(gE_4G_Module_Init_CMD == Module_QUERY_SIM_CARD_STATE_CMD)
                         {
-                            return 6;
+                        //    return 6;
                         }
-                        else
+                        //else
                         {
                             return 2;
                         }

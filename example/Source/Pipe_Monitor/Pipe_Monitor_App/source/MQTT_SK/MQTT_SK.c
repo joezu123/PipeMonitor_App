@@ -1584,6 +1584,102 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					nParaValue = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_ALARMUPLOAD5, (unsigned char*)&nParaValue);
 				}
+				else if (strcmp(pItem, "\"PlanEnable\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					cParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_PLAN_ENABLE, (unsigned char*)&cParaValue);
+				}
+				else if (strcmp(pItem, "\"AlarmEnable\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					cParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_ALARM_ENABLE, (unsigned char*)&cParaValue);
+				}
+				else if (strcmp(pItem, "\"FlowEnable\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					cParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_FLOW_ALARM_ENABLE, (unsigned char*)&cParaValue);
+				}
+				else if (strcmp(pItem, "\"FlowAlarmCnts\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					cParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_FLOW_ALARM_CNTS, (unsigned char*)&cParaValue);
+				}
+				else if (strcmp(pItem, "\"FlowAlarmVal1\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					fParaValue = atof(pItem);
+					//fParaValue = fParaValue / 100;
+					#pragma diag_suppress=Pa039
+					ucRes = func_Save_Device_Parameter(DEV_FLOW_ALARM_VAL1, (unsigned char*)&fParaValue);
+					#pragma diag_warning=Pa039
+				}
+				else if (strcmp(pItem, "\"FlowAlarmVal2\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					fParaValue = atof(pItem);
+					//fParaValue = fParaValue / 100;
+					#pragma diag_suppress=Pa039
+					ucRes = func_Save_Device_Parameter(DEV_FLOW_ALARM_VAL2, (unsigned char*)&fParaValue);
+					#pragma diag_warning=Pa039
+				}
 			}
 		}
 	}
@@ -1631,11 +1727,11 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, char* cmsgIdArr)
 	sprintf((char *)ucTempArr+usDataLen, "\"ID\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDeviceID);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备IMSI号
-	sprintf((char *)ucTempArr+usDataLen, "\"IMSI\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDeviceIMSI);
-	usDataLen = strlen((char *)ucTempArr);
+	//sprintf((char *)ucTempArr+usDataLen, "\"IMSI\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDeviceIMSI);
+	//usDataLen = strlen((char *)ucTempArr);
 	//拼接设备IMEI号
-	sprintf((char *)ucTempArr+usDataLen, "\"IMEI\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDeviceIMEI);
-	usDataLen = strlen((char *)ucTempArr);
+	//sprintf((char *)ucTempArr+usDataLen, "\"IMEI\":\"%s\",", pst_MQTTSystemPara->DevicePara.cDeviceIMEI);
+	//usDataLen = strlen((char *)ucTempArr);
 	//拼接设备硬件版本号
 	sprintf((char *)ucTempArr+usDataLen, "\"HWVer\":%d,", (pst_MQTTSystemPara->DevicePara.cDeviceHWVersion[0]-0x30)*100+
 													(pst_MQTTSystemPara->DevicePara.cDeviceHWVersion[2]-0x30)*10+
@@ -1697,8 +1793,8 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, char* cmsgIdArr)
 		//pst_MQTTSystemPara->DevicePara.eMeasSensor[1][9]);
 	usDataLen = strlen((char *)ucTempArr);
 	//拼接设备总流量
-	sprintf((char *)ucTempArr+usDataLen, "\"TotalFlow\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fTotal_Volume);
-	usDataLen = strlen((char *)ucTempArr);
+	//sprintf((char *)ucTempArr+usDataLen, "\"TotalFlow\":%.3f,", (double)pst_MQTTSystemPara->DevicePara.fTotal_Volume);
+	//usDataLen = strlen((char *)ucTempArr);
 	//拼接状态信息：纬度
 	sprintf((char *)ucTempArr+usDataLen, "\"Lat\":%.6f,", (double)pst_MQTTSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat);
 	usDataLen = strlen((char *)ucTempArr);																					
@@ -1809,12 +1905,31 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, char* cmsgIdArr)
 		//pst_MQTTSystemPara->DevicePara.usAlarmSamp[4]);
 	usDataLen = strlen((char *)ucTempArr);
 
-	sprintf((char *)ucTempArr+usDataLen, "\"AlarmUpload\":[%d,%d,%d]",
+	sprintf((char *)ucTempArr+usDataLen, "\"AlarmUpload\":[%d,%d,%d],",
 		pst_MQTTSystemPara->DevicePara.usAlarmUpload[0],
 		pst_MQTTSystemPara->DevicePara.usAlarmUpload[1],
 		pst_MQTTSystemPara->DevicePara.usAlarmUpload[2]);
 		//pst_MQTTSystemPara->DevicePara.usAlarmUpload[3],
 		//pst_MQTTSystemPara->DevicePara.usAlarmUpload[4]);
+	usDataLen = strlen((char *)ucTempArr);
+	
+	sprintf((char *)ucTempArr+usDataLen, "\"PlanEnable\":%d,", pst_MQTTSystemPara->DevicePara.cPlanEnableFlag);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"AlarmEnable\":%d", pst_MQTTSystemPara->DevicePara.cAlarmEnableFlag);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"FlowEnable\":%d", pst_MQTTSystemPara->DevicePara.cFlowAlarmEnableFlag);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"FlowAlarmCnts\":%d", pst_MQTTSystemPara->DevicePara.cFlowAlarmCnts);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"FlowAlarmVal\":[%.3f,%.3f],",
+		pst_MQTTSystemPara->DevicePara.fFlowAlarmValue[0],
+		pst_MQTTSystemPara->DevicePara.fFlowAlarmValue[1]);
+		//pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[3],
+		//pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[4]);
 	usDataLen = strlen((char *)ucTempArr);
 	
 	//拼接结束符

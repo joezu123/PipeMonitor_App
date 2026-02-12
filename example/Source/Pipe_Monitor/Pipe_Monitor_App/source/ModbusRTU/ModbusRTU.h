@@ -26,6 +26,7 @@ extern "C"
 #include "User_Data.h"
 #include "Mainloop.h"
 #include "hc32f460_utility.h"
+#include "stdint.h"
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
@@ -190,7 +191,7 @@ typedef enum
 #define MB_RW_DEVICE_LEVELALARM_PERENTS_3_ADDR 		(MB_DEVICE_PARA_BASE + 0x020C) //设备液位预警值百分比寄存器地址
 #define MB_RW_DEVICE_LEVELALARM_PERENTS_4_ADDR 		(MB_DEVICE_PARA_BASE + 0x020E) //设备液位预警值百分比寄存器地址
 #define MB_RW_DEVICE_LEVELALARM_PERENTS_5_ADDR 		(MB_DEVICE_PARA_BASE + 0x0210) //设备液位预警值百分比寄存器地址
-#define MB_RW_DEVICE_WEATHER_ADDR             		(MB_DEVICE_PARA_BASE + 0x0212) //设备雨旱天预案寄存器地址
+#define MB_RW_DEVICE_WEATHER_ADDR             		(MB_DEVICE_PARA_BASE + 0x0212) //设备雨旱天寄存器地址
 #define MB_RW_DEVICE_SCENARIO_ADDR             		(MB_DEVICE_PARA_BASE + 0x0213) //设备场景寄存器地址
 #define MB_RW_DEVICE_CONDALARM_CNTS_ADDR         		(MB_DEVICE_PARA_BASE + 0x0214) //设备电导率预警规则组数寄存器地址
 #define MB_RW_DEVICE_CONDALARM_LEV_1_ADDR         (MB_DEVICE_PARA_BASE + 0x0215)  //设备电导率预警层级1-5
@@ -213,6 +214,13 @@ typedef enum
 #define MB_RW_DEVICE_ALARM_UPLOAD_3_ADDR          (MB_DEVICE_PARA_BASE + 0X0226)  //设备预警上传频率
 #define MB_RW_DEVICE_ALARM_UPLOAD_4_ADDR          (MB_DEVICE_PARA_BASE + 0X0227)  //设备预警上传频率
 #define MB_RW_DEVICE_ALARM_UPLOAD_5_ADDR          (MB_DEVICE_PARA_BASE + 0X0228)  //设备预警上传频率
+#define MB_RW_DEVICE_PLANENABLE_ADDR             		(MB_DEVICE_PARA_BASE + 0x0229) //设备预案开关寄存器地址
+#define MB_RW_DEVICE_ALARMENABLE_ADDR             		(MB_DEVICE_PARA_BASE + 0x022A) //设备预警开关寄存器地址
+#define MB_RW_DEVICE_FLOW_ALARMENABLE_ADDR         		(MB_DEVICE_PARA_BASE + 0x022B) //设备流量预警开关寄存器地址
+#define MB_RW_DEVICE_FLOW_ALARM_CNTS_ADDR         		(MB_DEVICE_PARA_BASE + 0x022C) //设备流量预警规则组数寄存器地址
+#define MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR         (MB_DEVICE_PARA_BASE + 0x022D)  //设备流量预警层级1-5
+#define MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR         (MB_DEVICE_PARA_BASE + 0x022F)  //设备流量预警层级1-5
+//#define MB_RW_DEVICE_MAX_ADDR                		(MB_DEVICE_PARA_BASE + 0x0240) //设备参数寄存器最大地址
 
 /*******************************************************************************
  * Global type definitions ('typedef')

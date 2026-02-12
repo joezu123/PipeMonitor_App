@@ -36,13 +36,15 @@ extern "C"
 #define BACKUP_DATA_AREA_ADDR   0x001000// 备份区起始地址（0x001000 ~ 0x001FFF）
 #define CRC32_STORE_ADDR        0x002000// CRC32校验值存储地址
 #define SYSTEM_RECORD_START_ADDR  0x3000  //系统测量数据保存地址
-//#define SYSTEM_BACKUP_PARA_ADDR 0x4000  //系统配置参数备份地址，写以一扇区为单位4096Bytes
+//#define SYSTEM_BACKUP_PARA_ADDR 0x4000  //系统配置参数备份地址，写以一扇区为单  位4096Bytes
 #define SYSTEM_RECORD_SIZE  sizeof(DevMeasRecordDataSt)
 /***** 类型2：记录数据区（0x4000起始，结构体单位，无需备份，高效率） *****/
 #define RECORD_STRUCT_SIZE       sizeof(DevMeasRecordDataSt) // 单个记录结构体大小
-#define MAX_RECORD_COUNT         389800                        // 最大记录条数（可调整）(16777216-0x3000) / SYSTEM_RECORD_SIZE
+#define MAX_RECORD_COUNT         377650//389800                          // 最大记录条数（可调整）(16777216-0x3000-升级文件区域1024*512) / SYSTEM_RECORD_SIZE
 #define RECORD_DATA_START_ADDR   0x003000// 记录数据区起始地址（与设置参数区隔离开）
 #define RECORD_DATA_MAX_ADDR     (RECORD_DATA_START_ADDR + MAX_RECORD_COUNT * RECORD_STRUCT_SIZE)
+
+#define INIT_RETRY_COUNT       3       // 初始化最大重试次数
 /*******************************************************************************
  * Global type definitions ('typedef')
  ******************************************************************************/
@@ -68,7 +70,7 @@ extern void W25Q128_Spi_flash_buffer_write(uint8_t* pbuffer, uint32_t write_addr
 extern void W25Q128_Get_ReadDataBytes(uint32_t dest_addr, uint8_t *data, uint32_t len);
 extern unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDataArr);
 extern void func_Device_Parameter_Init(void);
-extern void func_Save_Device_MeasData();
+extern unsigned char func_Save_Device_MeasData();
 extern void func_Get_Device_MeasData_Record(int nRecordIndex, DevMeasRecordDataSt *pstMeasData);
 
 #ifdef NEW_W25Q128_DRIVER
@@ -76,6 +78,8 @@ extern int System_PowerOn_Storage_Init(void);
 extern bool Data_DoubleArea_Write(const uint8_t *p_new_data, uint32_t length);
 extern bool RecordData_Write(uint32_t record_index, const DevMeasRecordDataSt *p_record);
 extern bool RecordData_Read(uint32_t record_index, DevMeasRecordDataSt *p_record);
+extern bool W25Q128_Check_Exist(void);
+extern bool g_flash_ready;
 #endif
 #ifdef __cplusplus
 }

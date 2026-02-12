@@ -49,6 +49,7 @@ extern "C"
 extern int drv_mcu_RTC_Config(void);
 extern int drv_mcu_Set_RTC_Time(char *cCurDateTime);
 extern int drv_mcu_Get_RTC_Time(char *cCurDateTime);
+extern int drv_mcu_Get_RTC_Minute(void);
 
 #ifdef __cplusplus
 }

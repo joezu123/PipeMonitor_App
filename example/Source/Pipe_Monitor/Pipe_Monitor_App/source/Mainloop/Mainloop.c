@@ -887,6 +887,7 @@ void func_Save_Device_MeasRecord_Dispose()
 	uint8_t ucTimeFlag = 0;
 	struct tm tm;
 	time_t now;
+	unsigned char ucRes = 0;
 
 	#ifdef JOE_TEST
 	gSt_DevMeasRecordData.nAttitude_SC7A = pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A + pst_MainloopSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount * 10;
@@ -915,6 +916,7 @@ void func_Save_Device_MeasRecord_Dispose()
 		}
 		if(pst_MainloopSystemPara->DeviceRunPara.cGetMeasSensorValueFlag == 1)
 		{
+			//pst_MainloopSystemPara->DeviceRunPara.cGetMeasSensorValueFlag = 0;
 			for(l=0; l<2; l++)
 			{
 				for(i=0; i<pst_MainloopSystemPara->DevicePara.cMeasSensorCount[l]; i++)
@@ -925,9 +927,9 @@ void func_Save_Device_MeasRecord_Dispose()
 					{
 						gSt_DevMeasRecordData.fWaterVolume = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fFlowValue;
 						pst_MainloopSystemPara->DevicePara.fTotal_Volume  = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fPositiveCumulativeTraffic;//+= pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fFlowValue;
-						#pragma diag_suppress=Pa039
-						func_Save_Device_Parameter(DEV_TOTAL_VOLUME, (unsigned char*)&pst_MainloopSystemPara->DevicePara.fTotal_Volume);
-						#pragma diag_warning=Pa039
+						//#pragma diag_suppress=Pa039
+						//func_Save_Device_Parameter(DEV_TOTAL_VOLUME, (unsigned char*)&pst_MainloopSystemPara->DevicePara.fTotal_Volume);
+						//#pragma diag_warning=Pa039
 						gSt_DevMeasRecordData.fWaterVolume_Total = pst_MainloopSystemPara->DevicePara.fTotal_Volume;
 						gSt_DevMeasRecordData.fWaterSpeed = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHZ_Radar_Ultrasonic_FlowData.fCross_SectionVelocity;
 					}
@@ -936,9 +938,9 @@ void func_Save_Device_MeasRecord_Dispose()
 					{
 						gSt_DevMeasRecordData.fWaterVolume = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fFlowValue;
 						pst_MainloopSystemPara->DevicePara.fTotal_Volume = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fCumulativeTraffic;//+= pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fFlowValue;
-						#pragma diag_suppress=Pa039
-						func_Save_Device_Parameter(DEV_TOTAL_VOLUME, (unsigned char*)&pst_MainloopSystemPara->DevicePara.fTotal_Volume);
-						#pragma diag_warning=Pa039
+						//#pragma diag_suppress=Pa039
+						//func_Save_Device_Parameter(DEV_TOTAL_VOLUME, (unsigned char*)&pst_MainloopSystemPara->DevicePara.fTotal_Volume);
+						//#pragma diag_warning=Pa039
 						gSt_DevMeasRecordData.fWaterVolume_Total = pst_MainloopSystemPara->DevicePara.fTotal_Volume;
 						gSt_DevMeasRecordData.fWaterSpeed = pst_MainloopSystemPara->DeviceRunPara.esMeasData.esHX_FlowmeterData.fCross_SectionVelocity;
 					}
@@ -1038,7 +1040,7 @@ void func_Save_Device_MeasRecord_Dispose()
 			if((double)pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent >= 10.0)
 			{
 				ucRecordFlag = 0;
-				func_Save_Device_MeasData();
+				ucRes = func_Save_Device_MeasData();
 				pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt++;
 				if(pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt >= (MAX_RECORD_COUNT - 1))
 				{
@@ -1057,6 +1059,7 @@ void func_Save_Device_MeasRecord_Dispose()
 				{
 					if(pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordLostCnt == 0)
 					{
+						memcpy(&gt_MeasData.fWaterLevel, &gSt_DevMeasRecordData.fWaterLevel, sizeof(DevMeasRecordDataSt));
 						pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now; //记录上传数据开始时间
 						if(pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordStartTime < 1762136855)
 						{
@@ -1170,7 +1173,7 @@ void func_4G_Connect_Server_Dispose(void)
 	if(pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag == 0)
 	{
 		//定时上传4G数据到测试平台
-		if((pst_MainloopSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount >= pst_MainloopSystemPara->DevicePara.nDeviceUploadCnt)
+		if(((pst_MainloopSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount >= pst_MainloopSystemPara->DevicePara.nDeviceUploadCnt) && (pst_MainloopSystemPara->DeviceRunPara.cUploadTimeFlag == 1))
 		|| (pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag == 2))
 		{
 			drv_mcu_Get_RTC_Time(pst_MainloopSystemPara->DeviceRunPara.cDeviceCurDateTime);
@@ -1192,7 +1195,7 @@ void func_4G_Connect_Server_Dispose(void)
 			if(pst_MainloopSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount >= pst_MainloopSystemPara->DevicePara.nDeviceUploadCnt)
 			{
 				pst_MainloopSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount = 0;
-				
+				pst_MainloopSystemPara->DeviceRunPara.cUploadTimeFlag = 0;
 			}
 			//先统计本次要上传的数据个数
 			pst_MainloopSystemPara->DeviceRunPara.cConnectServerFlag = 1;
@@ -1412,7 +1415,7 @@ void func_System_Mainloop_Dispose(void)
 					else
 					{
 						//当前采用间隔计数值达到设置的采样间隔，开启外接传感器电源
-						if(((pst_MainloopSystemPara->DeviceRunPara.nDeviceCurSampleCount >= pst_MainloopSystemPara->DevicePara.nDeviceSampleGapCnt)
+						if((((pst_MainloopSystemPara->DeviceRunPara.nDeviceCurSampleCount >= pst_MainloopSystemPara->DevicePara.nDeviceSampleGapCnt) && (pst_MainloopSystemPara->DeviceRunPara.cSampleTimeFlag == 1))
 						|| (pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag == 1))
 						&& (pst_MainloopSystemPara->DevicePara.cMeasSensorCount > 0))
 						{
@@ -1423,6 +1426,7 @@ void func_System_Mainloop_Dispose(void)
 							if(pst_MainloopSystemPara->DeviceRunPara.nDeviceCurSampleCount >= pst_MainloopSystemPara->DevicePara.nDeviceSampleGapCnt)
 							{
 								pst_MainloopSystemPara->DeviceRunPara.nDeviceCurSampleCount = 0;
+								pst_MainloopSystemPara->DeviceRunPara.cSampleTimeFlag = 0;
 							}
 							//非调试模式下开启外接传感器电源，因为调试模式下，已经在前面开启了电源
 							if(pst_MainloopSystemPara->DeviceRunPara.cLongPowerModel == 1)
@@ -1479,11 +1483,13 @@ void func_System_Mainloop_Dispose(void)
 			}
 		}
 	}
+	#ifdef NEW_W25Q128_DRIVER
 	if(pst_MainloopSystemPara->DeviceRunPara.cSaveParaFlag == 1)
 	{
 		Data_DoubleArea_Write(&pst_MainloopSystemPara->DevicePara.cDeviceID[0], sizeof(SysDeviceParaSt));
 		pst_MainloopSystemPara->DeviceRunPara.cSaveParaFlag = 0;
 	}
+	#endif
 	if(pst_MainloopSystemPara->DeviceRunPara.eCurPowerType == Power_OFF)
 	{
 		if(pst_MainloopSystemPara->DeviceRunPara.cPowerOffCnt >= 2)	//当设备磁控触发关机，但时间未到，无实际关机时，等待2分钟后重新进入休眠模式

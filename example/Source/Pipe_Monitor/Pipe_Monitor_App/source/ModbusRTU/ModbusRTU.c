@@ -893,7 +893,7 @@ unsigned char func_Get_Meas_Pressure_Level_Sensor_Value(en_usart_device_t ucDevi
     unsigned short usValue = 0;
     unsigned char ucResult = 1;
 
-    if(ucDevType == 3)  //BY压力液位设备
+    if(ucDevType == 4)  //BY压力液位设备
     {
         fMeasValue = &pst_MBSystemPara->DeviceRunPara.esMeasData.esBY_LevelData.fPressureWaterLevelValue;
         ucSendBuf[i++] = BY_PRESSURE_WATER_LEVEL_SENSOR_ADDR;
@@ -920,7 +920,7 @@ unsigned char func_Get_Meas_Pressure_Level_Sensor_Value(en_usart_device_t ucDevi
         if(pcRecvData != NULL)
         {
             usValue = *((unsigned short*)pcRecvData);
-            if(ucDevType == 3)  //BY压力液位设备
+            if(ucDevType == 4)  //BY压力液位设备
             {
                 *fMeasValue = (float)(((double)usValue - 1007) / 100.0) ; //压力传感器返回值为0.1MPa，转换为水位需要减去1.007m
             }

@@ -56,6 +56,7 @@
 #define W25Q128_SECTOR_SIZE      4096                      // W25Q128 单个扇区大小（4KB）
 
 uint8_t guc_W25Q128_Buf[4096];
+bool g_flash_ready = false;                                // Flash就绪标志
 /*******************************************************************************
  * Global variable definitions (declared in header file with 'extern')
  ******************************************************************************/
@@ -173,13 +174,15 @@ void W25Q128_WriteEnable(void)
  */
 void W25Q128_WaitBusy(void)
 {
+    if(!g_flash_ready) return;
     uint8_t status = 0x01;
+    uint32_t timeout = 0xFFFF;  // 超时保护，避免死等
     NSS_LOW();
-    SPI_Send_Byte(W25Q128_CMD_READ_STATUS); // 发送读状态指令
-    while (status & 0x01)     // 忙标志位（BIT0）为1表示忙
+    SPI_Send_Byte(W25Q128_CMD_READ_STATUS);
+    while ((status & 0x01) && (timeout--))
     {
         status = SPI_Recv_Byte();
-        Delay_NOP(10);
+        Delay_NOP(5);
     }
     NSS_HIGH();
 }
@@ -290,6 +293,7 @@ void W25Q128_BulkWrite(uint32_t write_addr, const uint8_t *p_buffer, uint32_t le
  */
 void W25Q128_BulkRead(uint32_t read_addr, uint8_t *p_buffer, uint32_t length)
 {
+	if(!g_flash_ready) return;
     W25Q128_ReadData(read_addr, p_buffer, length);
 }
 
@@ -316,6 +320,25 @@ bool DataArea_CheckValid(uint32_t data_area_addr)
     return (calc_crc == stored_crc);
 }
 
+// 新增：读取W25Q128 JEDEC ID，检测芯片是否正常响应
+bool W25Q128_Check_Exist(void)
+{
+    uint8_t jedec_id[3] = {0};
+    NSS_LOW();
+    SPI_Send_Byte(GET_IDENTIFICATION);
+    jedec_id[0] = SPI_Recv_Byte();  // 厂商ID: 0xEF
+    jedec_id[1] = SPI_Recv_Byte();  // 类型ID: 0x40
+    jedec_id[2] = SPI_Recv_Byte();  // 容量ID: 0x18（W25Q128）
+    NSS_HIGH();
+
+    // 验证ID是否匹配W25Q128
+    if(jedec_id[0] == 0xEF && jedec_id[1] == 0x40 && jedec_id[2] == 0x18)
+    {
+        return true;
+    }
+    return false;
+}
+
 /**
  * @brief  开机初始化：数据区检测、故障修复、双区同步（HC342F460专用）
  * @retval 0: 初始化成功，1: 正常区/备份区均异常（已初始化默认数据）
@@ -327,67 +350,95 @@ int System_PowerOn_Storage_Init(void)
     uint32_t data_crc = 0;
 	int nReturn = 1;
 	char cResetFlag = 0;
-
-	// 3. 初始化引脚电平
-    NSS_HIGH();  // 初始取消片选
-    SCK_LOW();   // SCK空闲低电平（CPOL=0）
-    MOSI_LOW();  // MOSI初始低电平
+	int retry = 0;
+    int init_result = 1;
+	char cReadBackupFlag = 0;
 
 	pst_W25Q128SystemPara = GetSystemPara();
     
-    // 步骤1：校验正常数据区
-    bool normal_area_valid = DataArea_CheckValid(NORMAL_DATA_AREA_ADDR);
-    
-    if (normal_area_valid)
+	while(retry < INIT_RETRY_COUNT)
     {
-        // 正常区有效，同步到备份区
-        W25Q128_BulkRead(NORMAL_DATA_AREA_ADDR, normal_data, DATA_BLOCK_SIZE);
+		// 步骤1：校验正常数据区
+		bool normal_area_valid = DataArea_CheckValid(NORMAL_DATA_AREA_ADDR);
 		
-        W25Q128_SectorErase(BACKUP_DATA_AREA_ADDR); // 擦除备份区
-        W25Q128_BulkWrite(BACKUP_DATA_AREA_ADDR, normal_data, DATA_BLOCK_SIZE); // 写入备份区
-        
-        memcpy(g_data_buffer, normal_data, DATA_BLOCK_SIZE); // 更新全局缓存
-		
-        nReturn = 0;//return 0;
-    }
-    else
+		if (normal_area_valid)
+		{
+			// 正常区有效，同步到备份区
+			W25Q128_BulkRead(NORMAL_DATA_AREA_ADDR, normal_data, DATA_BLOCK_SIZE);
+			if((normal_data[0] == 'M') && (normal_data[1] == 'Q'))
+			{
+				W25Q128_SectorErase(BACKUP_DATA_AREA_ADDR); // 擦除备份区
+				W25Q128_BulkWrite(BACKUP_DATA_AREA_ADDR, normal_data, DATA_BLOCK_SIZE); // 写入备份区
+				
+				memcpy(g_data_buffer, normal_data, DATA_BLOCK_SIZE); // 更新全局缓存
+				cReadBackupFlag = 0;
+				nReturn = 0;//return 0;
+				init_result = 0;
+				break;
+			}
+			else
+			{
+				cReadBackupFlag = 1;
+			}
+			//memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], normal_data, sizeof(SysDeviceParaSt));
+			//bool backup_area_valid = DataArea_CheckValid(BACKUP_DATA_AREA_ADDR);
+			//W25Q128_BulkRead(BACKUP_DATA_AREA_ADDR, normal_data, DATA_BLOCK_SIZE);
+			//memset(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], 0, sizeof(SysDeviceParaSt));
+			//memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], normal_data, sizeof(SysDeviceParaSt));
+			
+			
+		}
+		else
+		{
+			cReadBackupFlag = 1;
+		}
+		if(cReadBackupFlag == 1)
+		{
+			// 正常区异常，校验备份区
+			bool backup_area_valid = DataArea_CheckValid(BACKUP_DATA_AREA_ADDR);
+			
+			if (backup_area_valid)
+			{
+				// 备份区有效，覆盖修复正常区
+				W25Q128_BulkRead(BACKUP_DATA_AREA_ADDR, backup_data, DATA_BLOCK_SIZE);
+				if((backup_data[0] == 'M') && (backup_data[1] == 'Q'))
+				{
+					W25Q128_SectorErase(NORMAL_DATA_AREA_ADDR); // 擦除正常区
+					W25Q128_BulkWrite(NORMAL_DATA_AREA_ADDR, backup_data, DATA_BLOCK_SIZE); // 修复正常区
+					
+					memcpy(g_data_buffer, backup_data, DATA_BLOCK_SIZE); // 更新全局缓存
+					nReturn = 0;//return 0;
+					init_result = 0;
+					break;
+				}
+			}
+		}
+		retry++;
+        Ddl_Delay1ms(1000);  // 重试前延时
+	}
+        // 多次重试失败，初始化默认参数
+    if(init_result != 0)
     {
-        // 正常区异常，校验备份区
-        bool backup_area_valid = DataArea_CheckValid(BACKUP_DATA_AREA_ADDR);
-        
-        if (backup_area_valid)
-        {
-            // 备份区有效，覆盖修复正常区
-            W25Q128_BulkRead(BACKUP_DATA_AREA_ADDR, backup_data, DATA_BLOCK_SIZE);
-            
-            W25Q128_SectorErase(NORMAL_DATA_AREA_ADDR); // 擦除正常区
-            W25Q128_BulkWrite(NORMAL_DATA_AREA_ADDR, backup_data, DATA_BLOCK_SIZE); // 修复正常区
-            
-            memcpy(g_data_buffer, backup_data, DATA_BLOCK_SIZE); // 更新全局缓存
-            nReturn = 0;//return 0;
-        }
-        else
-        {
-            // 双区均异常，初始化默认数据
-           // memset(g_data_buffer, 0x00, DATA_BLOCK_SIZE);
-		   	memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], &gs_DeviceDefaultPara, sizeof(gs_DeviceDefaultPara));
-			memcpy(g_data_buffer, &gs_DeviceDefaultPara, DATA_BLOCK_SIZE);
+		// 双区均异常，初始化默认数据
+		// memset(g_data_buffer, 0x00, DATA_BLOCK_SIZE);
+		memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], &gs_DeviceDefaultPara, sizeof(gs_DeviceDefaultPara));
+		memcpy(g_data_buffer, &gs_DeviceDefaultPara, DATA_BLOCK_SIZE);
 
-            data_crc = crc32_calculate(g_data_buffer, DATA_BLOCK_SIZE);
-            
-            // 擦除双区并写入默认数据
-            W25Q128_SectorErase(NORMAL_DATA_AREA_ADDR);
-            W25Q128_SectorErase(BACKUP_DATA_AREA_ADDR);
-            W25Q128_BulkWrite(NORMAL_DATA_AREA_ADDR, g_data_buffer, DATA_BLOCK_SIZE);
-            W25Q128_BulkWrite(BACKUP_DATA_AREA_ADDR, g_data_buffer, DATA_BLOCK_SIZE);
-            
-            // 存储CRC32校验值
-            W25Q128_SectorErase(CRC32_STORE_ADDR);
-            W25Q128_BulkWrite(CRC32_STORE_ADDR, (uint8_t*)&data_crc, sizeof(uint32_t));
-            
-            nReturn = 1;//return 1;
-        }
+		data_crc = crc32_calculate(g_data_buffer, DATA_BLOCK_SIZE);
+		
+		// 擦除双区并写入默认数据
+		W25Q128_SectorErase(NORMAL_DATA_AREA_ADDR);
+		W25Q128_SectorErase(BACKUP_DATA_AREA_ADDR);
+		W25Q128_BulkWrite(NORMAL_DATA_AREA_ADDR, g_data_buffer, DATA_BLOCK_SIZE);
+		W25Q128_BulkWrite(BACKUP_DATA_AREA_ADDR, g_data_buffer, DATA_BLOCK_SIZE);
+		
+		// 存储CRC32校验值
+		W25Q128_SectorErase(CRC32_STORE_ADDR);
+		W25Q128_BulkWrite(CRC32_STORE_ADDR, (uint8_t*)&data_crc, sizeof(uint32_t));
+		
+		nReturn = 1;//return 1;
     }
+    
 	memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], g_data_buffer, sizeof(SysDeviceParaSt));
 	if(pst_W25Q128SystemPara->DevicePara.sEEP_Version != EEP_VERSION)
 	{
@@ -397,12 +448,11 @@ int System_PowerOn_Storage_Init(void)
 		memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], &gs_DeviceDefaultPara, sizeof(gs_DeviceDefaultPara));
 		memcpy(g_data_buffer, &gs_DeviceDefaultPara, DATA_BLOCK_SIZE);
 		cResetFlag = 1;
-		
 	}
 	if( strcmp( (char*)&pst_W25Q128SystemPara->DevicePara.cDeviceSWVersion[0], (char *)&gs_DeviceDefaultPara.cDeviceSWVersion[0]) )
 	{
 		memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceSWVersion[0],&gs_DeviceDefaultPara.cDeviceSWVersion[0],10);
-		memcpy(g_data_buffer, pst_W25Q128SystemPara, DATA_BLOCK_SIZE);
+		memcpy(g_data_buffer, &pst_W25Q128SystemPara->DevicePara.cDeviceID[0], sizeof(SysDeviceParaSt));
 		cResetFlag = 1;
 	}
 	if(cResetFlag)
@@ -418,6 +468,22 @@ int System_PowerOn_Storage_Init(void)
 		W25Q128_SectorErase(CRC32_STORE_ADDR);
 		W25Q128_BulkWrite(CRC32_STORE_ADDR, (uint8_t*)&data_crc, sizeof(uint32_t));
 		nReturn = 2;
+		#if 0
+		Ddl_Delay1ms(5000);
+		bool normal_area_valid = DataArea_CheckValid(NORMAL_DATA_AREA_ADDR);
+		
+		if (normal_area_valid)
+		{
+			// 正常区有效，同步到备份区
+			W25Q128_BulkRead(NORMAL_DATA_AREA_ADDR, normal_data, DATA_BLOCK_SIZE);
+
+			memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], normal_data, sizeof(SysDeviceParaSt));
+			bool backup_area_valid = DataArea_CheckValid(BACKUP_DATA_AREA_ADDR);
+			W25Q128_BulkRead(BACKUP_DATA_AREA_ADDR, normal_data, DATA_BLOCK_SIZE);
+			memset(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], 0, sizeof(SysDeviceParaSt));
+			memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], normal_data, sizeof(SysDeviceParaSt));
+		}
+		#endif
 	}
 	return nReturn;
 }
@@ -487,7 +553,7 @@ bool RecordData_Write(uint32_t record_index, const DevMeasRecordDataSt *p_record
     }
     
     // 4. 第一步：读取所属扇区的所有原有数据到缓存（保留原有有效记录）
-    memset(guc_W25Q128_Buf, 0xFF, W25Q128_SECTOR_SIZE);  // 初始化缓存为Flash擦除后默认值（0xFF）
+    memset(guc_W25Q128_Buf, 0x00, W25Q128_SECTOR_SIZE);  // 初始化缓存为Flash擦除后默认值（0xFF）
     W25Q128_BulkRead(sector_base_addr, guc_W25Q128_Buf, W25Q128_SECTOR_SIZE);
     
     // 5. 第二步：在扇区缓存中更新目标记录（仅修改当前索引，其他记录保持不变）
@@ -537,7 +603,7 @@ bool RecordData_Read(uint32_t record_index, DevMeasRecordDataSt *p_record)
 }
 
 
-#endif // NEW_W25Q128_DRIVER
+#else
 
 /*******************************************************************************
  * Function implementation - global ('extern') and local ('static')
@@ -860,67 +926,94 @@ void W25Q128_Spi_flash_buffer_write(uint8_t* pbuffer, uint32_t write_addr, uint1
 	uint16_t secoff;
 	uint16_t secremain;           
 	uint16_t i;    
+	uint8_t j = 0;
 	uint8_t * W25QXX_BUF;   
 	W25QXX_BUF=guc_W25Q128_Buf;       
-   	secpos=write_addr/4096;//扇区地址  
-	secoff=write_addr%4096;//在扇区内的偏移
-	secremain=4096-secoff;//扇区剩余空间大小   
-   	//printf("ad:%X,nb:%X\r\n",WriteAddr,NumByteToWrite);//测试用
-   	if(NumByteToWrite<=secremain)
-   	{
-		secremain=NumByteToWrite;//不大于4096个字节
-   	}
-	while(1) 
-	{        
-		W25Q128_Get_ReadDataBytes(secpos*4096,W25QXX_BUF,4096);//读出整个扇区的内容
-		for(i=0;i<secremain;i++)//校验数据
+	for(j=0; j<2; j++)
+	{
+		if(write_addr < SYSTEM_RECORD_START_ADDR)
 		{
-			if(W25QXX_BUF[secoff+i] != 0XFF)
+			if(j == 0)
 			{
-				break;//需要擦除      
-			}
-		}
-		if(i<secremain)//需要擦除
-		{
-			W25Q128_Spi_flash_sector_erase(secpos);//擦除这个扇区
-			//W25Q128_Get_ReadDataBytes(secpos*4096,W25QXX_BUF,4096);//读出整个扇区的内容
-			for(i=0;i<secremain;i++)     //复制
-			{
-				W25QXX_BUF[i+secoff]=pbuffer[i];           
-			}
-			W25Q128_Write_NoCheck(W25QXX_BUF,secpos*4096,4096);//写入整个扇区  
-
-		}
-		else
-		{
-			W25Q128_Write_NoCheck(pbuffer,write_addr,secremain);//写已经擦除了的,直接写入扇区剩余区间.      
-		}                                   
-		if(NumByteToWrite==secremain)
-		{
-			break;//写入结束了
-		}
-		else//写入未结束
-		{
-			secpos++;//扇区地址增1
-			secoff=0;//偏移位置为0        
-
-			pbuffer+=secremain;  //指针偏移
-			write_addr+=secremain;//写地址偏移      
-			NumByteToWrite-=secremain;                                    //字节数递减
-			if(NumByteToWrite>4096)
-			{
-				secremain=4096;  //下一个扇区还是写不完
+				secpos=write_addr/4096;//扇区地址  
+				secoff=write_addr%4096;//在扇区内的偏移
+				secremain=4096-secoff;//扇区剩余空间大小   
 			}
 			else
 			{
-				secremain=NumByteToWrite;                   //下一个扇区可以写完了
+				write_addr = write_addr + BACKUP_DATA_AREA_ADDR;
+				secpos=write_addr/4096;//扇区地址  
+				secoff=write_addr%4096;//在扇区内的偏移
+				secremain=4096-secoff;//扇区剩余空间大小   
 			}
-		}        
-		
-	};       
+		}
+		else
+		{
+			j = 1;
+			secpos=write_addr/4096;//扇区地址  
+			secoff=write_addr%4096;//在扇区内的偏移
+			secremain=4096-secoff;//扇区剩余空间大小   
+		}
+		//printf("ad:%X,nb:%X\r\n",WriteAddr,NumByteToWrite);//测试用
+		if(NumByteToWrite<=secremain)
+		{
+			secremain=NumByteToWrite;//不大于4096个字节
+		}
+		while(1) 
+		{        
+			W25Q128_Get_ReadDataBytes(secpos*4096,W25QXX_BUF,4096);//读出整个扇区的内容
+			for(i=0;i<secremain;i++)//校验数据
+			{
+				if(W25QXX_BUF[secoff+i] != 0XFF)
+				{
+					break;//需要擦除      
+				}
+			}
+			if(i<secremain)//需要擦除
+			{
+				W25Q128_Spi_flash_sector_erase(secpos);//擦除这个扇区
+				//W25Q128_Get_ReadDataBytes(secpos*4096,W25QXX_BUF,4096);//读出整个扇区的内容
+				for(i=0;i<secremain;i++)     //复制
+				{
+					W25QXX_BUF[i+secoff]=pbuffer[i];           
+				}
+				W25Q128_Write_NoCheck(W25QXX_BUF,secpos*4096,4096);//写入整个扇区  
+
+			}
+			else
+			{
+				W25Q128_Write_NoCheck(pbuffer,write_addr,secremain);//写已经擦除了的,直接写入扇区剩余区间.      
+			}                                   
+			if(NumByteToWrite==secremain)
+			{
+				break;//写入结束了
+			}
+			else//写入未结束
+			{
+				secpos++;//扇区地址增1
+				secoff=0;//偏移位置为0        
+
+				pbuffer+=secremain;  //指针偏移
+				write_addr+=secremain;//写地址偏移      
+				NumByteToWrite-=secremain;                                    //字节数递减
+				if(NumByteToWrite>4096)
+				{
+					secremain=4096;  //下一个扇区还是写不完
+				}
+				else
+				{
+					secremain=NumByteToWrite;                   //下一个扇区可以写完了
+				}
+			}        
+			
+		};       
+	}
+   	
 	//W25Q128_Get_ReadDataBytes(secpos*4096,W25QXX_BUF,4096);//读出整个扇区的内容
 	#endif
 } 
+
+#endif // NEW_W25Q128_DRIVER
 
 //保存设备参数到存储器中
 //输入参数：eCMD:保存参数命令号;  cDataArr:保存数据指针
@@ -1918,7 +2011,7 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 		break;
 	case DEV_WEATHER:
 		ucTmpData = *cDataArr;     
-		if (ucTmpData > 2)
+		if (ucTmpData > 1)
 		{
 			return 0;
 		}
@@ -2108,6 +2201,94 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 			#endif
 		}
 		break;
+	case DEV_PLAN_ENABLE:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 1)
+		{
+			return 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cPlanEnableFlag = ucTmpData;
+			#ifndef NEW_W25Q128_DRIVER
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cPlanEnableFlag,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cPlanEnableFlag-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+			#endif
+		}
+		break;
+	case DEV_ALARM_ENABLE:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 1)
+		{
+			return 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cAlarmEnableFlag = ucTmpData;
+			#ifndef NEW_W25Q128_DRIVER
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cAlarmEnableFlag,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cAlarmEnableFlag-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+			#endif
+		}
+		break;
+	case DEV_FLOW_ALARM_ENABLE:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 1)
+		{
+			return 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cFlowAlarmEnableFlag = ucTmpData;
+			#ifndef NEW_W25Q128_DRIVER
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cFlowAlarmEnableFlag,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cFlowAlarmEnableFlag-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+			#endif
+		}
+		break;
+	case DEV_FLOW_ALARM_CNTS:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 2)
+		{
+			return 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cFlowAlarmCnts = ucTmpData;
+			#ifndef NEW_W25Q128_DRIVER
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cFlowAlarmCnts,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cFlowAlarmCnts-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+			#endif
+		}
+		break;
+	case DEV_FLOW_ALARM_VAL1:
+		fTmpData = ((float*)cDataArr);
+		if(((double)*fTmpData < 0.0) || (((double)*fTmpData > 1000.0)))
+		{
+			return 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.fFlowAlarmValue[0] = *fTmpData;
+			#ifndef NEW_W25Q128_DRIVER
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fFlowAlarmValue[0],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fFlowAlarmValue[0]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
+			#pragma diag_warning=Pa039
+			#endif
+		}
+		break;
+	case DEV_FLOW_ALARM_VAL2:
+		fTmpData = ((float*)cDataArr);
+		if(((double)*fTmpData < 0.0) || (((double)*fTmpData > 1000.0)))
+		{
+			return 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.fFlowAlarmValue[1] = *fTmpData;
+			#ifndef NEW_W25Q128_DRIVER
+			#pragma diag_suppress=Pa039
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.fFlowAlarmValue[1],SYSTEM_PARA_ADDR+((char*)&pst_W25Q128SystemPara->DevicePara.fFlowAlarmValue[1]-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),sizeof(float));
+			#pragma diag_warning=Pa039
+			#endif
+		}
+		break;
 	case DEV_FACTORY_RESET:
 		func_Device_Parameter_Factory_Reset();
 		break;
@@ -2135,10 +2316,24 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 }
 
 //保存设备测量数据
-void func_Save_Device_MeasData(void)
+unsigned char func_Save_Device_MeasData(void)
 {
 	#ifdef NEW_W25Q128_DRIVER
-	RecordData_Write(pst_W25Q128SystemPara->DevicePara.nDeviceRecordCnt, &gSt_DevMeasRecordData);
+	unsigned char i=0;
+	unsigned char ucResult = 1;
+	DevMeasRecordDataSt tMeasData;
+	for(i=0; i<3; i++)
+	{
+		//写入记录后，读取记录，判断是否写入成功
+		RecordData_Write(pst_W25Q128SystemPara->DevicePara.nDeviceRecordCnt, &gSt_DevMeasRecordData);
+		RecordData_Read(pst_W25Q128SystemPara->DevicePara.nDeviceRecordCnt, &tMeasData);
+		if((tMeasData.cWater_Immersion_Status == gSt_DevMeasRecordData.cWater_Immersion_Status) && (tMeasData.nAttitude_SC7A == gSt_DevMeasRecordData.nAttitude_SC7A))
+		{
+			ucResult = 0;
+		    break;
+		}
+	}
+	return ucResult;
 	#else
 	W25Q128_Spi_flash_buffer_write((uint8_t *)&gSt_DevMeasRecordData.fWaterLevel,SYSTEM_RECORD_START_ADDR+pst_W25Q128SystemPara->DevicePara.nDeviceRecordCnt*SYSTEM_RECORD_SIZE,SYSTEM_RECORD_SIZE);
 	#endif
@@ -2204,11 +2399,16 @@ void func_Device_Parameter_Init(void)
 	//判断版本号是否相同
 	if(pst_W25Q128SystemPara->DevicePara.sEEP_Version != EEP_VERSION)
 	{
-		//记录备份数据
-		//W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDeviceID[0],SYSTEM_BACKUP_PARA_ADDR,sizeof(gs_DeviceDefaultPara));
-		//采用默认参数
-		memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], &gs_DeviceDefaultPara, sizeof(gs_DeviceDefaultPara));
-		W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDeviceID[0],SYSTEM_PARA_ADDR,sizeof(gs_DeviceDefaultPara));
+		//读取备份区数据
+		W25Q128_Get_ReadDataBytes(BACKUP_DATA_AREA_ADDR,(uint8_t*)&pst_W25Q128SystemPara->DevicePara.cDeviceID[0],sizeof(SysDeviceParaSt));
+		if(pst_W25Q128SystemPara->DevicePara.sEEP_Version != EEP_VERSION)
+		{
+			//记录备份数据
+			//W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDeviceID[0],SYSTEM_BACKUP_PARA_ADDR,sizeof(gs_DeviceDefaultPara));
+			//采用默认参数
+			memcpy(&pst_W25Q128SystemPara->DevicePara.cDeviceID[0], &gs_DeviceDefaultPara, sizeof(gs_DeviceDefaultPara));
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDeviceID[0],SYSTEM_PARA_ADDR,sizeof(gs_DeviceDefaultPara));
+		}
 	}
 	if( strcmp( (char*)&pst_W25Q128SystemPara->DevicePara.cDeviceSWVersion[0], (char *)&gs_DeviceDefaultPara.cDeviceSWVersion[0]) )
 	{
