@@ -958,6 +958,12 @@ eMBErrorCode Unit_RW_Device_FlowAlarmValue_2_func( unsigned char * pucRegBuffer,
     return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fValue,DEV_FLOW_ALARM_VAL2);
 }
 
+eMBErrorCode Unit_RW_Device_SM4EntryFlag_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    char cVlaue = (char)pst_MBSystemPara->DevicePara.cSM4EntryFlag;
+    return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_SM4_ENTRY_FLAG);
+}
+
 /*参数单元表,寄存器地址对应参数占用的寄存器数，读写操作，预留空间调用Unit_RW_Null_func函数*/
 static const MB_Data_Reg_Unit_S Modbus_Data_Reg_Unit[MD_MAX_REG_UNIT] = 
 {
@@ -1071,7 +1077,8 @@ static const MB_Data_Reg_Unit_S Modbus_Data_Reg_Unit[MD_MAX_REG_UNIT] =
     {MB_RW_DEVICE_FLOW_ALARMENABLE_ADDR,MB_RW_DEVICE_FLOW_ALARM_CNTS_ADDR - MB_RW_DEVICE_FLOW_ALARMENABLE_ADDR, Unit_RW_Device_FlowAlarmEnable_func},
     {MB_RW_DEVICE_FLOW_ALARM_CNTS_ADDR,MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR - MB_RW_DEVICE_FLOW_ALARM_CNTS_ADDR, Unit_RW_Device_FlowAlarmCnts_func},
     {MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR,MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR - MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR, Unit_RW_Device_FlowAlarmValue_1_func},
-    {MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR,2, Unit_RW_Device_FlowAlarmValue_2_func},
+    {MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR,MB_RW_DEVICE_SM4_ENTRY_FLAG_ADDR - MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR, Unit_RW_Device_FlowAlarmValue_2_func},
+    {MB_RW_DEVICE_SM4_ENTRY_FLAG_ADDR,1, Unit_RW_Device_SM4EntryFlag_func},
     //{MB_RW_DEVICE_MAX_ADDR,1,NULL} //结束标志
 };
 

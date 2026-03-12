@@ -319,6 +319,11 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
     sprintf((char *)&ucParaNameArr[0], "\"lat\",");
     (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
 
+    //NFC状态
+    memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
+    sprintf((char *)&ucParaNameArr[0], "\"NFC\",");
+    (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
+
     //设备状态
     memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
     //memset(ucDataArr, 0, sizeof(ucDataArr));
@@ -404,6 +409,9 @@ uint16_t func_Get_BlackLightDataUploadCMD_Data(uint8_t *ucDataArr, unsigned char
     struct tm tm;
     unsigned short usDataLen = 0;
     unsigned char ucLen = 0;
+    uint8_t ucEntryArr[1200] = {0};
+    uint16_t usDataLength = 0;
+    uint8_t l = 0;
     //time(&now);
     drv_mcu_Get_RTC_Time(pst_EC200USystemPara->DeviceRunPara.cDeviceCurDateTime);
     sscanf(pst_EC200USystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
@@ -437,25 +445,32 @@ uint16_t func_Get_BlackLightDataUploadCMD_Data(uint8_t *ucDataArr, unsigned char
     //(void)strcat((char *)ucTempArr[usDataLen], ucArr);
     //usDataLen += ucLen;
     usDataLen = strlen((char *)ucTempArr);
-    #ifdef SM4_ENTRY_ENABLE
-    l = usDataLen % 16;
-    if(l != 0)
+    //#ifdef SM4_ENTRY_ENABLE
+    if(pst_EC200USystemPara->DevicePara.cSM4EntryFlag == 1)
     {
-        usDataLength = usDataLen + 16-l;
+        l = usDataLen % 16;
+        if(l != 0)
+        {
+            usDataLength = usDataLen + 16-l;
+        }
+        drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
+        unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
+        memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
+        usDataLength += 2;
+        memcpy(ucDataArr, ucEntryArr, usDataLength);
+        usDataLen = usDataLength;
     }
-    drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
-    unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
-    memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
-    usDataLength += 2;
-    memcpy(ucDataArr, ucEntryArr, usDataLength);
-    usDataLen = usDataLength;
-    #else
+    else
+    {
+        memcpy(ucDataArr, ucTempArr, usDataLen);
+    }
+    //#else
     //memset(ucTempArr,0,strlen((char *)ucTempArr));
     //drv_LKT4202_SendData_Decry(ucEntryArr, (char*)ucTempArr,usDataLength);
     //usDataLen = strlen((char *)ucEntryArr);
 
-    memcpy(ucDataArr, ucTempArr, usDataLen);
-    #endif
+    
+    //#endif
     return usDataLen;                          
 }
 
@@ -1212,25 +1227,32 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     }
     
     usDataLen = strlen((char *)ucTempArr);
-    #ifdef SM4_ENTRY_ENABLE
-    l = usDataLen % 16;
-    if(l != 0)
+    //#ifdef SM4_ENTRY_ENABLE
+    if(pst_EC200USystemPara->DevicePara.cSM4EntryFlag == 1)
     {
-        usDataLength = usDataLen + 16-l;
+    
+        l = usDataLen % 16;
+        if(l != 0)
+        {
+            usDataLength = usDataLen + 16-l;
+        }
+        drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
+        unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
+        memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
+        usDataLength += 2;
+        memcpy(ucDataArr, ucEntryArr, usDataLength);
+        usDataLen = usDataLength;
     }
-    drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
-    unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
-    memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
-    usDataLength += 2;
-    memcpy(ucDataArr, ucEntryArr, usDataLength);
-    usDataLen = usDataLength;
-    #else
+    //#else
     //memset(ucTempArr,0,strlen((char *)ucTempArr));
     //drv_LKT4202_SendData_Decry(ucEntryArr, (char*)ucTempArr,usDataLength);
     //usDataLen = strlen((char *)ucEntryArr);
-
-    memcpy(ucDataArr, ucTempArr, usDataLen);
-    #endif
+    else
+    {
+        memcpy(ucDataArr, ucTempArr, usDataLen);
+    }
+    
+    //#endif
     return usDataLen;                          
 }
 
@@ -1363,6 +1385,7 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
     uint8_t ucDevTempArr[150] = {0};    //用于存储设备内部MCU温度数据
     uint8_t ucCSQArr[50] = {0};    //用于存储设备信号强度数据
     uint8_t ucBatteryArr[150] = {0};    //用于存储设备电池电量数据
+    uint8_t ucNFCFlag[50] = {0};    //用于存储设备NFC状态数据
     //uint8_t ucParaNameArr[10] = {0};
     //uint8_t ucWaterLevel_Radar_Flag = 0;    //雷达液位测量传感器存在标志位
     #ifndef WATERLEVEL_RADAR_PRESS
@@ -1439,6 +1462,7 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
     memcpy(&ucDevTempArr[0], "\"DevTemperature\":[", 18);
     memcpy(&ucBatteryArr[0], "\"batV\":[", 8);
     memcpy(&ucCSQArr[0], "\"CSQ\":[", 7);
+    memcpy(&ucNFCFlag[0], "\"NFC\":[", 7);
 
     if(pst_EC200USystemPara->DeviceRunPara.cBarTouchFlag == 0)
     {
@@ -1458,6 +1482,7 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
             sprintf((char *)&ucDevTempArr[strlen((char *)ucDevTempArr)], "%.3lf,", (double)st_TempValue[nPosi].fDevTemperature);
             sprintf((char *)&ucBatteryArr[strlen((char *)ucBatteryArr)], "%.3lf,", (double)pst_EC200USystemPara->DeviceRunPara.esDeviceRunState.fBattleVoltage);
             sprintf((char *)&ucCSQArr[strlen((char *)ucCSQArr)], "%d,", pst_EC200USystemPara->DeviceRunPara.nSignalStrength);
+            sprintf((char *)&ucNFCFlag[strlen((char *)ucNFCFlag)], "%d,", 0); 
         }
         
     
@@ -1473,6 +1498,7 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
         sprintf((char *)&ucDevTempArr[strlen((char *)ucDevTempArr)], "%.3lf,", (double)gSt_DevMeasRecordData.fDevTemperature);
         sprintf((char *)&ucBatteryArr[strlen((char *)ucBatteryArr)], "%.3lf,", (double)pst_EC200USystemPara->DeviceRunPara.esDeviceRunState.fBattleVoltage);
         sprintf((char *)&ucCSQArr[strlen((char *)ucCSQArr)], "%d,", pst_EC200USystemPara->DeviceRunPara.nSignalStrength);
+        sprintf((char *)&ucNFCFlag[strlen((char *)ucNFCFlag)], "%d,", 1); 
     }
 
     if(ucRecordCnt > 0)
@@ -1493,6 +1519,8 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
         (void)strcat((char *)ucTempArr, (char *)ucDevTempArr);
         memcpy(&ucBatteryArr[strlen((char *)ucBatteryArr)-1], "],", 2);
         (void)strcat((char *)ucTempArr, (char *)ucBatteryArr);
+        memcpy(&ucNFCFlag[strlen((char *)ucNFCFlag)-1], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucNFCFlag);
         memcpy(&ucCSQArr[strlen((char *)ucCSQArr)-1], "]}}", 3);
         (void)strcat((char *)ucTempArr, (char *)ucCSQArr);
     }
@@ -1514,28 +1542,36 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
         (void)strcat((char *)ucTempArr, (char *)ucDevTempArr);
         memcpy(&ucBatteryArr[strlen((char *)ucBatteryArr)], "],", 2);
         (void)strcat((char *)ucTempArr, (char *)ucBatteryArr);
+        memcpy(&ucNFCFlag[strlen((char *)ucNFCFlag)], "],", 2);
+        (void)strcat((char *)ucTempArr, (char *)ucNFCFlag);
         memcpy(&ucCSQArr[strlen((char *)ucCSQArr)], "]}}", 3);
         (void)strcat((char *)ucTempArr, (char *)ucCSQArr);
     }
 
     usDataLen = strlen((char *)ucTempArr);
-    #ifdef SM4_ENTRY_ENABLE
-    l = usDataLen % 16;
-    if(l != 0)
+    //#ifdef SM4_ENTRY_ENABLE
+    if(pst_EC200USystemPara->DevicePara.cSM4EntryFlag == 1)
     {
-        usDataLength = usDataLen + 16-l;
+        l = usDataLen % 16;
+        if(l != 0)
+        {
+            usDataLength = usDataLen + 16-l;
+        }
+        drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
+        unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
+        memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
+        usDataLength += 2;
+        memcpy(ucDataArr, ucEntryArr, usDataLength);
+        usDataLen = usDataLength;
     }
-    drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
-    unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
-    memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
-    usDataLength += 2;
-    memcpy(ucDataArr, ucEntryArr, usDataLength);
-    usDataLen = usDataLength;
-    #else
+    //#else
     //usDataLen = strlen((char *)ucEntryArr);
-
-    memcpy(ucDataArr, ucTempArr, usDataLen);
-    #endif
+    else
+    {
+        memcpy(ucDataArr, ucTempArr, usDataLen);
+    }
+    
+    //#endif
     return usDataLen;                          
 }
 
@@ -1638,23 +1674,29 @@ uint16_t func_Get_DevStatusCMD_Data(uint8_t *ucDataArr)
     (void)strcat((char *)ucTempArr, (char *)ucTempValueArr[5]);
 
     usDataLen = strlen((char *)ucTempArr);
-    #ifdef SM4_ENTRY_ENABLE
-    l = usDataLen % 16;
-    if(l != 0)
+    //#ifdef SM4_ENTRY_ENABLE
+    if(pst_EC200USystemPara->DevicePara.cSM4EntryFlag == 1)
     {
-        usDataLength = usDataLen + 16-l;
+        l = usDataLen % 16;
+        if(l != 0)
+        {
+            usDataLength = usDataLen + 16-l;
+        }
+        
+        drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
+        unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
+        memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
+        usDataLength += 2;
+        memcpy(ucDataArr, ucEntryArr, usDataLength);
+        usDataLen = usDataLength;
+    }
+    //#else
+    else
+    {
+        memcpy(ucDataArr, ucTempArr, usDataLen);
     }
     
-    drv_LKT4202_SendData_Encry(&ucTempArr[0], (char*)ucEntryArr,usDataLength);
-    unsigned short usCRC16 = CRC16_SM4(ucEntryArr, usDataLength);
-    memcpy(&ucEntryArr[usDataLength], &usCRC16, 2);
-    usDataLength += 2;
-    memcpy(ucDataArr, ucEntryArr, usDataLength);
-    usDataLen = usDataLength;
-    #else
-
-    memcpy(ucDataArr, ucTempArr, usDataLen);
-    #endif
+    //#endif
     return usDataLen;          
 }
 

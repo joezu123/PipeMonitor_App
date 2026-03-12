@@ -34,8 +34,8 @@ extern "C"
 #define FLOWERMETER_SENSOR_ADDR 1
 #define BY_RADAR_WATER_LEVEL_SENSOR_ADDR 2 //博雅-雷达水位计设备地址
 #define BY_PRESSURE_WATER_LEVEL_SENSOR_ADDR 1 //博雅-压力水位计设备地址
-#define HZ_RADAR_ULTRASONIC_FLOW_SENSOR_ADDR 0x34 //航征-雷达超声波流量计设备地址
-#define HZ_RADAR_WATER_LEVEL_SENSOR_ADDR 0x35 //航征-雷达水位计设备地址
+#define HZ_RADAR_ULTRASONIC_FLOW_SENSOR_ADDR 0x35 //航征-雷达超声波流量计设备地址
+#define HZ_RADAR_WATER_LEVEL_SENSOR_ADDR 0x34 //航征-雷达水位计设备地址
 #define HZ_PRESSURE_WATER_LEVEL_SENSOR_ADDR 0x01 //航征-压力水位计设备地址
 #define HZ_INTEGRATED_CONDUCTIVITY_SENSOR_ADDR 0x02 //航征-电导率设备地址
 
@@ -220,6 +220,7 @@ typedef enum
 #define MB_RW_DEVICE_FLOW_ALARM_CNTS_ADDR         		(MB_DEVICE_PARA_BASE + 0x022C) //设备流量预警规则组数寄存器地址
 #define MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR         (MB_DEVICE_PARA_BASE + 0x022D)  //设备流量预警层级1-5
 #define MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR         (MB_DEVICE_PARA_BASE + 0x022F)  //设备流量预警层级1-5
+#define MB_RW_DEVICE_SM4_ENTRY_FLAG_ADDR          (MB_DEVICE_PARA_BASE + 0x0231)  //设备SM4加密使能标志寄存器地址
 //#define MB_RW_DEVICE_MAX_ADDR                		(MB_DEVICE_PARA_BASE + 0x0240) //设备参数寄存器最大地址
 
 /*******************************************************************************

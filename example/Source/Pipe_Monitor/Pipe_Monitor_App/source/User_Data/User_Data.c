@@ -48,7 +48,7 @@ unsigned char guc_RTURecvArr[100] = {0};	//Modbus RTU接收数据缓存
 char gc_SystemPosi = 0;
 DevMeasRecordDataSt gSt_DevMeasRecordData = {0};	//设备测量数据记录结构体
 unsigned char guc_SystemTestFlag = 0;
-unsigned short gus_SystemTestArr[10] = {0};
+unsigned short gus_SystemTestArr[10] = {0};	
 unsigned char ucMeasPosi = 0;
 unsigned char ucMeasValue[10] = {0};
 DevMeasRecordDataSt gt_MeasData = {0};;
@@ -56,7 +56,7 @@ en_4G_Module_Init_State gE_4G_Module_Init_CMD = Module_START_WAIT_CMD;
 SysDeviceParaSt gs_DeviceDefaultPara = 
 {
 	//char cDeviceID[16];	//设备ID:MQ+4位厂商代码+4位客户端类型+6位自定义字符串
-	{'M','Q','0','0','0','0','0','0','0','4','0','0','0','0','0','3',0},			
+	{'M','Q','0','0','0','0','0','0','0','4','0','0','0','0','1','3',0},			
 	{0},						//char cDeviceIdenFlag;	//设备是否经过NFC认证标志位	0->未验证
 	{0},						//char cDeviceRegisterFlag;	//设备是否在服务器通讯上注册标志位	0->未注册
 	{0,0,0},					//char cDeviceIMSI[15];	//设备IMSI号；是一个用于在全球范围内唯一地识别移动用户的标识符。IMSI存储在手机的SIM卡中，用于在蜂窝网络中进行用户身份验证和位置管理。
@@ -133,12 +133,13 @@ SysDeviceParaSt gs_DeviceDefaultPara =
 	{0},						//char cFlowAlarmEnableFlag;	//设备流量预警功能开关：0->未启用；1->启用
 	{0},						//char cFlowAlarmCnts;	//设备流量预警规则组数，最大2
 	{0.0,0.0},					//float fFlowAlarmValue[2];	//流量预警层级
-	{0},						//char cBackUpArr[134];	//备用数据数组，长度50字节	
+	{0},						//char cSM4EntryFlag;	//SM4加密使能标志位：0->未启用；1->启用
+	{0},						//char cBackUpArr[133];	//备用数据数组，长度50字节	
 	{EEP_VERSION}				//short sEEP_Version;			//存储版本号
 };
 //unsigned short gus_BarCnt = 0;
 //unsigned short gus_BarCnt1 = 0;
-//unsigned char guc_NFC_USART3_RecvCnt = 0;
+//unsigned char guc_NFC_USART3_RecvCnt = 0; 
 //unsigned char guc_NFC_USART3_RecvData[5][10] = {0};	//NFC USART3接收数据缓存
 //unsigned char guc_NFC_GetDataCnt = 0;
 //unsigned char guc_NFC_GetData[5][10] = {0};	//NFC USART3接收数据缓存

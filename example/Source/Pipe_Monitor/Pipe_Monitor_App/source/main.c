@@ -523,7 +523,7 @@ int32_t main(void)
     {
         ucMonitorFlag = 1;
     }
-    #if 1
+    #if 0   //BY
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
     pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 1;
@@ -537,19 +537,30 @@ int32_t main(void)
 
     //pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_BY_BlackLight;
     #else
+    #if 1   //HX
     pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 0;
-    pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 1; 
     pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 0;
-    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 4;
     
-    //pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_HX_Integrated_Conductivity;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][3] = Meas_HX_Integrated_Conductivity;
     pst_MainSystemPara->DevicePara.eMeasSensor[1][0] = Meas_HX_Radar_Level;
-    //pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_HX_Radar_Ultrasonic_Flow;
-    //pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HX_Pressure_Level;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][1] = Meas_HX_Radar_Ultrasonic_Flow;
+    pst_MainSystemPara->DevicePara.eMeasSensor[1][2] = Meas_HX_Integrated_Conductivity;
+    #else   //HZ
+    pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[0] = 1;
+    pst_MainSystemPara->DevicePara.cMeasSensorEnableFlag[1] = 0;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[0] = 4;
+    pst_MainSystemPara->DevicePara.cMeasSensorCount[1] = 0;
+    pst_MainSystemPara->DevicePara.eMeasSensor[0][0] = Meas_HZ_Radar_Ultrasonic_Flow;
+    pst_MainSystemPara->DevicePara.eMeasSensor[0][1] = Meas_HZ_Radar_Level;
+    pst_MainSystemPara->DevicePara.eMeasSensor[0][2] = Meas_HZ_Pressure_Level;
+    pst_MainSystemPara->DevicePara.eMeasSensor[0][3] = Meas_HZ_Integrated_Conductivity; 
     #endif
-    //pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 4;
-    //pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 2;     
-    //pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 2;
+    #endif
+    pst_MainSystemPara->DevicePara.nDeviceUploadCnt = 15;
+    pst_MainSystemPara->DevicePara.nDeviceSampleGapCnt = 5;             
+    pst_MainSystemPara->DevicePara.nDeviceSaveRecordCnt = 5;
 
     //pst_MainSystemPara->DeviceRunPara.nDeviceCurSampleCount = 7;
     //pst_MainSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount = 7;
@@ -644,7 +655,7 @@ int32_t main(void)
     //uint8_t ucTestKey[16] = {0x31,0x36,0x39,0x33,0x31,0x36,0x34,0x39,0x30,0x40,0x51,0x51,0x2e,0x43,0x4f,0x4d};
     drv_LKT4202_Send_EncryKEY(ucTestKey);
     drv_LKT4202_Send_DecryKEY(ucTestKey);
-
+    #if 0
     //uint8_t ucTestData[16] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F,0x10};
     uint8_t cTestDataArr[16] = {0x00};
     for(i=0; i<16; i++)
@@ -662,7 +673,7 @@ int32_t main(void)
         drv_LKT4202_SendData_Encry(cTestDataArr, (char*)ucEncryData,16);
         drv_LKT4202_SendData_Decry(ucEncryData, (char*)ucDecryData,16);
     }
-    
+    #endif
     //float fValue1 = 0.0;
     //float fValue2 = 0.0;
     //sscanf((char*)&ucDecryData[0], "%f", &fValue1);

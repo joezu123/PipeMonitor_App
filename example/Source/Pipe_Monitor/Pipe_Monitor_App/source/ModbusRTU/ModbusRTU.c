@@ -469,6 +469,10 @@ unsigned char* drv_Wait_RecvData_And_CrcCheck(enPara_Type enPaType, unsigned sho
     {
         RegData_HL_Swap_func(guc_RTURecvArr,(unsigned char*)&pst_MBSystemPara->UsartData.ucUsart4RecvDataArr[3],usRegNum*2,2,usRegNum*2);
     }
+    else if(enPaType == Type_Short_NoChange)
+    {
+        RegData_HL_Swap_func(guc_RTURecvArr,(unsigned char*)&pst_MBSystemPara->UsartData.ucUsart4RecvDataArr[3],usRegNum*2,0,usRegNum*2);
+    }
 	
 	//fValue = *((float*)ucRecvDataValueArr);
 	return &guc_RTURecvArr[0];
@@ -704,7 +708,7 @@ unsigned char func_Get_Meas_HZ_Integrated_Conductivity_Sensor_Value(en_usart_dev
     ucResult = func_Rts_Control_And_SendData(ucDeviceType,ucSendBuf,i, 50);
     if(ucResult == 0)
     {
-        pcRecvData = (char *)drv_Wait_RecvData_And_CrcCheck(Type_Short , usRegNum);
+        pcRecvData = (char *)drv_Wait_RecvData_And_CrcCheck(Type_Short_NoChange , usRegNum);
         if(pcRecvData != NULL)
         {
             //电导率值
@@ -1248,7 +1252,7 @@ unsigned char func_Get_Meas_HZ_Radar_Level_Sensor_Value(en_usart_device_t ucDevi
         }
         if(j == 0)
         {
-            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarWaterLevelValue = pst_MBSystemPara->DevicePara.fInit_Height - (pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarEmptyHeightValue / 1000.0f);
+            pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarWaterLevelValue = pst_MBSystemPara->DevicePara.fInit_Height - (pst_MBSystemPara->DeviceRunPara.esMeasData.esHZ_LevelData.fRadarEmptyHeightValue);
         }
         else if((j== 1) || (j == 2))
         {

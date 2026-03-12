@@ -1295,7 +1295,7 @@ void func_GPSData_View_Show(unsigned char ucCnt)
 void func_Device_ID_PD_View_Show(unsigned char ucCnt)
 {
 	signed short sTestArr[20] = {0};
-	char cID[10] = {0};
+	char cID[12] = {0};
 	//uint8_t i = 0;
 	func_DateTime_Battery_Status_View_Show();
 	

@@ -37,6 +37,7 @@ char g_Ble_SSID[20] = "SK_";              //蓝牙ssid前缀
 static char g_AT_SSID_CMD[35] = "AT+NAME=";     //蓝牙ssid配置AT指令
 static char g_AT_SSID1_CMD[35] = "AT+BLENAME="; 
 static char g_AT_RESET_CMD[30] = "AT+RST";        //蓝牙软件复位配置AT指令   
+static char g_AT_RESTORE_CMD[10] = "AT+RESTORE";  //蓝牙软件恢复配置AT指令   
 static char g_AT_CMD[4] = "AT";             //蓝牙AT指令
 static char g_ATE_CMD[6] = "ATE0";           //蓝牙AT指令
 //static char g_AT_BLEMTU[13] = "AT+BLEMTU=200"; //蓝牙MTU查询AT指令
@@ -92,6 +93,8 @@ void drv_BT05_InitATCMD(void)
 
 	//Ddl_Delay1ms(500);
 	//drv_BT05_SendATCMD((uint8_t *)g_AT_RESTORE_CMD,10);
+	//drv_BT05_SendATCMD((uint8_t *)g_AT_RESTORE_CMD,10);
+	//Ddl_Delay1ms(1500);
 	drv_BT05_SendATCMD((uint8_t *)g_AT_RESET_CMD,6);
 	Ddl_Delay1ms(1500);
 	//memset(pst_BTSystemPara->UsartData.ucUsartxRecvDataArr[1], 0, USART_DATA_LEN_MAX);
@@ -131,14 +134,14 @@ void drv_BT05_InitATCMD(void)
 	memset(g_AT_SSID1_CMD,0,35);
 	memcpy(g_AT_SSID1_CMD,"AT+BLENAME=",11);
 
-	strcat( g_AT_SSID_CMD, g_Ble_SSID );//"SK_3241ab"
-	drv_BT05_SendATCMD((uint8_t *) g_AT_SSID_CMD ,27);
-	Ddl_Delay1ms(500);
+	//strcat( g_AT_SSID_CMD, g_Ble_SSID );//"SK_3241ab"
+	//drv_BT05_SendATCMD((uint8_t *) g_AT_SSID_CMD ,27);
+	//Ddl_Delay1ms(500);
 	strcat( g_AT_SSID1_CMD, g_Ble_SSID );//"SK_3241ab"
 	drv_BT05_SendATCMD((uint8_t *) g_AT_SSID1_CMD ,30);
 	//memset(pst_BTSystemPara->UsartData.ucUsartxRecvDataArr[1], 0, USART_DATA_LEN_MAX);
 	//drv_BT05_SendATCMD((uint8_t *)g_AT_GETUUID,14);
-	//Ddl_Delay1ms(500);
+	Ddl_Delay1ms(500);
 	//memset(pst_BTSystemPara->UsartData.ucUsartxRecvDataArr[1], 0, USART_DATA_LEN_MAX);
 }
 
@@ -192,7 +195,8 @@ void func_BT05_PowerUp_Init(void)
 	BTRST_PIN_SET;
 	Ddl_Delay1ms(100);
 	pst_BTSystemPara->DeviceRunPara.cDeviceBTPowerOnFlag =  1;
-
+	//drv_BT05_SendATCMD((uint8_t *)g_AT_RESTORE_CMD,10);
+	//Ddl_Delay1ms(1500);
 	drv_BT05_SendATCMD((uint8_t *)g_AT_RESET_CMD,6);
 	Ddl_Delay1ms(1500);
 	//drv_BT05_SendATCMD((uint8_t *)g_AT_CMD,2);
@@ -210,12 +214,12 @@ void func_BT05_PowerUp_Init(void)
 	{
 		g_Ble_SSID[i+1] = pst_BTSystemPara->DevicePara.cDeviceID[i-2];
 	}
-	g_Ble_SSID[19] = 0;
-	memset(g_AT_SSID_CMD,0,35);
-	memcpy(g_AT_SSID_CMD,"AT+NAME=",8);
-	strcat( g_AT_SSID_CMD, g_Ble_SSID );//"SK_3241ab"
-	drv_BT05_SendATCMD((uint8_t *) g_AT_SSID_CMD ,27);
-	Ddl_Delay1ms(500);
+	//g_Ble_SSID[19] = 0;
+	//memset(g_AT_SSID_CMD,0,35);
+	//memcpy(g_AT_SSID_CMD,"AT+NAME=",8);
+	//strcat( g_AT_SSID_CMD, g_Ble_SSID );//"SK_3241ab"
+	//drv_BT05_SendATCMD((uint8_t *) g_AT_SSID_CMD ,27);
+	//Ddl_Delay1ms(500);
 	memset(g_AT_SSID1_CMD,0,35);
 	memcpy(g_AT_SSID1_CMD,"AT+BLENAME=",11);
 	strcat( g_AT_SSID1_CMD, g_Ble_SSID );//"SK_3241ab"

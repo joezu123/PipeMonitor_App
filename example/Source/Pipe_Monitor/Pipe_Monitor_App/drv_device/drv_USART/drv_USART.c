@@ -1187,7 +1187,7 @@ void drv_mcu_USART_SendData(en_usart_device_t e_Module_Type,uint8_t *pu8Buff, ui
         pst_UsartSystemPara->UsartData.usUsartxCurSendDataLen[0] = 0;
         pst_UsartSystemPara->UsartData.usUsartxSendDataLen[0] = u16Len;
         pst_UsartSystemPara->UsartData.ucUsartxSendDataFlag[0] = 1;
-        memset(pst_UsartSystemPara->UsartData.ucUsart1SendDataToServerArr, 0, USART_DATA_LEN_MAX);
+        memset(pst_UsartSystemPara->UsartData.ucUsart1SendDataToServerArr, 0, USART4_SEND_DATA_MAX);
         memcpy(pst_UsartSystemPara->UsartData.ucUsart1SendDataToServerArr, pu8Buff, u16Len);
         USART_FuncCmd(M4_USART1, UsartTxAndTxEmptyInt, Enable);
         break;
@@ -1232,7 +1232,7 @@ void drv_mcu_USART_SendData(en_usart_device_t e_Module_Type,uint8_t *pu8Buff, ui
         pst_UsartSystemPara->UsartData.usUsartxCurSendDataLen[3] = 0;
         pst_UsartSystemPara->UsartData.usUsartxSendDataLen[3] = u16Len;
         pst_UsartSystemPara->UsartData.ucUsartxSendDataFlag[3] = 1;
-        memset(pst_UsartSystemPara->UsartData.ucUsartxSendDataArr[2], 0, USART4_SEND_DATA_MAX);
+        memset(pst_UsartSystemPara->UsartData.ucUsartxSendDataArr[2], 0, USART_DATA_LEN_MAX);
         memcpy(pst_UsartSystemPara->UsartData.ucUsartxSendDataArr[2], pu8Buff, u16Len);
         USART_FuncCmd(M4_USART4, UsartTxAndTxEmptyInt, Enable);
         break;

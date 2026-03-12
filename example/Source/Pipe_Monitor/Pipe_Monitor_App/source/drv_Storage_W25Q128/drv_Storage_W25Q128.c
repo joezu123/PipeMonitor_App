@@ -2289,6 +2289,20 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 			#endif
 		}
 		break;
+	case DEV_SM4_ENTRY_FLAG:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 1)
+		{
+			return 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cSM4EntryFlag = ucTmpData;
+			#ifndef NEW_W25Q128_DRIVER
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cSM4EntryFlag,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cSM4EntryFlag-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+			#endif
+		}
+		break;
 	case DEV_FACTORY_RESET:
 		func_Device_Parameter_Factory_Reset();
 		break;
@@ -2397,11 +2411,13 @@ void func_Device_Parameter_Init(void)
 	W25Q128_Get_ReadDataBytes(SYSTEM_PARA_ADDR,(uint8_t*)&pst_W25Q128SystemPara->DevicePara.cDeviceID[0],sizeof(SysDeviceParaSt));
     //W25Q128_Get_ReadDataBytes(SYSTEM_BACKUP_PARA_ADDR,(uint8_t*)&stTemp.DevicePara.cDeviceID[0],sizeof(SysDeviceParaSt));
 	//判断版本号是否相同
-	if(pst_W25Q128SystemPara->DevicePara.sEEP_Version != EEP_VERSION)
+	//if(pst_W25Q128SystemPara->DevicePara.sEEP_Version != EEP_VERSION)
+	if((pst_W25Q128SystemPara->DevicePara.sEEP_Version != EEP_VERSION) || (!((pst_W25Q128SystemPara->DevicePara.cDeviceID[0] == 'M') && (pst_W25Q128SystemPara->DevicePara.cDeviceID[1] == 'Q'))))
 	{
 		//读取备份区数据
 		W25Q128_Get_ReadDataBytes(BACKUP_DATA_AREA_ADDR,(uint8_t*)&pst_W25Q128SystemPara->DevicePara.cDeviceID[0],sizeof(SysDeviceParaSt));
-		if(pst_W25Q128SystemPara->DevicePara.sEEP_Version != EEP_VERSION)
+		//if(pst_W25Q128SystemPara->DevicePara.sEEP_Version != EEP_VERSION)
+		if((pst_W25Q128SystemPara->DevicePara.sEEP_Version != EEP_VERSION) || (!((pst_W25Q128SystemPara->DevicePara.cDeviceID[0] == 'M') && (pst_W25Q128SystemPara->DevicePara.cDeviceID[1] == 'Q'))))
 		{
 			//记录备份数据
 			//W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cDeviceID[0],SYSTEM_BACKUP_PARA_ADDR,sizeof(gs_DeviceDefaultPara));

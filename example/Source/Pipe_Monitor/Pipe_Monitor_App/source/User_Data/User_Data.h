@@ -71,6 +71,7 @@ typedef enum _PARA_TYPE
 	Type_Float_Low,	//四字节，低位在前
 	Type_Float_CDAB,	//四字节，CDAB顺序
 	Type_Long,	//四字节
+	Type_Short_NoChange,
 	Type_Arr	
 }enPara_Type;
 
@@ -251,6 +252,7 @@ typedef enum _SavePara
 	DEV_FLOW_ALARM_CNTS,	//设备流量预警规则组数
 	DEV_FLOW_ALARM_VAL1,	//流量预警层级
 	DEV_FLOW_ALARM_VAL2,	//流量预警层级
+	DEV_SM4_ENTRY_FLAG,	//SM4加密使能标志位
 	DEV_END_PARA
 }en_SaveParaCMD;
 
@@ -310,7 +312,8 @@ typedef struct _SysDevicePara
 	char cFlowAlarmEnableFlag;	//设备流量预警功能开关：0->未启用；1->启用
 	char cFlowAlarmCnts;	//设备流量预警规则组数，最大2
 	float fFlowAlarmValue[2];	//流量预警层级
-	char cBackUpArr[134];	//备用数据数组，长度50字节
+	char cSM4EntryFlag;	//SM4加密使能标志位：0->未启用；1->启用
+	char cBackUpArr[133];	//备用数据数组，长度50字节
 	short sEEP_Version;			//存储版本号
 }SysDeviceParaSt;	//325Bytes
 #pragma pack()
