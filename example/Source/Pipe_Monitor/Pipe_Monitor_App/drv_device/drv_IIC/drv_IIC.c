@@ -749,7 +749,7 @@ uint8_t drv_mcu_XYC_ALS_IIC_Init(void)
 
     /* Flash NSS */
     stcPortInit.enPinMode = Pin_Mode_Out;
-	//stcPortInit.enPinOType = Pin_OType_Od;
+	stcPortInit.enPinOType = Pin_OType_Od;
     PORT_Init(XYC_ALS_IIC_SDA_PORT, XYC_ALS_IIC_SDA_PIN, &stcPortInit);		
 	PORT_Init(XYC_ALS_IIC_SCL_PORT, XYC_ALS_IIC_SCL_PIN, &stcPortInit);
     	  

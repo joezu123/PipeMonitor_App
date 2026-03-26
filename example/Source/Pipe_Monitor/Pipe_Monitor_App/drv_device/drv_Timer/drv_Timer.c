@@ -24,6 +24,7 @@
 #include "4G_EC200U.h"
 #include "Display.h"
 #include "OLED.h"
+#include "RF_NFC.h"
 /*******************************************************************************
  * Local type definitions ('typedef')
  ******************************************************************************/
@@ -142,6 +143,7 @@ static void OcoIrqCallback(void)
                 cBarEventFinishFlag = 1;
 				pst_TimerSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status = 0;
                 pst_TimerSystemPara->DeviceRunPara.eCurPowerType = Power_OFF;
+                func_RF_NFC_PowerDown_DeInit();
                 drv_mcu_ChangeUSART3_Source(MODULE_BD);
                 pst_TimerSystemPara->DeviceRunPara.cPowerOffFlag = 0;
                 pst_TimerSystemPara->DeviceRunPara.cPowerOffCnt = 0;

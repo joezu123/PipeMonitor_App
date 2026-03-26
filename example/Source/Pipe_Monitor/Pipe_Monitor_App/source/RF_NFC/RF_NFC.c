@@ -291,6 +291,7 @@ void func_RF_NFC_PowerDown_DeInit(void)
     stcPortInit.enPinSubFunc = Disable;
     PORT_Init(USART3_TX_RFID_PORT, USART3_TX_RFID_PIN, &stcPortInit);
     PORT_ResetBits(USART3_TX_RFID_PORT,USART3_TX_RFID_PIN);
+    PORT_ResetBits(USART3_RX_RFID_PORT,USART3_RX_RFID_PIN);
     //PORT_Init(USART3_TX_RFID_PORT, USART3_TX_RFID_PIN, &stcPortInit);
 
     PWRRF_PIN_CLOSE();	//关闭RF模块电源

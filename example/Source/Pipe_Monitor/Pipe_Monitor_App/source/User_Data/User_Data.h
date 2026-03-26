@@ -253,6 +253,8 @@ typedef enum _SavePara
 	DEV_FLOW_ALARM_VAL1,	//流量预警层级
 	DEV_FLOW_ALARM_VAL2,	//流量预警层级
 	DEV_SM4_ENTRY_FLAG,	//SM4加密使能标志位
+	DEV_VPOWER_FLAG,	//7v->12v转换使能标志位
+	DEV_UPGRADE_FLAG,	//设备升级标志位
 	DEV_END_PARA
 }en_SaveParaCMD;
 
@@ -313,7 +315,9 @@ typedef struct _SysDevicePara
 	char cFlowAlarmCnts;	//设备流量预警规则组数，最大2
 	float fFlowAlarmValue[2];	//流量预警层级
 	char cSM4EntryFlag;	//SM4加密使能标志位：0->未启用；1->启用
-	char cBackUpArr[133];	//备用数据数组，长度50字节
+	char cVPowerFlag; //485供电7v->12v使能标志位：0->启用；1-未启用
+	char cUpgradeFlag;	//设备升级标志位：0->未升级；1->升级
+	char cBackUpArr[131];	//备用数据数组，长度50字节
 	short sEEP_Version;			//存储版本号
 }SysDeviceParaSt;	//325Bytes
 #pragma pack()
@@ -340,6 +344,7 @@ typedef struct _SysDeviceStatusPara
 	double fDevLoca_lng;	//设备经度
 	double fDevLoca_lat;	//设备纬度
 	unsigned short usDevStatus;	//设备状态
+	char cDevICCID[21];	//设备ICCID号，SIM卡的唯一标识符，由19或20位数字组成	
 }SysDeviceStatusParaSt;
 
 //GPS NMEA-0183协议重要参数结构体定义
@@ -639,6 +644,7 @@ typedef struct _SysDeviceRunPara
 	char cSaveParaFlag;		//保存参数标志位; 0->不保存; 1->保存
 	char cUploadTimeFlag;	//上传时间标志位
 	char cSampleTimeFlag;	//采样时间标志位
+	char cICCID[21];	//设备ICCID号；是一个用于在全球范围内唯一地识别移动用户的标识符。ICCID存储在手机的SIM卡中，用于在蜂窝网络中进行用户身份验证和位置管理。
 	//char c4GTimerCnt;
 }SysDeviceRunParaSt;
 
@@ -736,6 +742,7 @@ typedef enum _4G_Module_Init_State
 	//Module_DCE_RST_STAGE4,
 	//Module_TEST_AT_CMD,	//测试AT指令
 	Module_TEST_ATE0_CMD,	//关闭回显
+	Module_QUERY_ICCID_CMD,	//查询ICCID
 	//Module_QUERY_SIM_CARD_STATE_CMD,	//查询SIM卡状态
 	Module_QUERY_SIGNAL_STRENGTH_CMD,	//查询信号强度
 	//Module_QICSGP_CMD,	//设置PDP上下文参数; APN等
@@ -788,6 +795,99 @@ typedef enum _4G_Module_Init_State
 	Module_TUNS_TOPIC_CMD,	//退订主题
 	Module_INIT_STATE_MAX
 }en_4G_Module_Init_State;
+
+// ============================ 系统配置定义 ============================
+// 预警档位定义
+typedef enum {
+    WARNING_LEVEL_NORMAL = 0,  // 非预警档位
+    WARNING_LEVEL_1 = 1,       // 第1预警档位
+    WARNING_LEVEL_2 = 2,       // 第2预警档位
+    WARNING_LEVEL_3 = 3        // 第3预警档位（最高）
+} WarningLevel_TypeDef;
+
+// 传感器类型定义
+typedef enum {
+    SENSOR_TYPE_LEVEL = 0,     // 液位传感器
+    SENSOR_TYPE_CONDUCTIVITY,  // 电导率传感器
+    SENSOR_TYPE_FLOW_RATE      // 流速传感器
+} SensorType_TypeDef;
+
+// 数据采集上传周期定义（单位：秒）
+#define NORMAL_COLLECT_INTERVAL    300    // 非预警：5分钟(300秒)
+#define WARNING_LEVEL1_INTERVAL    180    // 第1档位：3分钟(180秒)
+#define WARNING_LEVEL2_INTERVAL    120    // 第2档位：2分钟(120秒)
+#define WARNING_LEVEL3_INTERVAL     60    // 第3档位：1分钟(60秒)
+
+// 预警切换配置
+#define WARNING_GROUP_COUNT        3      // 预警判断所需数据组数
+#define WARNING_LEVEL_DURATION     1800   // 档位持续时间：30分钟(1800秒)
+#define DOWNGRADE_CHECK_CYCLE      300    // 降档预判周期：5分钟(300秒)
+
+// ============================ 系统结构体定义 ============================
+// 液位预警配置结构体
+typedef struct {
+    float well_depth;              // 现场井深（单位：m）
+    unsigned char warning_switch;            // 预警开关：1-开启，0-关闭
+    unsigned char warning_group;             // 预警判断组数
+    float level1_threshold;        // 第1档位阈值（占井深百分比）
+    float level2_threshold;        // 第2档位阈值（占井深百分比）
+    float level3_threshold;        // 第3档位阈值（占井深百分比）
+} LevelWarningConfig_TypeDef;
+
+// 电导率预警配置结构体
+typedef struct {
+    unsigned char warning_switch;            // 预警开关：1-开启，0-关闭
+    unsigned char warning_group;             // 预警判断组数
+    unsigned long level1_threshold;         // 第1档位阈值（μS/cm）
+    unsigned long level2_threshold;         // 第2档位阈值（μS/cm）
+    unsigned long level3_threshold;         // 第3档位阈值（μS/cm）
+} ConductivityWarningConfig_TypeDef;
+
+// 流速预警配置结构体
+typedef struct {
+    unsigned char flow_switch;               // 流量开关：1-开启，0-关闭
+    unsigned char warning_switch;            // 预警开关：1-开启，0-关闭
+    unsigned char warning_group;             // 预警判断组数
+    float level1_threshold;        // 第1档位阈值（m/s）
+    float level2_threshold;        // 第2档位阈值（m/s）
+    float level3_threshold;        // 第3档位阈值（m/s）
+} FlowRateWarningConfig_TypeDef;
+
+// 系统状态结构体
+typedef struct {
+    // 传感器数据
+    float current_level;           // 当前液位（m）
+    unsigned long current_conductivity;     // 当前电导率（μS/cm）
+    float current_flow_rate;       // 当前流速（m/s）
+    
+    // 预警档位状态
+    WarningLevel_TypeDef level_level;  // 液位当前档位
+    WarningLevel_TypeDef cond_level;   // 电导率当前档位
+    WarningLevel_TypeDef flow_level;   // 流速当前档位
+    WarningLevel_TypeDef system_level; // 系统综合档位（最高优先）
+    
+    // 时间记录
+    unsigned long last_collect_time;        // 上次采集时间（秒）
+    unsigned long last_upload_time;         // 上次上传时间（秒）
+    unsigned long level_duration;           // 液位当前档位持续时间
+    unsigned long cond_duration;            // 电导率当前档位持续时间
+    unsigned long flow_duration;            // 流速当前档位持续时间
+    
+    // 数据缓存
+    float level_history[WARNING_GROUP_COUNT];  // 液位历史数据
+    unsigned long cond_history[WARNING_GROUP_COUNT];    // 电导率历史数据
+    float flow_history[WARNING_GROUP_COUNT];   // 流速历史数据
+    unsigned char history_index;             // 历史数据索引
+    
+    // 配置参数
+    LevelWarningConfig_TypeDef level_config;       // 液位配置
+    ConductivityWarningConfig_TypeDef cond_config; // 电导率配置
+    FlowRateWarningConfig_TypeDef flow_config;     // 流速配置
+    unsigned char system_init_flag;          // 系统初始化标志
+} WarningSystem_TypeDef;
+
+// 全局变量声明
+extern WarningSystem_TypeDef g_WarningSystem;
 
 extern unsigned char guc_OLED_Buf[128][8];	//OLED显示数据缓存;8*8=64行128列
 extern unsigned char  picc_atqa[2],picc_uid[15],picc_sak[3];

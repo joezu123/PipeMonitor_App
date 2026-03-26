@@ -23,6 +23,7 @@
 #include "hc32f460_utility.h"
 #include "Mainloop.h"
 #include "math.h"
+
 /*******************************************************************************
  * Local type definitions ('typedef')
  ******************************************************************************/
@@ -430,7 +431,7 @@ int drv_mcu_Get_RTC_Time(char *cCurDateTime)
 	return 0;
 }
 
-int drv_mcu_Get_RTC_Minute(void)
+int drv_mcu_Get_RTC_Minute(int *nSecond)
 {
     stc_rtc_date_time_t stcCurrDateTime;
 
@@ -439,12 +440,27 @@ int drv_mcu_Get_RTC_Minute(void)
 
 	if (RTC_GetDateTime(RtcDataFormatDec, &stcCurrDateTime) != Ok)
 	{
+        *nSecond = 100;
 		return 100;
 	}
 	else
 	{
+        *nSecond = stcCurrDateTime.u8Second;
 		return stcCurrDateTime.u8Minute;
 	}
+}
+
+time_t func_Get_Linux_Time_Sec(void)
+{
+    time_t now;
+    struct tm tm;
+    drv_mcu_Get_RTC_Time(pst_RTCSystemPara->DeviceRunPara.cDeviceCurDateTime);
+    sscanf(pst_RTCSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
+    tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
+    tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
+    tm.tm_isdst = -1;
+    now = mktime(&tm) - 8*60*60; 
+    return now;
 }
 /******************************************************************************
  * 

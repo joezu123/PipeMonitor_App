@@ -208,12 +208,19 @@ void func_OLED_PowerDown_DeInit(void)
 	pst_OLEDSystemPara->DeviceRunPara.eShowView = SType_Meas_Level;
 	stc_port_init_t stcPortInit;
     MEM_ZERO_STRUCT(stcPortInit);
-    stcPortInit.enPinMode = Pin_Mode_Ana;
+    stcPortInit.enPinMode = Pin_Mode_Out;
 	PORT_Init(LCMRST_PORT, LCMRST_PIN, &stcPortInit);
 	PORT_Init(LCMCS_PORT, LCMCS_PIN, &stcPortInit);
 	PORT_Init(LCMRS_PORT, LCMRS_PIN, &stcPortInit);
 	PORT_Init(OLED_IIC_SDA_PORT, OLED_IIC_SDA_PIN, &stcPortInit);
 	PORT_Init(OLED_IIC_SCL_PORT, OLED_IIC_SCL_PIN, &stcPortInit);
+
+	PORT_ResetBits(OLED_IIC_SCL_PORT,OLED_IIC_SCL_PIN);
+	PORT_ResetBits(OLED_IIC_SDA_PORT,OLED_IIC_SDA_PIN);
+	PORT_ResetBits(LCMCS_PORT,LCMCS_PIN);
+	PORT_ResetBits(LCMRST_PORT,LCMRST_PIN);
+	PORT_ResetBits(LCMRS_PORT,LCMRS_PIN);
+	
 	//LCMCS_PIN_SET;
 	PWRLCM_PIN_CLOSE();	//关闭OLED电源
 }

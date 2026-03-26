@@ -2983,6 +2983,12 @@
             </file>
         </group>
         <group>
+            <name>AlarmRule</name>
+            <file>
+                <name>$PROJ_DIR$\..\source\AlarmRule\AlarmRule.c</name>
+            </file>
+        </group>
+        <group>
             <name>BT_TB05</name>
             <file>
                 <name>$PROJ_DIR$\..\source\BT_TB05\BT_TB05.c</name>

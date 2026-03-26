@@ -175,6 +175,7 @@ typedef enum
 #define MB_R_DEVICE_INTEGRATED_CONDUCTIVITY_SENSOR_VALUE (MB_DEVICE_PARA_BASE + 0x00A6) //一体式数字电导率传感器值寄存器地址
 #define MB_R_DEVICE_FLOWERSPEED_SENSOR_VALUE    	(MB_DEVICE_PARA_BASE + 0x00A8)	//流量计-流速
 #define MB_R_DEVICE_FLOWERMETER_TOTAL_SENSOR_VALUE	(MB_DEVICE_PARA_BASE + 0x00AA)	//流量计-累计流量
+#define MB_R_DEVICE_ADCVALUE_SENSOR_VALUE    	(MB_DEVICE_PARA_BASE + 0x00AC)	//水浸ADC传感器值寄存器地址
 
 #define MB_W_DEVICE_PARA_PD_DATE          			(MB_DEVICE_PARA_BASE + 0x0100) //生产日期寄存器地址
 #define MB_W_DEVICE_RESET_CMD             			(MB_DEVICE_PARA_BASE + 0x0105) //设备复位命令寄存器地址
@@ -221,6 +222,8 @@ typedef enum
 #define MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR         (MB_DEVICE_PARA_BASE + 0x022D)  //设备流量预警层级1-5
 #define MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR         (MB_DEVICE_PARA_BASE + 0x022F)  //设备流量预警层级1-5
 #define MB_RW_DEVICE_SM4_ENTRY_FLAG_ADDR          (MB_DEVICE_PARA_BASE + 0x0231)  //设备SM4加密使能标志寄存器地址
+#define MB_RW_DEVICE_VPOWER_FLAG_ADDR          (MB_DEVICE_PARA_BASE + 0x0232)  //设备电压使能标志寄存器地址
+#define MB_RW_DEVICE_UPGRADE_FLAG_ADDR          (MB_DEVICE_PARA_BASE + 0x0233)  //设备升级寄存器地址
 //#define MB_RW_DEVICE_MAX_ADDR                		(MB_DEVICE_PARA_BASE + 0x0240) //设备参数寄存器最大地址
 
 /*******************************************************************************

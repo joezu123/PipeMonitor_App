@@ -26,7 +26,7 @@ extern "C"
 #include "hc32f460_rtc.h"
 #include "hc32f460_interrupts.h"
 #include "hc32f460.h"
-
+#include "time.h"
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
@@ -49,7 +49,8 @@ extern "C"
 extern int drv_mcu_RTC_Config(void);
 extern int drv_mcu_Set_RTC_Time(char *cCurDateTime);
 extern int drv_mcu_Get_RTC_Time(char *cCurDateTime);
-extern int drv_mcu_Get_RTC_Minute(void);
+extern int drv_mcu_Get_RTC_Minute(int *nSecond);
+extern time_t func_Get_Linux_Time_Sec(void);
 
 #ifdef __cplusplus
 }

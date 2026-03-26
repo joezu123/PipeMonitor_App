@@ -378,6 +378,7 @@
                     <state>$PROJ_DIR$\..\source\Lora-TP1109</state>
                     <state>$PROJ_DIR$\..\source\RF_NFC\RXNTTL518</state>
                     <state>$PROJ_DIR$\..\drv_device\drv_OTS_Temperature</state>
+                    <state>$PROJ_DIR$\..\source\AlarmRule</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2331,6 +2332,12 @@
             <name>4G_EC200U</name>
             <file>
                 <name>$PROJ_DIR$\..\source\4G_EC200U\4G_EC200U.c</name>
+            </file>
+        </group>
+        <group>
+            <name>AlarmRule</name>
+            <file>
+                <name>$PROJ_DIR$\..\source\AlarmRule\AlarmRule.c</name>
             </file>
         </group>
         <group>

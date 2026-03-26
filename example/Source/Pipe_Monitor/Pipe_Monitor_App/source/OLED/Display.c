@@ -572,37 +572,37 @@ void func_Device_Status_View_Show(unsigned char ucCnt)
 			{
 				//sTestArr[i++] = 0x0504;
 				sTestArr[i++] = 0x0514;
-				sTestArr[i++] = 0x0533;
+				//sTestArr[i++] = 0x0533;
 			}
 			if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x02) == 0x02)	//NFC初始化异常
 			{
 				sTestArr[i++] = 0x051B;
 				//sTestArr[i++] = 0x0513;
 				//sTestArr[i++] = 0X0510;
-				sTestArr[i++] = 0x0533;
+				//sTestArr[i++] = 0x0533;
 			}
 			if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x04) == 0x04)	//姿态
 			{
 				sTestArr[i++] = 0X0000;
 				//sTestArr[i++] = 0X0001;
-				sTestArr[i++] = 0x0533;
+				//sTestArr[i++] = 0x0533;
 			}
 			if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x08) == 0x08)	//水浸	
 			{
 				//sTestArr[i++] = 0X000A;
 				sTestArr[i++] = 0X000B;
-				sTestArr[i++] = 0x0533;
+				//sTestArr[i++] = 0x0533;
 			}
 			if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x10) == 0x10)	//光照
 			{
 				sTestArr[i++] = 0X0006;
 				//sTestArr[i++] = 0X0007;
-				sTestArr[i++] = 0x0533;
+				//sTestArr[i++] = 0x0533;
 			}
 			if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x20) == 0x20)	//MODBUS通信异常
 			{
 				sTestArr[i++] = 0X051A;	//M
-				sTestArr[i++] = 0x0533;
+				//sTestArr[i++] = 0x0533;
 			}
 		}
 	}
@@ -1243,7 +1243,8 @@ void func_GPSData_View_Show(unsigned char ucCnt)
 	//char cID[10] = {0};
 	//uint8_t i = 0;
 	func_DateTime_Battery_Status_View_Show();
-	if(pst_OLEDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude < 1)
+	//if(pst_OLEDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude < 1)
+	if(pst_OLEDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat < 1)
 	{
 		//定位中
 		if(pst_OLEDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag == 0)
@@ -1271,7 +1272,7 @@ void func_GPSData_View_Show(unsigned char ucCnt)
 		sTestArr[2] = 0x071A;	//':'
 		sTestArr[3] = 0xFFFF;
 		func_display_string(0,17,&sTestArr[0]);	
-		fValue = (float)pst_OLEDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude / 1000.0f;
+		fValue = (float)pst_OLEDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lng;//pst_OLEDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLongitude / 1000.0f;
 		func_sprintf_metricsystem(&sTestArr[0],fValue,3,7);
 		func_display_string(35,20,&sTestArr[0]);
 
@@ -1281,7 +1282,7 @@ void func_GPSData_View_Show(unsigned char ucCnt)
 		sTestArr[2] = 0x071A;	//':'
 		sTestArr[3] = 0xFFFF;
 		func_display_string(0,33,&sTestArr[0]);	
-		fValue = (float)pst_OLEDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude / 1000.0f;
+		fValue = (float)pst_OLEDSystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat;//pst_OLEDSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ulLatitude / 1000.0f;
 		func_sprintf_metricsystem(&sTestArr[0],fValue,3,7);
 		func_display_string(35,36,&sTestArr[0]);
 	}
@@ -1371,6 +1372,64 @@ void func_PowerOn_View_Show(unsigned char ucCnt)
 	func_display_string(0,33,&sTestArr[0]);
 	func_Display_128x64(0);
 }
+
+//自检结果
+void func_SelfTest_Result_View_Show(void)
+{
+	signed short sTestArr[40] = {0};
+	unsigned char i = 0;
+	clear_screen();
+	sTestArr[0] = 0x004B;
+	sTestArr[1] = 0x004C;
+	sTestArr[2] = 0x071A;	//':'
+	sTestArr[3] = 0xFFFF;
+	func_display_string(0,16,&sTestArr[0]);
+	i = 0;
+	if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x0001) == 0x0001)	//4G
+	{
+		sTestArr[i++] = 0x0514;	//G
+		sTestArr[i++] = 0x0532;	//,
+	}
+	if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x0002) == 0x0002)	//NFC
+	{
+		sTestArr[i++] = 0x051B;	//N
+		sTestArr[i++] = 0x0533;	//,
+	}
+	if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x0004) == 0x0004)
+	{
+		sTestArr[i++] = 0x0000;	//姿
+		sTestArr[i++] = 0x0533;	//,
+	}
+	if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x0008) == 0x0008)
+	{
+		sTestArr[i++] = 0x000A;	//水
+		sTestArr[i++] = 0x0533;	//,
+	}
+	if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x0010) == 0x0010)
+	{
+		sTestArr[i++] = 0x0006;	//光
+		sTestArr[i++] = 0x0533;	//,
+	}
+	if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x0020) == 0x0020)	//MODBUS
+	{
+		sTestArr[i++] = 0x051A;	//M
+		sTestArr[i++] = 0x0533;	//,
+	}
+	if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x0040) == 0x0040)	//BT
+	{
+		sTestArr[i++] = 0x050F;	//B
+		sTestArr[i++] = 0x0533;	//,
+	}
+	if((pst_OLEDSystemPara->DeviceRunPara.usDevStatus & 0x0080) == 0x0080)	//存储
+	{
+		sTestArr[i++] = 0x004D;	//存
+		sTestArr[i++] = 0x0533;	//,
+	}
+	sTestArr[i] = 0xFFFF;
+	func_display_string(0,33,&sTestArr[0]);
+	func_Display_128x64(0);
+}
+
 
 /****************************	q+***************************************************
  * Function implementation - global ('extern') and local ('static')

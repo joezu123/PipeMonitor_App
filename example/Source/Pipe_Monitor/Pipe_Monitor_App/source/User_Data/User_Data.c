@@ -53,6 +53,8 @@ unsigned char ucMeasPosi = 0;
 unsigned char ucMeasValue[10] = {0};
 DevMeasRecordDataSt gt_MeasData = {0};;
 en_4G_Module_Init_State gE_4G_Module_Init_CMD = Module_START_WAIT_CMD;
+WarningSystem_TypeDef g_WarningSystem;
+
 SysDeviceParaSt gs_DeviceDefaultPara = 
 {
 	//char cDeviceID[16];	//设备ID:MQ+4位厂商代码+4位客户端类型+6位自定义字符串
@@ -134,7 +136,9 @@ SysDeviceParaSt gs_DeviceDefaultPara =
 	{0},						//char cFlowAlarmCnts;	//设备流量预警规则组数，最大2
 	{0.0,0.0},					//float fFlowAlarmValue[2];	//流量预警层级
 	{0},						//char cSM4EntryFlag;	//SM4加密使能标志位：0->未启用；1->启用
-	{0},						//char cBackUpArr[133];	//备用数据数组，长度50字节	
+	{0},						//char cVPowerFlag; //485供电7v->12v使能标志位：0->启用；1-未启用
+	{0},						//char cUpgradeFlag;	//设备升级标志位：0->未升级；1->升级
+	{0},						//char cBackUpArr[131];	//备用数据数组，长度50字节	
 	{EEP_VERSION}				//short sEEP_Version;			//存储版本号
 };
 //unsigned short gus_BarCnt = 0;

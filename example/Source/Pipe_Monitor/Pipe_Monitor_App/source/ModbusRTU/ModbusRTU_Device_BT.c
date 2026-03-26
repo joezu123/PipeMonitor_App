@@ -589,7 +589,12 @@ eMBErrorCode Unit_RW_Device_PressWaterLevel_Calibration_func( unsigned char * pu
     return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_PRESSURE_SENSOR_CALIBRATION);
 }
 
-
+//设备测量信息：水浸传感器ADC数值(HX压力传感器)
+eMBErrorCode Unit_R_DeviceADCValue_HX_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    float fVlaue = pst_MBSystemPara->DeviceRunPara.esMeasData.fHX_ADCValue;
+    return Float_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, fVlaue,DEV_BEGIN_PARA);
+}
 
 //设备恢复出厂设置
 eMBErrorCode Unit_W_Device_Factory_Reset_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
@@ -609,7 +614,7 @@ eMBErrorCode Unit_R_Device_4G_Connect_Status_func( unsigned char * pucRegBuffer,
     { 
         return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_BEGIN_PARA);
     }
-    return MB_ENOERR;
+    //return MB_ENOERR;
 }
 
 
@@ -964,6 +969,18 @@ eMBErrorCode Unit_RW_Device_SM4EntryFlag_func( unsigned char * pucRegBuffer, uns
     return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_SM4_ENTRY_FLAG);
 }
 
+eMBErrorCode Unit_RW_Device_VPowerFlag_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    char cVlaue = (char)pst_MBSystemPara->DevicePara.cVPowerFlag;
+    return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_VPOWER_FLAG);
+}
+
+eMBErrorCode Unit_RW_Device_UpgradeFlag_func( unsigned char * pucRegBuffer, unsigned short usAddressP, unsigned short usNRegs, eMBRegisterMode eMode)
+{
+    char cVlaue = (char)pst_MBSystemPara->DevicePara.cUpgradeFlag;
+    return char_reg_rw_mode(pucRegBuffer, usAddressP, usNRegs, eMode, cVlaue, DEV_UPGRADE_FLAG);
+}
+
 /*参数单元表,寄存器地址对应参数占用的寄存器数，读写操作，预留空间调用Unit_RW_Null_func函数*/
 static const MB_Data_Reg_Unit_S Modbus_Data_Reg_Unit[MD_MAX_REG_UNIT] = 
 {
@@ -1032,7 +1049,8 @@ static const MB_Data_Reg_Unit_S Modbus_Data_Reg_Unit[MD_MAX_REG_UNIT] =
     {MB_R_DEVICE_FLOWERMETER_SENSOR_VALUE,MB_R_DEVICE_INTEGRATED_CONDUCTIVITY_SENSOR_VALUE - MB_R_DEVICE_FLOWERMETER_SENSOR_VALUE,Unit_R_DeviceWaterVolume_s_func},
     {MB_R_DEVICE_INTEGRATED_CONDUCTIVITY_SENSOR_VALUE,MB_R_DEVICE_FLOWERSPEED_SENSOR_VALUE - MB_R_DEVICE_INTEGRATED_CONDUCTIVITY_SENSOR_VALUE,Unit_R_DeviceWaterQuality_COND_func},
     {MB_R_DEVICE_FLOWERSPEED_SENSOR_VALUE,MB_R_DEVICE_FLOWERMETER_TOTAL_SENSOR_VALUE - MB_R_DEVICE_FLOWERSPEED_SENSOR_VALUE,Unit_R_DeviceWaterSpeed_func},
-    {MB_R_DEVICE_FLOWERMETER_TOTAL_SENSOR_VALUE,2,Unit_R_DeviceWaterVolume_Total_func},
+    {MB_R_DEVICE_FLOWERMETER_TOTAL_SENSOR_VALUE,MB_R_DEVICE_ADCVALUE_SENSOR_VALUE - MB_R_DEVICE_FLOWERMETER_TOTAL_SENSOR_VALUE,Unit_R_DeviceWaterVolume_Total_func},
+    {MB_R_DEVICE_ADCVALUE_SENSOR_VALUE,2,Unit_R_DeviceADCValue_HX_func},
     
     {MB_W_DEVICE_PARA_PD_DATE,5,Unit_W_DevicePDDate_func}, 
     {MB_W_DEVICE_RESET_CMD,1,Unit_W_DeviceReset_func},
@@ -1078,7 +1096,9 @@ static const MB_Data_Reg_Unit_S Modbus_Data_Reg_Unit[MD_MAX_REG_UNIT] =
     {MB_RW_DEVICE_FLOW_ALARM_CNTS_ADDR,MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR - MB_RW_DEVICE_FLOW_ALARM_CNTS_ADDR, Unit_RW_Device_FlowAlarmCnts_func},
     {MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR,MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR - MB_RW_DEVICE_FLOW_ALARM_LEV_1_ADDR, Unit_RW_Device_FlowAlarmValue_1_func},
     {MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR,MB_RW_DEVICE_SM4_ENTRY_FLAG_ADDR - MB_RW_DEVICE_FLOW_ALARM_LEV_2_ADDR, Unit_RW_Device_FlowAlarmValue_2_func},
-    {MB_RW_DEVICE_SM4_ENTRY_FLAG_ADDR,1, Unit_RW_Device_SM4EntryFlag_func},
+    {MB_RW_DEVICE_SM4_ENTRY_FLAG_ADDR,MB_RW_DEVICE_VPOWER_FLAG_ADDR - MB_RW_DEVICE_SM4_ENTRY_FLAG_ADDR, Unit_RW_Device_SM4EntryFlag_func},
+    {MB_RW_DEVICE_VPOWER_FLAG_ADDR,MB_RW_DEVICE_UPGRADE_FLAG_ADDR - MB_RW_DEVICE_VPOWER_FLAG_ADDR, Unit_RW_Device_VPowerFlag_func},
+    {MB_RW_DEVICE_UPGRADE_FLAG_ADDR,1, Unit_RW_Device_UpgradeFlag_func},
     //{MB_RW_DEVICE_MAX_ADDR,1,NULL} //结束标志
 };
 

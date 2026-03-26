@@ -360,10 +360,13 @@ void func_BD_PownDown_Deinit(void)
 {
 	stc_port_init_t stcPortInit;
     MEM_ZERO_STRUCT(stcPortInit);
-    stcPortInit.enPinMode = Pin_Mode_Ana;
+    stcPortInit.enPinMode = Pin_Mode_Out;
 	PORT_Init(BDRST_GPIO_PORT, BDRST_GPIO_PIN, &stcPortInit);
 	PORT_Init(USART3_RX_BD_PORT, USART3_RX_BD_PIN, &stcPortInit);
 	PORT_Init(USART3_TX_BD_PORT, USART3_TX_BD_PIN, &stcPortInit);
+	PORT_ResetBits(USART3_RX_BD_PORT,USART3_RX_BD_PIN);
+	PORT_ResetBits(USART3_TX_BD_PORT,USART3_TX_BD_PIN);
+	PORT_ResetBits(BDRST_GPIO_PORT,BDRST_GPIO_PIN);
 
 	PWRBD_PIN_CLOSE();	//关闭北斗模块电源
 }

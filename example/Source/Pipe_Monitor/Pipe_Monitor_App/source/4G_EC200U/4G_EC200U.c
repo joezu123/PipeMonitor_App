@@ -144,6 +144,7 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
     uint8_t i = 0;
     uint8_t ucMeasWaterVolumeFlag = 0;
     time_t now;
+    #if 0
     struct tm tm;
     //time(&now);
     drv_mcu_Get_RTC_Time(pst_EC200USystemPara->DeviceRunPara.cDeviceCurDateTime);
@@ -152,6 +153,9 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
     tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
     tm.tm_isdst = -1;
     now = mktime(&tm) - 8*60*60; 
+    #else
+    now = func_Get_Linux_Time_Sec();
+    #endif
     sprintf(ucTempArr, "{\"clientId\":\"%s\",\"pver\":24,\"msgId\":%ld,\"data\":{\"colname\":[\"deviceName\",\"collectGap\",\"reportGap\"],", 
                                                                                         pst_EC200USystemPara->DevicePara.cDeviceID,
                                                                                         (long)now);
@@ -324,6 +328,11 @@ uint16_t func_Get_DevRegCMD_Data(uint8_t *ucDataArr)
     sprintf((char *)&ucParaNameArr[0], "\"NFC\",");
     (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
 
+    //ICCID
+    memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
+    sprintf((char *)&ucParaNameArr[0], "\"ICCID\",");
+    (void)strcat((char *)ucTempMonitorNameArr, (char *)ucParaNameArr);
+
     //设备状态
     memset(ucParaNameArr, 0, sizeof(ucParaNameArr));
     //memset(ucDataArr, 0, sizeof(ucDataArr));
@@ -405,20 +414,24 @@ void hex_to_str(uint8_t *pucData, uint16_t ucDataLen, uint8_t *pucStr)
 uint16_t func_Get_BlackLightDataUploadCMD_Data(uint8_t *ucDataArr, unsigned char* ucPosi)
 {
     uint8_t ucTempArr[1200] = {0};
-    uint8_t ucArr[100] = {0};
+    //uint8_t ucArr[100] = {0};
     struct tm tm;
     unsigned short usDataLen = 0;
-    unsigned char ucLen = 0;
+    //unsigned char ucLen = 0;
     uint8_t ucEntryArr[1200] = {0};
     uint16_t usDataLength = 0;
     uint8_t l = 0;
     //time(&now);
+    #if 0
     drv_mcu_Get_RTC_Time(pst_EC200USystemPara->DeviceRunPara.cDeviceCurDateTime);
     sscanf(pst_EC200USystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
     tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
     tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
     tm.tm_isdst = -1;
     now = mktime(&tm) - 8*60*60; //将时间转换为UTC时间，减去8小时
+    #else
+    now = func_Get_Linux_Time_Sec();
+    #endif
     ulTime = pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime;
     sprintf((char *)ucTempArr, "{\"clientId\":\"%s\",\"pver\":24,\"beginTime\":%ld,\"msgId\":%ld,\"gap\":%d,\"data\":{\"pictime\":[%ld],\"picture\":[\"", 
                                                                                         pst_EC200USystemPara->DevicePara.cDeviceID,
@@ -430,17 +443,17 @@ uint16_t func_Get_BlackLightDataUploadCMD_Data(uint8_t *ucDataArr, unsigned char
     //sprintf((char *)ucTempArr[strlen(ucTempArr)],"%s", &pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0]);
     if(*ucPosi < pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt - 1)
     {
-        hex_to_str(&pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0],400,&ucTempArr[strlen(ucTempArr)]);
+        hex_to_str(&pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0],400,&ucTempArr[strlen((char *)ucTempArr)]);
     }
     else
     {
-        hex_to_str(&pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0],pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ulCurGetDataSize - ((pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt-1) * 400),&ucTempArr[strlen(ucTempArr)]);
+        hex_to_str(&pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0],pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ulCurGetDataSize - ((pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt-1) * 400),&ucTempArr[strlen((char *)ucTempArr)]);
     }
     
     //memcpy((char *)ucTempArr[strlen(ucTempArr)], &pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0],1024);
     //usDataLen += 1024;
     //(void)strcat((char *)ucTempArr, &pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoData[*ucPosi][0]);
-    sprintf((char*)&ucTempArr[strlen(ucTempArr)],"\"],\"piccount\":[%d],\"index\":[%d]}}",pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt,*ucPosi);
+    sprintf((char*)&ucTempArr[strlen((char *)ucTempArr)],"\"],\"piccount\":[%d],\"index\":[%d]}}",pst_EC200USystemPara->DeviceRunPara.st_BlackLightData.ucPhotoDataCnt,*ucPosi);
     //ucLen = strlen((char *)ucArr);
     //(void)strcat((char *)ucTempArr[usDataLen], ucArr);
     //usDataLen += ucLen;
@@ -518,7 +531,7 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     //memset(ucBaseDataValueArr[3],0,150);
     //memset(ucBaseDataValueArr[4],0,150);
     //memset(ucBaseDataValueArr[5],0,150);
-    
+    #if 0
     //time(&now);
     struct tm tm;
     //time(&now);
@@ -528,7 +541,9 @@ uint16_t func_Get_DataUploadCMD_Data(uint8_t *ucDataArr)
     tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
     tm.tm_isdst = -1;
     now = mktime(&tm) - 8*60*60; //将时间转换为UTC时间，减去8小时
-
+    #else
+    now = func_Get_Linux_Time_Sec();
+    #endif
     //if(pst_EC200USystemPara->DeviceRunPara.ulUploadRecordLostCnt == pst_EC200USystemPara->DevicePara.nDeviceUploadCnt / pst_EC200USystemPara->DevicePara.nDeviceSaveRecordCnt)
     {
     //    pst_EC200USystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now; //记录上传数据开始时间
@@ -1405,7 +1420,7 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
     //uint8_t i = 0;
     uint8_t l = 0;
     int nPosi = 0;
-    char cCheckCnt,cn;
+    //char cCheckCnt,cn;
     //uint8_t ucRecordCnt = 0;
     //DevMeasRecordDataSt st_TempValue[10];
     //time(&now);
@@ -1578,6 +1593,7 @@ uint16_t func_Get_StatusUploadCMD_Data(uint8_t *ucDataArr)
 void func_Get_DevStatusData(void)
 {
     time_t now;
+    #if 0
     struct tm tm;
     //time(&now);
     drv_mcu_Get_RTC_Time(pst_EC200USystemPara->DeviceRunPara.cDeviceCurDateTime);
@@ -1586,6 +1602,9 @@ void func_Get_DevStatusData(void)
     tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
     tm.tm_isdst = -1;
     now = mktime(&tm) - 8*60*60; 
+    #else
+    now = func_Get_Linux_Time_Sec();
+    #endif
     if(strlen(pst_EC200USystemPara->DeviceRunPara.esDeviceRunState.cDevStartDateTime) > 1)
     {
         if(pst_EC200USystemPara->DeviceRunPara.ulUploadStatusLostCnt == 0)
@@ -1597,7 +1616,8 @@ void func_Get_DevStatusData(void)
     //记录此次设备状态数据
     memcpy(pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[pst_EC200USystemPara->DeviceRunPara.cLostStatusArrCnt].cDevStartDateTime,pst_EC200USystemPara->DeviceRunPara.esDeviceRunState.cDevStartDateTime,20);
     pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[pst_EC200USystemPara->DeviceRunPara.cLostStatusArrCnt].nDevStartDays = pst_EC200USystemPara->DeviceRunPara.esDeviceRunState.nDevStartDays;
-    pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[pst_EC200USystemPara->DeviceRunPara.cLostStatusArrCnt].fBattleVoltage = pst_EC200USystemPara->DeviceRunPara.esDeviceRunState.fBattleVoltage;
+    //pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[pst_EC200USystemPara->DeviceRunPara.cLostStatusArrCnt].fBattleVoltage = pst_EC200USystemPara->DeviceRunPara.esDeviceRunState.fBattleVoltage;
+    memcpy(pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[pst_EC200USystemPara->DeviceRunPara.cLostStatusArrCnt].cDevICCID,pst_EC200USystemPara->DeviceRunPara.cICCID,20);
     pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[pst_EC200USystemPara->DeviceRunPara.cLostStatusArrCnt].fDevLoca_lng = pst_EC200USystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lng;
     pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[pst_EC200USystemPara->DeviceRunPara.cLostStatusArrCnt].fDevLoca_lat = pst_EC200USystemPara->DeviceRunPara.esDeviceRunState.fDevLoca_lat;
     pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[pst_EC200USystemPara->DeviceRunPara.cLostStatusArrCnt].usDevStatus = pst_EC200USystemPara->DeviceRunPara.usDevStatus;
@@ -1621,6 +1641,7 @@ uint16_t func_Get_DevStatusCMD_Data(uint8_t *ucDataArr)
     long lValue = pst_EC200USystemPara->DeviceRunPara.cDevUploadStatusTime * 60 * 60;
 
     time_t now;
+    #if 0
     struct tm tm;
     //time(&now);
     drv_mcu_Get_RTC_Time(pst_EC200USystemPara->DeviceRunPara.cDeviceCurDateTime);
@@ -1629,7 +1650,9 @@ uint16_t func_Get_DevStatusCMD_Data(uint8_t *ucDataArr)
     tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
     tm.tm_isdst = -1;
     now = mktime(&tm) - 8*60*60; 
-
+    #else
+    now = func_Get_Linux_Time_Sec();
+    #endif
     //time(&now);
     sprintf((char *)ucTempArr, "{\"clientId\":\"%s\",\"pver\":24,\"beginTime\":%ld,\"msgId\":%ld,\"gap\":%ld,\"data\":{", 
                                                                                         pst_EC200USystemPara->DevicePara.cDeviceID,
@@ -1641,7 +1664,7 @@ uint16_t func_Get_DevStatusCMD_Data(uint8_t *ucDataArr)
     //pst_EC200USystemPara->DeviceRunPara.ucCurUploadStatusCnt = pst_EC200USystemPara->DeviceRunPara.ulUploadStatusLostCnt; //记录本次上传数据个数
     memcpy(&ucTempValueArr[0], "\"timeStart\":[\"", 14);
     memcpy(&ucTempValueArr[1], "\"timeRun\":[", 11);
-    memcpy(&ucTempValueArr[2], "\"batV\":[", 8);
+    memcpy(&ucTempValueArr[2], "\"ICCID\":[", 9);
     memcpy(&ucTempValueArr[3], "\"lng\":[", 7);
     memcpy(&ucTempValueArr[4], "\"lat\":[", 7);
     memcpy(&ucTempValueArr[5], "\"status\":[", 10);
@@ -1654,7 +1677,7 @@ uint16_t func_Get_DevStatusCMD_Data(uint8_t *ucDataArr)
         //pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].usDevStatus = 0x0103;
         sprintf((char *)&ucTempValueArr[0][strlen((char *)ucTempValueArr[0])], "%s\",\"", pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].cDevStartDateTime);
         sprintf((char *)&ucTempValueArr[1][strlen((char *)ucTempValueArr[1])], "%d,", pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].nDevStartDays);
-        sprintf((char *)&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])], "%.3lf,", (double)pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].fBattleVoltage);
+        sprintf((char *)&ucTempValueArr[2][strlen((char *)ucTempValueArr[2])], "%s,", pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].cDevICCID);
         sprintf((char *)&ucTempValueArr[3][strlen((char *)ucTempValueArr[3])], "%.5lf,", (double)pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].fDevLoca_lng);
         sprintf((char *)&ucTempValueArr[4][strlen((char *)ucTempValueArr[4])], "%.5lf,", (double)pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].fDevLoca_lat);
         sprintf((char *)&ucTempValueArr[5][strlen((char *)ucTempValueArr[5])], "%2x,", pst_EC200USystemPara->DeviceRunPara.esLostStatusArr[nPosi].usDevStatus);
@@ -1722,6 +1745,7 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
     uint16_t usRecvLen = 0;
     unsigned short usPosition = 0;
     char cCSQ[2] = {0};
+    char cICCID[21] = {0};
     int nClientType = 4;
 
     if(pst_EC200USystemPara->DeviceRunPara.cBlackLightFlag == 0)
@@ -1782,6 +1806,11 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
             (void)strcpy((char *)ucSendBuf, "ATE0\r\n");
             usSendDataLen = strlen((char *)ucSendBuf);
             sprintf((char *)ucRecvCheckData, "OK");
+            break;
+        case Module_QUERY_ICCID_CMD: //查询ICCID
+            (void)strcpy((char *)ucSendBuf, "AT+QCCID\r\n");
+            usSendDataLen = strlen((char *)ucSendBuf);
+            sprintf((char *)ucRecvCheckData, "+QCCID:");
             break;
             #if 0
         case Module_QUERY_SIM_CARD_STATE_CMD: //查询SIM卡状态
@@ -2245,6 +2274,11 @@ uint8_t EC200U_4G_Module_Configuration_Init(unsigned char ucDataUploadEnable)
                     pst_EC200USystemPara->DeviceRunPara.enUploadStatus = Status_OK;
                     return 0;
                 }
+            }
+            else if(gE_4G_Module_Init_CMD == Module_QUERY_ICCID_CMD)  //ICCID
+            {
+                memcpy(cICCID,&pst_EC200USystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB][10], 20);
+                memcpy(pst_EC200USystemPara->DeviceRunPara.cICCID, cICCID, 20);
             }
             else if(gE_4G_Module_Init_CMD == Module_QUERY_SIGNAL_STRENGTH_CMD)  //4G信号强度
             {

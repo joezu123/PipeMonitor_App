@@ -129,6 +129,7 @@ uint8_t drv_Photosensitive_XYC_ALS_Init(void)
 	stc_exint_config_t stcExtiConfig;
     stc_irq_regi_conf_t stcIrqRegiConf;
     stc_port_init_t stcPortInit;
+	en_result_t enRet;
 	uint8_t ucData[2] = {0};
 
     /* configuration structure initialization */
@@ -163,7 +164,7 @@ uint8_t drv_Photosensitive_XYC_ALS_Init(void)
     MEM_ZERO_STRUCT(stcPortInit);
     stcPortInit.enExInt = Enable;
     PORT_Init(LTINT_PORT, LTINT_PIN, &stcPortInit);
-
+	PORT_ResetBits(LTINT_PORT,LTINT_PIN);
     /* Select External Int Ch.7 */
 	#ifdef HW_VERSION_V1_1
 	stcIrqRegiConf.enIntSrc = INT_PORT_EIRQ1;
@@ -225,50 +226,57 @@ uint8_t drv_Photosensitive_XYC_ALS_Init(void)
 	#endif
 	ucData[0] = SYSM_CTRL_REG;	
 	ucData[1] = 0x80;	//设备复位
-	I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
+	enRet = I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
 	Ddl_Delay1ms(100);
 	ucData[0] = SYSM_CTRL_REG;	
 	ucData[1] = 0x41;	//允许两次测量之间加入等待时间; 启用ALS功能
-	I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
+	enRet = I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
 	ucData[0] = INT_CTRL_REG;	
 	ucData[1] = 0x11;	//当ALS中断产生时，测量将暂停到清除中断之前; 允许ALS中断影响INT引脚
-	I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
+	enRet = I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
 	ucData[0] = WAIT_TIME_REG;	
 	ucData[1] = 0xD3;	//配置等待时间为8*8*20 = 1280ms
-	I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
+	enRet = I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
 	ucData[0] = ALS_GAIN_REG;	
 	ucData[1] = 0x01;	//增益控制，目前先使用默认值，不放大增益
-	I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
+	enRet = I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
 	ucData[0] = ALS_TIME_REG;	
 	ucData[1] = 0x03;	//ALS时间配置，目前先使用默认值，最大输出值65535
-	I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
+	enRet = I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
 	ucData[0] = ALS_PER_REG;	
 	//ucData[1] = 0x0A;	//ALS持续次数达到10次后触发报警,总报警时间为10*1280ms= 12.8s
 	ucData[1] = 0x01;	//ALS持续次数达到10次后触发报警,总报警时间为10*1280ms= 12.8s
-	I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
+	enRet = I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
 	ucData[0] = ALS_THRES_LL;	
 	//ucData[1] = 0x10;	//预设低位报警阈值为10000(0x2710)；低位报警阈值低位：0x10
 	ucData[1] = 0x00;	//预设低位报警阈值为0
-	I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
+	enRet = I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
 	ucData[0] = ALS_THRES_LH;	
 	//ucData[1] = 0x27;	//预设低位报警阈值为10000(0x2710)；低位报警阈值高位：0x27
 	ucData[1] = 0x00;	//预设低位报警阈值为0
-	I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
+	enRet = I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
 	ucData[0] = ALS_THRES_HL;	
 	//ucData[1] = 0xD0;	//预设高位报警阈值为20000(0x07D0)；高位报警阈值低位：0xD0
 	ucData[1] = 0x1E;	//预设高位报警阈值为30
-	I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
+	enRet = I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
 	ucData[0] = ALS_THRES_HH;	
 	//ucData[1] = 0x07;	//预设高位报警阈值为20000(0x07D0)；高位报警阈值高位：0x07
 	ucData[1] = 0x00;	//预设高位报警阈值为30
-	I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
+	enRet = I2C_XYC_ALS_Master_Transmit(DEVICE_XYC_ALS_ADDRESS, ucData, 2, TIMEOUT);
 
 
 	//ucData[0] = 0xBC;
 
 	//I2C_XYC_ALS_Master_Receive(DEVICE_XYC_ALS_ADDRESS,0xBC, &ucData[0], 1, TIMEOUT);
 	//I2C_XYC_ALS_Master_Receive(DEVICE_XYC_ALS_ADDRESS,0xBD, &ucData[1], 1, TIMEOUT);
-	return 0;
+	if(enRet == Ok)
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;/* code */
+	}
 }
 
 uint16_t func_ReadPhoto_XYC_ALS_Data()

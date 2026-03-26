@@ -37,7 +37,7 @@ char g_Ble_SSID[20] = "SK_";              //蓝牙ssid前缀
 static char g_AT_SSID_CMD[35] = "AT+NAME=";     //蓝牙ssid配置AT指令
 static char g_AT_SSID1_CMD[35] = "AT+BLENAME="; 
 static char g_AT_RESET_CMD[30] = "AT+RST";        //蓝牙软件复位配置AT指令   
-static char g_AT_RESTORE_CMD[10] = "AT+RESTORE";  //蓝牙软件恢复配置AT指令   
+//static char g_AT_RESTORE_CMD[10] = "AT+RESTORE";  //蓝牙软件恢复配置AT指令   
 static char g_AT_CMD[4] = "AT";             //蓝牙AT指令
 static char g_ATE_CMD[6] = "ATE0";           //蓝牙AT指令
 //static char g_AT_BLEMTU[13] = "AT+BLEMTU=200"; //蓝牙MTU查询AT指令

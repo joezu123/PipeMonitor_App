@@ -76,6 +76,14 @@ static SystemPataSt *pst_MainSystemPara;
 /*******************************************************************************
  * Function implementation - global ('extern') and local ('static')
  ******************************************************************************/
+#define HC32F460_UID_BASE_ADDR    (0x40010450 )  // UID起始地址
+#define HC32F460_UID_BYTE_LEN     12U             // UID总字节数（96位）
+
+typedef struct {
+    uint32_t UID_Word0;  // 第0~31位（地址0x00100000-0x00100003）
+    uint32_t UID_Word1;  // 第32~63位（地址0x00100004-0x00100007）
+    uint32_t UID_Word2;  // 第64~95位（地址0x00100008-0x0010000B）
+} HC32F460_UID_T;
 
 static stc_clk_sysclk_cfg_t m_stcSysclkCfg =
 {
@@ -88,6 +96,25 @@ static stc_clk_sysclk_cfg_t m_stcSysclkCfg =
     .enPclk3Div = ClkSysclkDiv1,  // 40MHz
     .enPclk4Div = ClkSysclkDiv1,  // 40MHz
 };
+
+/**
+ * @brief 读取HC32F460的96位唯一ID
+ * @param pstUid: 存储UID的结构体指针（输出参数）
+ * @note 直接访问芯片固化的UID地址，无需初始化任何外设
+ */
+void HC32F460_ReadUID(HC32F460_UID_T *pstUid)
+{
+    // 安全校验：确保指针非空
+    if (NULL == pstUid) {
+        return;
+    }
+
+    // 将UID起始地址强制转换为结构体指针，直接读取
+    const HC32F460_UID_T *pstUIDBase = (const HC32F460_UID_T *)HC32F460_UID_BASE_ADDR;
+    pstUid->UID_Word0 = pstUIDBase->UID_Word0;
+    pstUid->UID_Word1 = pstUIDBase->UID_Word1;
+    pstUid->UID_Word2 = pstUIDBase->UID_Word2;
+}
 
 /**
  *******************************************************************************
@@ -363,6 +390,49 @@ void func_Close_AllPower(void)
 }
 
 
+/**
+ * @brief 十六进制数转大写ASCII字符（核心函数）
+ * @param hex_num  输入的十六进制数（支持8/16/32位，如0x3c58）
+ * @param ascii_buf 输出ASCII字符的数组（需提前分配足够空间）
+ * @param digit_num 要转换的十六进制位数（如0x3c58是4位，传4）
+ * @return 无
+ * @note 示例：hex_num=0x3c58, digit_num=4 → ascii_buf = {'3','C','5','8'}
+ */
+void hex_to_upper_ascii(uint32_t hex_num, char ascii_buf[], uint8_t digit_num)
+{
+    // 安全校验：数组为空或位数为0则直接返回
+    if (ascii_buf == NULL || digit_num == 0) {
+        return;
+    }
+
+    uint8_t i = 0;
+    uint8_t hex_digit;  // 存储每一位提取的十六进制数字（0-15）
+
+    // 步骤1：逐位提取并转换为ASCII（先提取低位，如0x3c58先提取8→5→c→3）
+    for (i = 0; i < digit_num; i++) {
+        hex_digit = hex_num & 0x0F;  // 提取当前最低4位（1位十六进制）
+        
+        // 转换为ASCII：数字转'0'-'9'，字母转'A'-'F'
+        if (hex_digit <= 9) {
+            ascii_buf[i] = hex_digit + '0';  // 0-9 → '0'-'9'
+        } else {
+            ascii_buf[i] = (hex_digit - 10) + 'A';  // 10-15 → 'A'-'F'
+        }
+
+        hex_num = hex_num >> 4;  // 右移4位，处理下一位
+    }
+
+    // 步骤2：反转数组（因提取顺序是低位→高位，需调整为高位→低位）
+    char temp;
+    for (i = 0; i < digit_num / 2; i++) {
+        temp = ascii_buf[i];
+        ascii_buf[i] = ascii_buf[digit_num - 1 - i];
+        ascii_buf[digit_num - 1 - i] = temp;
+    }
+
+    // 步骤3：添加字符串结束符（可选，若需作为字符串打印）
+    ascii_buf[digit_num] = '\0';
+}
 
 /**
  *******************************************************************************
@@ -383,8 +453,13 @@ int32_t main(void)
     //DevMeasRecordDataSt st_TempValue;
     static unsigned char ucRetryCnt = 0;
     //DevMeasRecordDataSt st_TempValue1[10];
+    #ifdef NEW_W25Q128_DRIVER
     int nRet = 0;
+    #endif
     int nMin = 0;
+    int nSec = 0;
+    unsigned short usID = 0;
+    char cID[4] = {0};
     /* Initialize Clock */
     drv_mcu_Clock_Init();
     // ucValueArr[10] = {0};
@@ -400,6 +475,13 @@ int32_t main(void)
         Ddl_Delay1ms(500);
     }
     #endif
+    HC32F460_UID_T stUid = {0};
+    
+    // 读取UID
+    HC32F460_ReadUID(&stUid);
+    usID = stUid.UID_Word2 & 0xFFFF; // 取UID的后16位作为设备ID
+    hex_to_upper_ascii(usID, cID, 4); // 将设备ID转换为4位大写ASCII字符
+    memcpy(&gs_DeviceDefaultPara.cDeviceID[12], cID, 4); // 将转换后的ASCII字符存入设备参数的ID字段（假设ID字段从第12位开始）
 
     func_Board_Power_And_Control_GPIO_Init();
 
@@ -434,7 +516,11 @@ int32_t main(void)
     //memset(&gSt_DevMeasRecordData, 0, sizeof(DevMeasRecordDataSt));
     //RecordData_Read(1, &gSt_DevMeasRecordData);
     #else
-    drv_Storage_W25Q128_Init();
+    u8Result = drv_Storage_W25Q128_Init();
+    if(u8Result == 1)
+    {
+        pst_MainSystemPara->DeviceRunPara.usDevStatus |= 0x80;
+    }
     func_Device_Parameter_Init();
     #endif
     //OLED初始化
@@ -640,10 +726,7 @@ int32_t main(void)
 
     //读取当前电池电量
     pst_MainSystemPara->DeviceRunPara.esDeviceRunState.fBattleVoltage = drv_Get_Battery_Level_Value(&pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent);
-    if(pst_MainSystemPara->DeviceRunPara.cHXPressureLevelFlag == 0)
-    {
-        drv_Get_Water_Immersion_Sensor_Status(&pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status, &pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.fWater_Immersion_Level);
-    }
+    
     //磁控外部中断初始化
     drv_Magnetic_Bar_Init();
     
@@ -680,7 +763,11 @@ int32_t main(void)
     //sscanf((char*)&ucDecryData[7], "%f", &fValue2);
     //OLED_Test(4);
     //光照感应初始化
-    drv_Photosensitive_XYC_ALS_Init();
+    u8Result = drv_Photosensitive_XYC_ALS_Init();
+    if(u8Result == 1)
+    {
+        pst_MainSystemPara->DeviceRunPara.usDevStatus |= 0x10;
+    }
     
     //Ddl_Delay1ms(100);
     //pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.sPhotosensitive_XYC_ALS_Data = func_ReadPhoto_XYC_ALS_Data();
@@ -794,6 +881,25 @@ int32_t main(void)
     }
     func_Meas_Sensor_PowerDown_DeInit();
         #endif
+    if(pst_MainSystemPara->DeviceRunPara.cHXPressureLevelFlag == 0)
+    {
+        drv_Get_Water_Immersion_Sensor_Status(&pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status, &pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.fWater_Immersion_Level);
+        if(pst_MainSystemPara->DeviceRunPara.esDeviceSensorsData.cWater_Immersion_Status == 0)
+		{
+			pst_MainSystemPara->DeviceRunPara.usDevStatus &= 0xFFF7;
+		}
+		else
+		{
+			pst_MainSystemPara->DeviceRunPara.usDevStatus |= 0x0008;
+		}
+    }
+
+    //pst_MainSystemPara->DeviceRunPara.usDevStatus = 0xFF;
+    if((pst_MainSystemPara->DeviceRunPara.usDevStatus & 0xFF) != 0)
+    {
+        func_SelfTest_Result_View_Show();
+        Ddl_Delay1ms(5000);
+    }
     //测试外接传感器通讯
     #if 0
     BATTERY_PWRCHK_OPEN();
@@ -883,8 +989,8 @@ int32_t main(void)
             pst_MainSystemPara->DeviceRunPara.cRTC_1MIN_ReflashFlag = 0;
             //轮询喂狗
             func_WatchDog_Refresh();
-            nMin = drv_mcu_Get_RTC_Minute();
-            if(nMin != 100)
+            nMin = drv_mcu_Get_RTC_Minute(&nSec);
+            if((nMin != 100) && (nSec != 100))
             {
                 if((nMin % pst_MainSystemPara->DevicePara.nDeviceUploadCnt) == 0)
                 {

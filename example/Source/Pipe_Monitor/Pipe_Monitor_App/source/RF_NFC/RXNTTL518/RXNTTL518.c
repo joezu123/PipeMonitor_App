@@ -43,7 +43,7 @@ uint8_t guc_NFC_Card_ID[20][7] =
     {0x04,0x05,0xCF,0x01,0x41,0x3B,0x03},
     {0x04,0x23,0x53,0xAB,0x46,0x59,0x80},
     {0x04,0x51,0x3A,0x01,0xE1,0x34,0x03},
-    {0}
+    {0x04,0xB7,0X97,0X9B,0X46,0X59,0X81},
 };
 /*******************************************************************************
  * Local variable definitions ('static')
@@ -208,7 +208,7 @@ unsigned char func_Search_Card(void)
                 memcpy(ucData, &pst_RXNTTLSystemPara->UsartData.ucUsartxRecvDataArr[2][7], ucDataLen);
                 for(i=0; i<20; i++)
                 {
-                    if(strncmp((char*)ucData, (char*)guc_NFC_Card_ID[i],ucDataLen) == 0)
+                    if(strncmp((char*)ucData, (char*)&guc_NFC_Card_ID[i][0],ucDataLen) == 0)
                     {
                         ucRes = 0; //成功
                         break;

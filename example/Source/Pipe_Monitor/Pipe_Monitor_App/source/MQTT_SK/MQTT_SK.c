@@ -457,14 +457,18 @@ void MQTT_Send_SetConfig_Result(unsigned char ucRes, char* cmsgIdArr)
 {
 	uint16_t usSendDataLen = 0;
 	uint8_t ucSendBuf[1500] = {0};
-	struct tm tm;
 	time_t now;
+	#if 0
+	struct tm tm;
 	drv_mcu_Get_RTC_Time(pst_MQTTSystemPara->DeviceRunPara.cDeviceCurDateTime);
 	sscanf(pst_MQTTSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
 	tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
 	tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
 	tm.tm_isdst = -1; // 自动判断夏令时
 	now = mktime(&tm) - 8*60*60; 
+	#else
+	now = func_Get_Linux_Time_Sec();
+	#endif
 	usSendDataLen = func_Get_SetConfigResult_CMD(ucSendBuf,ucRes,(long)now);
 	memset(ucSendBuf, 0, 1500);
 	sprintf((char *)ucSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/setConfig/%s\",%d\r\n",pst_MQTTSystemPara->DevicePara.cDeviceID, usSendDataLen);
@@ -1703,6 +1707,36 @@ uint8_t MQTT_SK_Set_Config(unsigned short usBasePosi)
 					cParaValue = atoi(pItem);
 					ucRes = func_Save_Device_Parameter(DEV_SM4_ENTRY_FLAG, (unsigned char*)&cParaValue);
 				}
+				else if (strcmp(pItem, "\"VP\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					cParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_VPOWER_FLAG, (unsigned char*)&cParaValue);
+				}
+				else if (strcmp(pItem, "\"UP\"") == 0)
+				{
+					pItem = strtok(NULL, ":");
+					if(pItem[strlen(pItem)-1] == '}') //处理字符串中的引号
+					{
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					if(pItem[0] == '"')
+					{
+						pItem++;
+						pItem[strlen(pItem)-1] = '\0';
+					}
+					cParaValue = atoi(pItem);
+					ucRes = func_Save_Device_Parameter(DEV_UPGRADE_FLAG, (unsigned char*)&cParaValue);
+				}
 			}
 		}
 	}
@@ -1888,9 +1922,9 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, long cmsgIdArr)
 	usDataLen = strlen((char *)ucTempArr);
 
 	sprintf((char *)ucTempArr+usDataLen, "\"LevelAlarmPer\":[%.3f,%.3f,%.3f],",
-		pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[0],
-		pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[1],
-		pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[2]);
+		(double)pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[0],
+		(double)pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[1],
+		(double)pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[2]);
 		//pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[3],
 		//pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[4]);
 	usDataLen = strlen((char *)ucTempArr);
@@ -1949,10 +1983,16 @@ uint16_t func_Get_GetConfigResult_CMD(uint8_t *ucDataArr, long cmsgIdArr)
 	usDataLen = strlen((char *)ucTempArr);
 
 	sprintf((char *)ucTempArr+usDataLen, "\"FlowAlarmVal\":[%.3f,%.3f],",
-		pst_MQTTSystemPara->DevicePara.fFlowAlarmValue[0],
-		pst_MQTTSystemPara->DevicePara.fFlowAlarmValue[1]);
+		(double)pst_MQTTSystemPara->DevicePara.fFlowAlarmValue[0],
+		(double)pst_MQTTSystemPara->DevicePara.fFlowAlarmValue[1]);
 		//pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[3], 
 		//pst_MQTTSystemPara->DevicePara.fLevelAlarmPer[4]);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"VP\":%d,", pst_MQTTSystemPara->DevicePara.cVPowerFlag);
+	usDataLen = strlen((char *)ucTempArr);
+
+	sprintf((char *)ucTempArr+usDataLen, "\"UP\":%d,", pst_MQTTSystemPara->DevicePara.cUpgradeFlag);
 	usDataLen = strlen((char *)ucTempArr);
 
 	sprintf((char *)ucTempArr+usDataLen, "\"SM4\":%d", pst_MQTTSystemPara->DevicePara.cSM4EntryFlag);
@@ -1984,13 +2024,16 @@ uint8_t MQTT_SK_Get_Config(unsigned short usBasePosi)
 	{
 		memcpy(cmsgIdArr, &pst_MQTTSystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB][usStartPosi+usBasePosi], 19);
 	}
-	
+	#if 0
 	drv_mcu_Get_RTC_Time(pst_MQTTSystemPara->DeviceRunPara.cDeviceCurDateTime);
 	sscanf(pst_MQTTSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
 	tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
 	tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
 	tm.tm_isdst = -1; // 自动判断夏令时
 	now = mktime(&tm) - 8*60*60; 
+	#else
+	now = func_Get_Linux_Time_Sec();
+	#endif
 	usSendDataLen = func_Get_GetConfigResult_CMD(ucSendBuf,(long)now);
 	memset(ucSendBuf, 0, 1500);
 	sprintf((char *)ucSendBuf, "AT+QMTPUBEX=0,0,0,0,\"data/up/0000/0004/getConfig/%s\",%d\r\n",pst_MQTTSystemPara->DevicePara.cDeviceID, usSendDataLen);
@@ -2028,9 +2071,10 @@ uint8_t MQTT_SK_Get_Data(void)
 	time_t now;
 	char cSendBuf[100] = {0};
 	char cTimeArr[20];
-
-    //time(&now);
 	struct tm tm;
+	#if 0
+    //time(&now);
+	
     //time(&now);
     drv_mcu_Get_RTC_Time(pst_MQTTSystemPara->DeviceRunPara.cDeviceCurDateTime);
     sscanf(pst_MQTTSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
@@ -2038,7 +2082,9 @@ uint8_t MQTT_SK_Get_Data(void)
     tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
 	tm.tm_isdst = -1;
     now = mktime(&tm) - 8*60*60; 
-
+	#else
+	now = func_Get_Linux_Time_Sec();
+	#endif
 	if((func_Array_Find_Str(pst_MQTTSystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB],USART_DATA_LEN_MAX/2,"timeBegin",9, &usPosi)  == 0)
 		&& func_Array_Find_Str(pst_MQTTSystemPara->UsartData.ucUsartxRecvDataArr[MODULE_4G_NB],USART_DATA_LEN_MAX/2,"timeEnd",7, &usPosi) == 0)
 	{

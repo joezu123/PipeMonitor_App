@@ -29,7 +29,7 @@
         <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>1834521573</Checksum>
+        <Checksum>1719312757</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -115,9 +115,9 @@
     <Breakpoints2>
         <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\source\drv_Storage_W25Q128\drv_Storage_W25Q128.c}.424.3" 0 0 1 "" 0 "" 0</Bp0>
         <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\source\drv_Storage_W25Q128\drv_Storage_W25Q128.c}.398.9" 0 0 1 "" 0 "" 0</Bp1>
-        <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\drv_device\drv_USART\drv_USART.c}.609.5" 0 0 1 "" 0 "" 0</Bp2>
-        <Bp3>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\source\BT_TB05\BT_TB05.c}.140.2" 0 0 1 "" 0 "" 0</Bp3>
-        <Bp4>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\source\BT_TB05\BT_TB05.c}.122.2" 0 0 1 "" 0 "" 0</Bp4>
+        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\drv_device\drv_USART\drv_USART.c}.609.5" 0 0 1 "" 0 "" 0</Bp2>
+        <Bp3>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\source\BT_TB05\BT_TB05.c}.140.2" 0 0 1 "" 0 "" 0</Bp3>
+        <Bp4>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\source\BT_TB05\BT_TB05.c}.122.2" 0 0 1 "" 0 "" 0</Bp4>
         <Count>5</Count>
     </Breakpoints2>
     <Aliases>

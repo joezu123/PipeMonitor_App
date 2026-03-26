@@ -17,6 +17,7 @@
 #include "ModbusRTU.h"
 #include "WatchDog.h"
 #include "time.h"
+#include "stdio.h"
 /*******************************************************************************
  * Local type definitions ('typedef')
  ******************************************************************************/
@@ -530,13 +531,14 @@ unsigned char func_Get_Meas_BY_HX_Integrated_Conductivity_Sensor_Value(unsigned 
 	float *pfMeasValue = NULL;
 	unsigned short usCrc = 0xFFFF;
 	unsigned char i = 0;
-    unsigned char j = 0;
+    
 	char *pcRecvData = NULL;
     char cFloat[4] = {0}; //接收数据缓冲区
     unsigned char ucResult = 1;
     unsigned short usCMD = 0;
 	unsigned short usRegNum = 0;
     #if 0
+    unsigned char j = 0;
     for(j = 0; j < 4; j++)
     {
         i = 0;
@@ -682,12 +684,12 @@ unsigned char func_Get_Meas_BY_HX_Integrated_Conductivity_Sensor_Value(unsigned 
 unsigned char func_Get_Meas_HZ_Integrated_Conductivity_Sensor_Value(en_usart_device_t ucDeviceType)
 {
     unsigned char ucSendBuf[10] = {0};
-	float *pfMeasValue = NULL;
+	//float *pfMeasValue = NULL;
 	unsigned short usCrc = 0xFFFF;
 	unsigned char i = 0;
-    unsigned char j = 0;
+    //unsigned char j = 0;
 	char *pcRecvData = NULL;
-    char cFloat[4] = {0}; //接收数据缓冲区
+    //char cFloat[4] = {0}; //接收数据缓冲区
     unsigned char ucResult = 1;
     unsigned short usCMD = 0;
 	unsigned short usRegNum = 0;
@@ -1312,7 +1314,7 @@ unsigned char func_Set_HX_Radar_Level_Addr(en_usart_device_t ucDeviceType)
 	unsigned short usCrc = 0xFFFF;
 	unsigned char i = 0;
 	char *pcRecvData = NULL;
-    unsigned short usValue = 0;
+    //unsigned short usValue = 0;
     unsigned char ucResult = 1;
 
     ucSendBuf[i++] = guc_HX_RadarLevel_Addr;
@@ -1331,7 +1333,7 @@ unsigned char func_Set_HX_Radar_Level_Addr(en_usart_device_t ucDeviceType)
         pcRecvData = (char *)drv_Wait_RecvData_And_CrcCheck(Type_Short , 1);
         if(pcRecvData != NULL)
         {
-            usValue = *((unsigned short*)pcRecvData);
+            //usValue = *((unsigned short*)pcRecvData);
             ucResult = 0;
         }
         else
@@ -1351,15 +1353,17 @@ unsigned char func_Get_Meas_HX_Radar_Ultrasonic_Flow_Sensor_Value(en_usart_devic
     unsigned short usCMD = 0x0001; //获取瞬时流量值
     unsigned short usRegNum = 2;
 	unsigned char i = 0;
-    unsigned char j = 0;
+    
 	char *pcRecvData = NULL;
     //unsigned short usValue = 0;
     unsigned char ucResult = 1;
     char cTempValue[4] = {0};
     //signed long slValue = 0;
     //float fValue = 0.0;
-    enPara_Type ePType = Type_Float_CDAB;
+    
     #if 0
+    unsigned char j = 0;
+    enPara_Type ePType = Type_Float_CDAB;
     for(j=0; j<10; j++)
     {
         i = 0;
@@ -1558,7 +1562,7 @@ unsigned char func_Get_Meas_HX_Flow_Sensor_Value(en_usart_device_t ucDeviceType)
     unsigned short usCMD = 0x0001; //获取瞬时流量值
     unsigned short usRegNum = 2;
 	unsigned char i = 0;
-    unsigned char j = 0;
+    
 	char *pcRecvData = NULL;
     unsigned char ucResult = 1;
     char cTempValue[4] = {0};
@@ -1566,6 +1570,7 @@ unsigned char func_Get_Meas_HX_Flow_Sensor_Value(en_usart_device_t ucDeviceType)
     //float fValue = 0.0;
 
     #if 0
+    unsigned char j = 0;
     for(j=0; j<6; j++)
     {
         i = 0;
@@ -2246,22 +2251,29 @@ unsigned char func_BlackLight_Sensor_Dispose(void)
     }
     pst_MBSystemPara->UsartData.ucUsartxRecvDataFlag[3] = 0;
     memset(pst_MBSystemPara->UsartData.ucUsart4RecvDataArr,0,sizeof(pst_MBSystemPara->UsartData.ucUsart4RecvDataArr));
-
+    #if 0
     drv_mcu_Get_RTC_Time(pst_MBSystemPara->DeviceRunPara.cDeviceCurDateTime);
     sscanf(pst_MBSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
     tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
     tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
     tm.tm_isdst = -1;
     now = mktime(&tm) - 8*60*60; //将时间转换为UTC时间，减去8小时
+    #else
+    now = func_Get_Linux_Time_Sec();
+    #endif
     pst_MBSystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now; //记录上传数据开始时间
     if(pst_MBSystemPara->DeviceRunPara.ulUploadRecordStartTime < 1762136855)
     {
+        #if 0
         drv_mcu_Get_RTC_Time(pst_MBSystemPara->DeviceRunPara.cDeviceCurDateTime);
         sscanf(pst_MBSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
         tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
         tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
         tm.tm_isdst = -1; // 自动判断夏令时
         now = mktime(&tm) - 8*60*60; 
+        #else
+        now = func_Get_Linux_Time_Sec();
+        #endif
         pst_MBSystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now; //记录上传数据开始时间
     }
     //发送拍照命令

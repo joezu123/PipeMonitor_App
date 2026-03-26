@@ -124,6 +124,8 @@ void func_Enter_LowPower_Stop_Mode(void)
     guc_NFCPWRInitFlag = 0;
     func_RF_NFC_PowerDown_DeInit(); //关闭RF模块电源
     VLT_PIN_CLOSE();    //关闭光照传感器电源
+	XYC_ALS_IIC_SDA_L;
+	XYC_ALS_IIC_SCL_L;
     //DCERST_PIN_RESET;   //关闭4G电源
 	gc_SystemPosi = 9;
     if(pst_MainloopSystemPara->DeviceRunPara.cWaitServerCMDFlag == 0)
@@ -140,6 +142,7 @@ void func_Enter_LowPower_Stop_Mode(void)
     //Ddl_Delay1ms(100000);
     if(pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.esBD_NEMAData.ucDataValidFlag == 1)
 	{
+		func_BD_PownDown_Deinit();
 		/* Ensure DMA disable */
 		u32tmp1 = M4_DMA1->EN_f.EN;
 		u32tmp2 = M4_DMA2->EN_f.EN;
@@ -259,12 +262,12 @@ void func_Meas_Sensor_PowerOn_Init(void)
 	uint8_t ucDelayFlag = 0;
 	//外接485电源
 	#if 1
-	if(pst_MainloopSystemPara->DevicePara.cMeasSensorEnableFlag[0] == 1)
+	if((pst_MainloopSystemPara->DevicePara.cMeasSensorEnableFlag[0] == 1) && (pst_MainloopSystemPara->DevicePara.cVPowerFlag == 0))
 	{
 		PWRUP_CTLUP1_PIN_OPEN();
 		ucDelayFlag = 1;
 	}
-	if(pst_MainloopSystemPara->DevicePara.cMeasSensorEnableFlag[1] == 1)
+	if((pst_MainloopSystemPara->DevicePara.cMeasSensorEnableFlag[1] == 1) && (pst_MainloopSystemPara->DevicePara.cVPowerFlag == 0))
 	{
 		PWRUP_CTLUP2_PIN_OPEN();
 		ucDelayFlag = 1;
@@ -753,10 +756,11 @@ void func_Get_Device_Sensors_Value(void)
 	}
 	if(nDifValue >= 10)
 	{
-		pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_DIAG;
+		
 		pst_MainloopSystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt++;
 		if(pst_MainloopSystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt >= 3)
 		{
+			pst_MainloopSystemPara->DeviceRunPara.enDeviceRunMode = DEVICE_RUN_STATE_DIAG;
 			pst_MainloopSystemPara->DeviceRunPara.cBoardSensorPhotoValueChangeCnt = 0;
 			pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A = nValue;
 			pst_MainloopSystemPara->DeviceRunPara.cBDRestartFlag = 1;	//姿态传感器数据变化过大，重新进行北斗定位
@@ -851,7 +855,7 @@ void func_Get_Device_Sensors_Value(void)
 			func_Meas_Sensor_Dispose();
 			if(pst_MainloopSystemPara->DeviceRunPara.cHXPressureLevelFlag == 1)
 			{
-				drv_Get_HX_Pressure_Level_Value(&pst_MainloopSystemPara->DeviceRunPara.esMeasData.fHXPressureWaterLevelValue);
+				pst_MainloopSystemPara->DeviceRunPara.esMeasData.fHX_ADCValue = drv_Get_HX_Pressure_Level_Value(&pst_MainloopSystemPara->DeviceRunPara.esMeasData.fHXPressureWaterLevelValue);
 				pst_MainloopSystemPara->DeviceRunPara.esMeasData.fHXPressureWaterLevelValue += pst_MainloopSystemPara->DevicePara.fPressureSensorCalibration;
 			}
 		}
@@ -887,7 +891,7 @@ void func_Save_Device_MeasRecord_Dispose()
 	uint8_t ucTimeFlag = 0;
 	struct tm tm;
 	time_t now;
-	unsigned char ucRes = 0;
+	//unsigned char ucRes = 0;
 
 	#ifdef JOE_TEST
 	gSt_DevMeasRecordData.nAttitude_SC7A = pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.nDev_Attitude_SC7A + pst_MainloopSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount * 10;
@@ -1024,6 +1028,7 @@ void func_Save_Device_MeasRecord_Dispose()
 	}
 	else
 	{
+		pst_MainloopSystemPara->DeviceRunPara.cSaveDataTimeDelayFlag = 1;
 		ucRecordFlag = 1;
 		ucTimeFlag = 1;
 	}
@@ -1040,7 +1045,7 @@ void func_Save_Device_MeasRecord_Dispose()
 			if((double)pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.fBattery_Level_Percent >= 10.0)
 			{
 				ucRecordFlag = 0;
-				ucRes = func_Save_Device_MeasData();
+				func_Save_Device_MeasData();
 				pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt++;
 				if(pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt >= (MAX_RECORD_COUNT - 1))
 				{
@@ -1049,12 +1054,16 @@ void func_Save_Device_MeasRecord_Dispose()
 				#pragma diag_suppress=Pa039
 				func_Save_Device_Parameter(DEV_HIS_RECORD, (unsigned char*)&pst_MainloopSystemPara->DevicePara.nDeviceRecordCnt);
 				#pragma diag_warning=Pa039
+				#if 0
 				drv_mcu_Get_RTC_Time(pst_MainloopSystemPara->DeviceRunPara.cDeviceCurDateTime);
 				sscanf(pst_MainloopSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
 				tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
 				tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
 				tm.tm_isdst = -1; // 自动判断夏令时
 				now = mktime(&tm) - 8*60*60; 
+				#else
+				now = func_Get_Linux_Time_Sec();
+				#endif
 				if(strlen(pst_MainloopSystemPara->DeviceRunPara.esDeviceRunState.cDevStartDateTime) > 1)
 				{
 					if(pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordLostCnt == 0)
@@ -1063,12 +1072,16 @@ void func_Save_Device_MeasRecord_Dispose()
 						pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now; //记录上传数据开始时间
 						if(pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordStartTime < 1762136855)
 						{
+							#if 0
 							drv_mcu_Get_RTC_Time(pst_MainloopSystemPara->DeviceRunPara.cDeviceCurDateTime);
 							sscanf(pst_MainloopSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
 							tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
 							tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
 							tm.tm_isdst = -1; // 自动判断夏令时
 							now = mktime(&tm) - 8*60*60; 
+							#else
+							now = func_Get_Linux_Time_Sec();
+							#endif
 							pst_MainloopSystemPara->DeviceRunPara.ulUploadRecordStartTime = (long)now; //记录上传数据开始时间
 						}
 					}
@@ -1176,13 +1189,16 @@ void func_4G_Connect_Server_Dispose(void)
 		if(((pst_MainloopSystemPara->DeviceRunPara.nDeviceCurUploadRecordCount >= pst_MainloopSystemPara->DevicePara.nDeviceUploadCnt) && (pst_MainloopSystemPara->DeviceRunPara.cUploadTimeFlag == 1))
 		|| (pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag == 2))
 		{
+			#if 0
 			drv_mcu_Get_RTC_Time(pst_MainloopSystemPara->DeviceRunPara.cDeviceCurDateTime);
 			sscanf(pst_MainloopSystemPara->DeviceRunPara.cDeviceCurDateTime, "%d-%d-%d %d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
 			tm.tm_year -= 1900; // 由于tm_year是从1900年开始计数的
 			tm.tm_mon -= 1;     // tm_mon是从0开始的，所以需要减1
 			tm.tm_isdst = -1; // 自动判断夏令时
 			now = mktime(&tm) - 8*60*60; 
-
+			#else
+			now = func_Get_Linux_Time_Sec();
+			#endif
 			if(pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag == 2)
 			{
 				pst_MainloopSystemPara->DeviceRunPara.cBarTouchFlag = 3; //清除触摸标志位
@@ -1316,7 +1332,8 @@ void func_System_Mainloop_Dispose(void)
 	if((pst_MainloopSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status == 1)
 		//&& (pst_MainloopSystemPara->DevicePara.cDeviceIdenFlag == 0)) //当前设备未经过验证
 		&& (pst_MainloopSystemPara->DeviceRunPara.cEveryNFCDisposeFlag == 0)
-		&& (pst_MainloopSystemPara->DevicePara.cMonitorMode == 0)) //当前设备未经过验证
+		&& (pst_MainloopSystemPara->DevicePara.cMonitorMode == 0)
+		&& (pst_MainloopSystemPara->DeviceRunPara.eCurPowerType == Power_ON)) //当前设备未经过验证
 	{
 		func_NFC_Check_Dispose();
 	}

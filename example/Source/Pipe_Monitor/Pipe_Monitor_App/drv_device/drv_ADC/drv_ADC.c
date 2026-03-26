@@ -370,12 +370,13 @@ uint8_t drv_Battery_Level_Init()
 }
 
 //压力液位计输出电压0.5V~2.5V对应0~10米水位高度
-void drv_Get_HX_Pressure_Level_Value(float* fValue)
+float drv_Get_HX_Pressure_Level_Value(float* fValue)
 {
     uint8_t u8Count = 0u;
     uint16_t usValue[3] = {0};
     uint16_t usSumValue = 0;
     double fValue1 = 0.0;
+    float fADCValue = 0.0;
 
     #ifdef HW_VERSION_V1_1
     while (u8Count < ADC2_CONTINUOUS_TIMES)
@@ -397,6 +398,7 @@ void drv_Get_HX_Pressure_Level_Value(float* fValue)
     usSumValue = usValue[0] + usValue[1] + usValue[2];
     usSumValue = usSumValue / 3;
     fValue1 =  ((double)usSumValue * ADC_VREF) / (double)ADC1_ACCURACY;
+    fADCValue = (float)fValue1;
     if(fValue1 > 2.5)
     {
         fValue1 = 2.5;
@@ -407,6 +409,7 @@ void drv_Get_HX_Pressure_Level_Value(float* fValue)
     }
     fValue1 = (fValue1 - 0.5) * 10 / 2; //转换为水位高度值，单位米
     *fValue = fValue1;
+    return fADCValue;
 }
 
 //获取水浸传感器状态

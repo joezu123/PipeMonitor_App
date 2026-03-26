@@ -91,7 +91,11 @@ void ExtInt07_Callback(void)
             guc_NFCPWRInitFlag = 0;    //NFC模块开启电源及初始化配置标志位
             pst_MagSystemPara->DeviceRunPara.cEveryNFCDisposeFlag= 0;
             pst_MagSystemPara->DeviceRunPara.esDeviceSensorsData.cMagnetic_Bar_Status = 1;
-            drv_mcu_ChangeUSART3_Source(MODULE_NFC_RFID);
+            if(pst_MagSystemPara->DeviceRunPara.eCurPowerType == Power_ON)
+            {
+                drv_mcu_ChangeUSART3_Source(MODULE_NFC_RFID);
+            }
+            
             #ifndef HW_VERSION_V1_1
             MAINPWR3V8_PIN_CLOSE();	//关闭3.8V电源
             Ddl_Delay1ms(100);
@@ -148,6 +152,7 @@ uint8_t drv_Magnetic_Bar_Init(void)
     /* Set External Int */
     MEM_ZERO_STRUCT(stcPortInit);
     stcPortInit.enExInt = Enable;
+    stcPortInit.enPullUp = Enable;
     PORT_Init(MAGNETIC_BAR_PORT, MAGNETIC_BAR_PIN, &stcPortInit);
 
     /* Select External Int Ch.7 */

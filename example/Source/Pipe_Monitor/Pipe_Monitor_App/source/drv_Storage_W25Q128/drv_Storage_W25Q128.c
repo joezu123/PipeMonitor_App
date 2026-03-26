@@ -2303,6 +2303,34 @@ unsigned char func_Save_Device_Parameter(en_SaveParaCMD eCMD, unsigned char *cDa
 			#endif
 		}
 		break;
+	case DEV_VPOWER_FLAG:	//7v->12v转换使能标志位:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 1)
+		{
+			return 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cVPowerFlag = ucTmpData;
+			#ifndef NEW_W25Q128_DRIVER
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cVPowerFlag,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cVPowerFlag-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+			#endif
+		}
+		break;
+	case DEV_UPGRADE_FLAG:	//升级标志位:
+		ucTmpData = *cDataArr;     
+		if (ucTmpData > 1)
+		{
+			return 0;
+		}
+		else
+		{
+			pst_W25Q128SystemPara->DevicePara.cUpgradeFlag = ucTmpData;
+			#ifndef NEW_W25Q128_DRIVER
+			W25Q128_Spi_flash_buffer_write((uint8_t *)&pst_W25Q128SystemPara->DevicePara.cUpgradeFlag,SYSTEM_PARA_ADDR+(&pst_W25Q128SystemPara->DevicePara.cUpgradeFlag-&pst_W25Q128SystemPara->DevicePara.cDeviceID[0]),1);
+			#endif
+		}
+		break;
 	case DEV_FACTORY_RESET:
 		func_Device_Parameter_Factory_Reset();
 		break;
@@ -2350,6 +2378,7 @@ unsigned char func_Save_Device_MeasData(void)
 	return ucResult;
 	#else
 	W25Q128_Spi_flash_buffer_write((uint8_t *)&gSt_DevMeasRecordData.fWaterLevel,SYSTEM_RECORD_START_ADDR+pst_W25Q128SystemPara->DevicePara.nDeviceRecordCnt*SYSTEM_RECORD_SIZE,SYSTEM_RECORD_SIZE);
+	return 0;
 	#endif
 }
 
